@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: growa-turismo-medico
+    runtime: python
+    region: oregon
+    plan: free
+    autoDeploy: false
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers
+    healthCheckPath: /api/health
+    envVars:
+      - key: PRODUCTION
+        value: "true"
+      - key: DEMO_SEED
+        value: "false"
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: ALLOWED_HOSTS
+        value: "*.onrender.com"
+      - key: DATABASE_URL
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: GOOGLE_TOKEN_FERNET_KEY
+        sync: false

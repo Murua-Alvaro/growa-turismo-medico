@@ -1,0 +1,26 @@
+name: Growa · tests
+on:
+  push:
+  pull_request:
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PRODUCTION: "false"
+      DATABASE_URL: "sqlite:///./test_growa.sqlite3"
+      DEMO_SEED: "true"
+      BOOTSTRAP_ADMIN_EMAIL: "admin@example.test"
+      BOOTSTRAP_ADMIN_PASSWORD: "CiOnlyStrongSecret-2026-NotProduction"
+      SESSION_SECRET: "CiOnlyRandomSignedState-2026-NotProduction"
+      PUBLIC_BASE_URL: "http://testserver"
+      ALLOWED_HOSTS: "testserver,localhost,127.0.0.1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - run: python -m compileall -q app
+      - run: python -m pytest -q

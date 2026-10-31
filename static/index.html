@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="theme-color" content="#ffffff">
+ <meta name="description" content="Growa Hospitalidad, un espacio para explorar y coordinar hospedaje, movilidad y servicios independientes en Mazatlán.">
+ <title>Growa | Hospitalidad inteligente</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+ <link href="/static/styles.css" rel="stylesheet">
+ <script src="/static/app.js" defer></script>
+</head>
+<body>
+<header class="header">
+ <div class="header-inner">
+  <button class="brand" data-go="home" aria-label="Growa, inicio"><span class="brand-symbol">G</span><span>growa<small>HOSPITALITY</small></span></button>
+  <nav class="nav" aria-label="Secciones">
+   <button class="nav-item selected" data-go="home">Inicio</button>
+   <button class="nav-item" data-go="explore">Explorar</button>
+   <button class="nav-item" data-go="planner">Planificar</button>
+   <button class="nav-item private" data-go="trips">Itinerarios</button>
+   <button class="nav-item private" data-go="partners">Aliados</button>
+  </nav>
+  <div class="header-actions"><span class="location-label">◉ Mazatlán, México</span><button class="btn outline" id="account-button">Iniciar sesión</button></div>
+ </div>
+</header>
+
+<main class="container">
+<section class="view active" id="view-home">
+ <div class="hero">
+  <div class="hero-copy">
+   <div class="eyebrow"><span class="eyebrow-dot"></span> Una nueva forma de coordinar hospitalidad</div>
+   <h1>Todo lo que necesitas, <em>en una misma estancia.</em></h1>
+   <p>Descubre hospedaje, especialistas independientes, transporte privado y servicios para acompañantes. Explora alternativas y construye un itinerario inteligente.</p>
+   <div class="hero-buttons"><button class="btn dark" data-go="explore">Explorar experiencias <span>↗</span></button><button class="btn light" data-go="planner">Organizar mi estancia</button></div>
+   <div class="hero-meta"><span><b>4 categorías</b> conectadas</span><span>◉ Mazatlán · Sinaloa</span><span>Coordinación, no atención clínica</span></div>
+  </div>
+  <div class="hero-photo" aria-label="Imagen de hospitalidad">
+   <div class="hero-gradient"></div>
+   <div class="hero-badge"><span class="badge-icon">✦</span><div><strong>Estancias mejor conectadas</strong><small>Hospedaje · Transporte · Agenda</small></div></div>
+  </div>
+ </div>
+ <div class="search-dock">
+  <div class="search-dock-title"><strong>¿Qué te gustaría encontrar?</strong><span>Una búsqueda, todas las opciones</span></div>
+  <div class="search-bar">
+   <label><span>Buscar</span><input id="quick-q" placeholder="Hotel, rehabilitación, traslado privado..." autocomplete="off"></label>
+   <label><span>Zona</span><select id="quick-zone"><option value="">Toda Mazatlán</option></select></label>
+   <label><span>Presupuesto</span><select id="quick-price"><option value="0">Flexible</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select></label>
+   <button class="btn search-submit" id="quick-submit">Buscar <span>→</span></button>
+  </div>
+ </div>
+ <section class="content-section">
+  <div class="section-head"><div><span class="overline">EXPLORA A TU MANERA</span><h2>Cada servicio, en un mismo lugar.</h2><p>Explora proveedores y organiza una experiencia completa.</p></div></div>
+  <div class="category-showcase">
+   <button class="showcase show-hotel" data-category="hotel"><span class="showcase-number">01 / Hospedaje</span><strong>Encuentra un lugar para estar bien.</strong><span class="showcase-link">Ver alojamientos <b>↗</b></span></button>
+   <button class="showcase show-medical" data-category="medico"><span class="showcase-number">02 / Servicios médicos</span><strong>Agenda con profesionales independientes.</strong><span class="showcase-link">Explorar especialistas <b>↗</b></span></button>
+   <button class="showcase show-transport" data-category="transporte"><span class="showcase-number">03 / Movilidad</span><strong>Muévete sin complicaciones.</strong><span class="showcase-link">Ver transportes <b>↗</b></span></button>
+   <button class="showcase show-business" data-category="negocio"><span class="showcase-number">04 / Comercio</span><strong>Todo lo que hace cómoda tu visita.</strong><span class="showcase-link">Explorar negocios <b>↗</b></span></button>
+  </div>
+ </section>
+ <section class="content-section">
+  <div class="section-head"><div><span class="overline">SELECCIÓN PARA EXPLORAR</span><h2>Opciones destacadas</h2><p>Fichas de demostración. Los precios y horarios no están verificados.</p></div><button class="simple-link" data-go="explore">Ver todas las opciones ↗</button></div>
+  <div class="listing-grid featured-listings" id="featured"></div>
+ </section>
+ <section class="experience-banner">
+  <div><span class="overline">AGENDA INTELIGENTE</span><h2>Una estancia es más que una reservación.</h2><p>Encuentra combinaciones compatibles de cita, hotel y movilidad. Un solo itinerario y confirmaciones transparentes por proveedor.</p><button class="btn light" data-go="planner">Crear itinerario ↗</button></div>
+  <div class="journey-line"><div><span>01</span><strong>Elige la atención</strong><small>Servicio y horario</small></div><div><span>02</span><strong>Agrega la estancia</strong><small>Hotel y noches</small></div><div><span>03</span><strong>Coordina movilidad</strong><small>Traslado privado</small></div></div>
+ </section>
+</section>
+
+<section class="view" id="view-explore">
+ <div class="page-intro"><span class="overline">DIRECTORIO DE HOSPITALIDAD</span><h1>Explora con libertad.</h1><p>Opciones, detalles y ubicaciones en una sola búsqueda. Compara por intereses y necesidades específicas.</p></div>
+ <div class="explore-toolbar">
+  <div class="search-input">⌕ <input id="catalog-q" placeholder="Buscar alojamiento, especialidad, movilidad..."></div>
+  <select id="catalog-zone" aria-label="Zona"><option value="">Todas las zonas</option></select>
+  <select id="catalog-price" aria-label="Precio máximo"><option value="0">Cualquier precio</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select>
+  <button class="btn outline" id="toggle-map">◩ Ver mapa</button>
+ </div>
+ <div class="category-pills" id="category-pills"></div>
+ <div class="filter-row"><label><input id="filter-access" type="checkbox"> Accesibilidad</label><label><input id="filter-english" type="checkbox"> Atención en inglés</label><label><input id="filter-verified" type="checkbox"> Verificados</label><button class="simple-link" id="clear-filters">Limpiar filtros</button></div>
+ <div class="results-heading"><div><h2 id="results-title">Opciones para tu estancia</h2><p id="results-count">Cargando oferta...</p></div><span class="demo-hint">Las fichas demo no representan empresas reales.</span></div>
+ <div class="explore-layout">
+  <div class="listing-grid" id="results"></div>
+  <div id="map-panel" class="map-panel" hidden><div id="map"></div><small>Ubicaciones ilustrativas en demostración.</small></div>
+ </div>
+</section>
+
+<section class="view" id="view-planner">
+ <div class="page-intro"><span class="overline">COORDINACIÓN INTEGRAL</span><h1>Tu agenda, con todo conectado.</h1><p>Combinamos horarios declarados, alojamientos y transportes en alternativas viables. No son reservaciones externas confirmadas.</p></div>
+ <div class="planner-grid">
+  <div class="planner-form-box">
+   <div class="step-label">PASO 01 — PREFEFERENCIAS</div><h2>Organiza tu estancia</h2><p>Personaliza tu búsqueda. El sistema comprueba capacidad local y calcula opciones.</p>
+   <form id="plan-form">
+    <label>Servicio médico<select id="plan-medical" required></select></label>
+    <div class="form-cols"><label>Fecha de consulta<input type="date" id="plan-day" required></label><label>Noches<input type="number" id="plan-nights" min="1" max="30" value="2" required></label></div>
+    <div class="form-cols"><label>Hotel<select id="plan-hotel"></select></label><label>Transporte<select id="plan-transport"></select></label></div>
+    <div class="form-cols"><label>Hora preferida<select id="plan-hour"><option value="8">08:00</option><option value="9">09:00</option><option value="10" selected>10:00</option><option value="11">11:00</option><option value="12">12:00</option><option value="15">15:00</option></select></label><label>Presupuesto total (MXN)<input type="number" id="plan-budget" min="0" value="5500"></label></div>
+    <label class="check-inline"><input id="plan-access" type="checkbox"> Exigir accesibilidad en los tres servicios</label>
+    <button class="btn dark full" type="submit">Buscar combinaciones <span>↗</span></button>
+   </form>
+  </div>
+  <div class="planner-results-box"><div class="step-label">PASO 02 — ALTERNATIVAS</div><h2>Itinerarios compatibles</h2><p id="planner-count">Selecciona tus preferencias para comparar.</p><div id="planner-results" class="planner-results"><div class="empty-state">✦<h3>Tu itinerario empieza aquí.</h3><p>Busca combinaciones de horarios, alojamiento y traslado.</p></div></div></div>
+ </div>
+</section>
+
+<section class="view" id="view-trips">
+ <div class="page-intro"><span class="overline">COORDINACIÓN DE ITINERARIOS</span><h1>Reservaciones con claridad.</h1><p>Cada componente se confirma de forma independiente. Consulta estados, capacidad y acciones pendientes.</p></div>
+ <div id="trip-list" class="trip-list"></div>
+</section>
+
+<section class="view" id="view-partners">
+ <div class="page-intro"><span class="overline">RED DE ALIADOS</span><h1>Administra tu red de servicios.</h1><p>Incorpora negocios, declara horarios y revisa las conexiones de coordinación.</p></div>
+ <div class="partners-grid">
+  <div class="operation-panel"><h2>Registrar proveedor</h2><form id="provider-form">
+    <label>Nombre de la empresa<input name="name" required minlength="3"></label>
+    <div class="form-cols"><label>Tipo<select name="category"><option value="hotel">Hotel</option><option value="medico">Servicio médico</option><option value="transporte">Transporte</option><option value="negocio">Negocio</option></select></label><label>Especialidad o subtipo<input name="subtype"></label></div>
+    <div class="form-cols"><label>Zona<input name="zone" value="Mazatlán"></label><label>Precio base (MXN)<input name="price_mxn" type="number" min="0" value="1000"></label></div>
+    <label>Descripción<textarea name="description" rows="3"></textarea></label>
+    <div class="form-cols"><label>Capacidad<input name="capacity" type="number" min="1" max="500" value="1"></label><label>URL de imagen (HTTPS)<input name="image_url" type="url"></label></div>
+    <div class="form-cols"><label class="check-inline"><input name="accessible" type="checkbox"> Accesibilidad</label><label class="check-inline"><input name="english" type="checkbox"> Inglés</label></div>
+    <button class="btn dark" type="submit">Registrar negocio</button>
+   </form><p class="fine-print">Toda ficha nueva requiere verificación administrativa; no implica certificación médica.</p>
+  </div>
+  <div class="operation-panel"><h2>Disponibilidad de prestadores</h2><form id="slots-form">
+    <label>Servicio médico<select id="slot-provider"></select></label>
+    <label>Fecha<input type="date" id="slot-day" required></label>
+    <label>Horarios separados por comas<input id="slot-times" placeholder="09:00,10:30,12:00" required></label>
+    <button class="btn light" type="submit">Guardar horarios</button>
+   </form>
+   <div class="integration-panel"><h3>Google Calendar</h3><p id="google-status">Comprobando la conexión de agenda...</p><div class="integration-buttons"><button class="btn dark" id="google-connect">Conectar calendario</button><button class="btn outline" id="google-disconnect">Desconectar</button></div><small>Solo la cuenta del coordinador autorizada. No brinda acceso a calendarios de médicos externos.</small></div>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer class="footer"><div><strong>GROWA</strong><span>Hospitality Intelligence</span></div><p>Prototipo de coordinación logística · No presta servicios médicos · Datos sintéticos identificados</p><span>MAZATLÁN · MÉXICO</span></footer>
+
+<div class="modal-backdrop" id="login-modal" hidden><div class="modal-card"><button class="close-modal" data-close="login-modal" aria-label="Cerrar">×</button><span class="overline">ACCESO A COORDINACIÓN</span><h2>Bienvenido a Growa.</h2><p>Inicia sesión para gestionar solicitudes y administrar proveedores.</p><form id="login-form"><label>Correo<input type="email" id="login-email" autocomplete="username" required></label><label>Contraseña<input type="password" id="login-password" autocomplete="current-password" required></label><button class="btn dark full">Acceder</button><p class="form-error" id="login-error"></p></form></div></div>
+
+<div class="modal-backdrop" id="reserve-modal" hidden><div class="modal-card"><button class="close-modal" data-close="reserve-modal" aria-label="Cerrar">×</button><span class="overline">SOLICITUD DE COORDINACIÓN</span><h2>Solicitar itinerario</h2><p id="reserve-summary">Esta solicitud no confirma por sí sola servicios externos.</p><form id="reserve-form"><label>Alias del visitante (sin datos clínicos)<input id="reserve-alias" maxlength="90" minlength="2" required placeholder="Visitante 001"></label><label>Personas<input type="number" id="reserve-guests" min="1" max="12" value="1"></label><button class="btn dark full">Crear solicitud</button></form></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body></html>

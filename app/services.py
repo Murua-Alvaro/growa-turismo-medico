@@ -81,32 +81,51 @@ def feasible(db, med:Listing,hotel:Listing,trans:Listing,slot:Slot,nights:int,gu
     return True
 
 def plan(db:Session, medical_id:str, day:date, nights:int, preferred_hour:int,
-         max_budget:int, accessible:bool, hotel_id=None, transport_id=None) -> dict:
+         max_budget:int, accessible:bool, hotel_id=None, transport_id=None,
+         max_results:int=18) -> dict:
     validate_day(day)
     med=db.get(Listing,medical_id)
-    if not med or med.category!="medico" or not med.active:raise HTTPException(404,"Servicio médico no encontrado.")
-    slots=list(db.scalars(select(Slot).where(Slot.listing_id==med.id,Slot.slot_date==day,Slot.enabled.is_(True))))
+    if not med or med.category!="medico" or not med.active:
+        raise HTTPException(404,"Servicio médico no encontrado.")
+    slots=list(db.scalars(select(Slot).where(Slot.listing_id==med.id,
+             Slot.slot_date==day,Slot.enabled.is_(True)).order_by(Slot.time_hhmm)))
     hotels=list(db.scalars(select(Listing).where(Listing.category=="hotel",Listing.active.is_(True))))
     transports=list(db.scalars(select(Listing).where(Listing.category=="transporte",Listing.active.is_(True))))
-    if hotel_id:hotels=[h for h in hotels if h.id==hotel_id]
-    if transport_id:transports=[t for t in transports if t.id==transport_id]
+    if hotel_id: hotels=[h for h in hotels if h.id==hotel_id]
+    if transport_id: transports=[t for t in transports if t.id==transport_id]
+    if accessible:
+        if not med.accessible:return {"options":[],"total_feasible":0,"notice":"No hay prestador accesible para la selección."}
+        hotels=[h for h in hotels if h.accessible]
+        transports=[t for t in transports if t.accessible]
+
+    # Availability must be evaluated once per resource/time window, not once per
+    # Cartesian-product combination; relevant for larger multi-provider catalogs.
+    hotel_cache={}
+    for hotel in hotels:
+        start,end=range_for("hotel",day,slots[0].time_hhmm if slots else "10:00",nights)
+        hotel_cache[hotel.id]=available(db,hotel,start,end)
+    hotels=[h for h in hotels if hotel_cache[h.id]]
+    distance={h.id:round(distance_km(med,h),1) for h in hotels}
     options=[]
     for slot in slots:
+        start,end=range_for("medico",day,slot.time_hhmm,nights)
+        if not available(db,med,start,end):continue
+        valid_transport=[]
+        for trans in transports:
+            ts,te=range_for("transporte",day,slot.time_hhmm,nights)
+            if available(db,trans,ts,te):valid_transport.append(trans)
         for h in hotels:
-            for t in transports:
-                if accessible and not (med.accessible and h.accessible and t.accessible):continue
-                if not feasible(db,med,h,t,slot,nights):continue
+            for t in valid_transport:
                 total=offer_price(med,h,t,nights)
                 if max_budget and total>max_budget:continue
-                distance=round(distance_km(med,h),1)
-                score=100-abs(int(slot.time_hhmm[:2])-preferred_hour)*4-distance*2-total/3000
+                score=100-abs(int(slot.time_hhmm[:2])-preferred_hour)*4-distance[h.id]*2-total/3000
                 options.append({"slot_id":slot.id,"medical_id":med.id,"hotel_id":h.id,"transport_id":t.id,
                                 "time":slot.time_hhmm,"day":day.isoformat(),"medical":med.name,"hotel":h.name,
                                 "transport":t.name,"nights":nights,"price_mxn":total,
-                                "distance_km":distance,"score":round(score,1),"source":slot.source,
+                                "distance_km":distance[h.id],"score":round(score,1),"source":slot.source,
                                 "demo":med.demo or h.demo or t.demo})
     options.sort(key=lambda x:(-x["score"],x["price_mxn"]))
-    return {"options":options[:18],"total_feasible":len(options),
+    return {"options":options[:max_results],"total_feasible":len(options),
             "notice":"Horarios y precios de demostración o declarados por proveedores. Ninguna combinación constituye una reserva externa confirmada."}
 
 def make_booking(db:Session, actor:User, slot_id:str, hotel_id:str, transport_id:str,

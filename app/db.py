@@ -2,7 +2,7 @@
 from __future__ import annotations
 import os
 import secrets
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, create_engine, Index
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
@@ -72,7 +72,7 @@ class Slot(Base):
     __tablename__ = "slots"
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=uid)
     listing_id: Mapped[str] = mapped_column(ForeignKey("listings.id"), index=True)
-    slot_date: Mapped[datetime.date] = mapped_column(Date, index=True)
+    slot_date: Mapped[date] = mapped_column(Date, index=True)
     time_hhmm: Mapped[str] = mapped_column(String(5))
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     source: Mapped[str] = mapped_column(String(30), default="manual")

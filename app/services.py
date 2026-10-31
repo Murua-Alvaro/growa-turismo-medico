@@ -138,6 +138,7 @@ def make_booking(db:Session, actor:User, slot_id:str, hotel_id:str, transport_id
         db.add(BookingLeg(booking_id=booking.id,listing_id=item.id,kind=item.category,
                           starts_at=s,ends_at=e,status="pending",price_mxn=p))
     db.add(Audit(user_id=actor.id,action="booking_created",target_id=booking.id))
+    db.flush()  # ensure booking legs are visible even with autoflush disabled
     return booking
 
 def booking_view(db:Session,booking:Booking,provider_id=None)->dict:

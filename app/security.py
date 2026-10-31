@@ -92,6 +92,7 @@ def check_csrf(request: Request):
     if not cookie or not header or not hmac.compare_digest(cookie, header):
         raise HTTPException(403, "Protección CSRF: actualiza la sesión e inténtalo de nuevo.")
     origin = request.headers.get("origin")
-    if origin and origin.rstrip("/") != str(request.base_url).rstrip("/"):
+    expected=os.getenv("PUBLIC_BASE_URL",str(request.base_url)).rstrip("/")
+    if origin and origin.rstrip("/") != expected:
         # Render's proxy supplies the original scheme via forwarded headers.
         raise HTTPException(403, "Origen no autorizado.")

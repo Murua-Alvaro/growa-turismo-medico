@@ -116,11 +116,13 @@ class PlanRequest(BaseModel):
 def plan(body:PlanRequest):
     with SessionLocal() as db:
         result=services.plan(db,body.medical_id,body.day,body.nights,body.preferred_hour,
-                             body.max_budget,body.accessible,body.hotel_id,body.transport_id)
+                             body.max_budget,body.accessible,body.hotel_id,body.transport_id,max_results=300)
         medical=db.get(Listing,body.medical_id)
         if not medical or not medical.provider_user_id or not google_calendar.configured():
+            result["options"]=result["options"][:18]
             return result
         if not google_calendar.token_for(medical.provider_user_id):
+            result["options"]=result["options"][:18]
             return result
         tz=ZoneInfo("America/Mazatlan")
         begin=datetime.combine(body.day,time(0,0)).replace(tzinfo=tz)
@@ -140,7 +142,7 @@ def plan(body:PlanRequest):
             if not overlap:
                 option["source"]="declarada + Google FreeBusy"
                 filtered.append(option)
-        result["options"]=filtered
+        result["options"]=filtered[:18]
         result["total_feasible"]=len(filtered)
         result["notice"]="Horarios del proveedor declarados y filtrados por ocupación del calendario autorizado. Requieren confirmación del prestador."
         return result

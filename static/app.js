@@ -48,10 +48,10 @@ function listingCard(item){
  const photo=item.image_url?'<img loading="lazy" src="'+safe(item.image_url)+'" alt="Fotografía ilustrativa de '+safe(item.category)+'">':'';
  const desc=(item.description||'').slice(0,115);
  const action=item.category==='negocio'?'<button data-detail="'+safe(item.id)+'">Consultar</button>':'<button data-plan="'+safe(item.id)+'">Planificar ↗</button>';
- return '<article class="listing-card"><div class="listing-image">'+photo+
+ return '<article class="listing-card"><div class="listing-image" role="button" tabindex="0" data-detail="'+safe(item.id)+'">'+photo+
   '<div class="listing-badges">'+(item.demo?'<span>DEMOSTRACIÓN</span>':item.verified?'<span>VERIFICADO</span>':'<span>DECLARADO</span>')+'</div></div>'+
   '<div class="listing-info"><div class="listing-zone"><span>'+safe(TYPES[item.category])+'</span><span>◉ '+safe(item.zone)+'</span></div>'+
-  '<h3>'+safe(item.name)+'</h3><p>'+safe(desc)+'</p><div class="amenities">'+badges.join('')+
+  '<h3><button class="listing-name" data-detail="'+safe(item.id)+'">'+safe(item.name)+'</button></h3><p>'+safe(desc)+'</p><div class="amenities">'+badges.join('')+
   '<span>'+safe(item.subtype||'Servicio')+'</span></div><div class="listing-bottom"><div><strong>'+money(item.price_mxn)+
   '</strong><small>'+(item.demo?'Precio ilustrativo':'Tarifa declarada, por confirmar')+'</small></div>'+action+'</div></div></article>';
 }
@@ -64,10 +64,32 @@ function wireCards(root){
   if(listing.category==='transporte')$('#plan-transport').value=id;
   go('planner');
  });
- root.querySelectorAll('[data-detail]').forEach(btn=>btn.onclick=()=>{
-  const x=state.all.find(y=>y.id===btn.dataset.detail);
-  if(x)msg(x.name+' · '+x.description.slice(0,120));
+ root.querySelectorAll('[data-detail]').forEach(btn=>{
+  btn.onclick=()=>openDetail(btn.dataset.detail);
+  btn.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(btn.dataset.detail);}};
  });
+}
+function openDetail(id){
+ const x=state.all.find(item=>item.id===id);
+ if(!x)return;
+ const photo=x.image_url?'<img src="'+safe(x.image_url)+'" alt="Imagen ilustrativa de la ficha" loading="lazy">':'';
+ const tags=[x.accessible?'Accesibilidad declarada':null,x.english?'Atención en inglés':null,
+             x.verified?'Verificación documental':null].filter(Boolean).map(v=>'<span>'+safe(v)+'</span>').join('');
+ const contact=x.contact_url&&!x.demo?'<a class="btn outline" href="'+safe(x.contact_url)+'" target="_blank" rel="noopener noreferrer">Visitar negocio ↗</a>':'';
+ $('#detail-content').innerHTML='<div class="detail-gallery">'+photo+'<div class="detail-gallery-label">'+
+   (x.demo?'FICHA DEMOSTRATIVA · IMAGEN ILUSTRATIVA':x.verified?'PROVEEDOR VERIFICADO':'INFORMACIÓN DECLARADA')+'</div></div>'+
+   '<div class="detail-body"><span class="overline">'+safe(TYPES[x.category])+' · '+safe(x.zone)+'</span>'+
+   '<h2>'+safe(x.name)+'</h2><p>'+safe(x.description)+'</p><div class="detail-tags">'+tags+'</div>'+
+   '<div class="detail-pricing"><div><small>Precio de referencia</small><strong>'+money(x.price_mxn)+'</strong><em>'+
+   (x.demo?'Importe sintético, no reservable externamente':'Sujeto a disponibilidad y confirmación del negocio')+'</em></div>'+
+   '<div class="detail-actions">'+contact+(x.category!=='negocio'?'<button id="detail-plan" class="btn dark">Incluir en itinerario →</button>':'')+'</div></div></div>';
+ const target=$('#detail-plan');
+ if(target)target.onclick=()=>{hideModal('detail-modal');
+   if(x.category==='medico')$('#plan-medical').value=x.id;
+   if(x.category==='hotel')$('#plan-hotel').value=x.id;
+   if(x.category==='transporte')$('#plan-transport').value=x.id;
+   go('planner');};
+ showModal('detail-modal');
 }
 function categories(){
  const types=[['all','Todas'],['hotel','Alojamiento'],['medico','Servicios médicos'],['transporte','Transporte'],['negocio','Negocios']];

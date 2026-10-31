@@ -4,7 +4,8 @@ import os
 import re
 import secrets
 from contextlib import asynccontextmanager
-from datetime import date
+from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from collections import defaultdict
 from time import monotonic
@@ -114,8 +115,35 @@ class PlanRequest(BaseModel):
 @app.post("/api/plan")
 def plan(body:PlanRequest):
     with SessionLocal() as db:
-        return services.plan(db,body.medical_id,body.day,body.nights,body.preferred_hour,
+        result=services.plan(db,body.medical_id,body.day,body.nights,body.preferred_hour,
                              body.max_budget,body.accessible,body.hotel_id,body.transport_id)
+        medical=db.get(Listing,body.medical_id)
+        if not medical or not medical.provider_user_id or not google_calendar.configured():
+            return result
+        if not google_calendar.token_for(medical.provider_user_id):
+            return result
+        tz=ZoneInfo("America/Mazatlan")
+        begin=datetime.combine(body.day,time(0,0)).replace(tzinfo=tz)
+        end=begin+timedelta(days=1)
+        try:
+            busy=google_calendar.freebusy(medical.provider_user_id,begin,end)
+        except HTTPException:
+            # Fail closed: never advertise availability when the linked provider calendar fails.
+            return {"options":[],"total_feasible":0,
+                    "notice":"No se pudo verificar la agenda Google del prestador. Reintenta o solicita confirmación directa."}
+        filtered=[]
+        for option in result["options"]:
+            start=datetime.combine(body.day,time.fromisoformat(option["time"])).replace(tzinfo=tz)
+            finish=start+timedelta(hours=1)
+            overlap=any(datetime.fromisoformat(x["start"].replace("Z","+00:00"))<finish and
+                        datetime.fromisoformat(x["end"].replace("Z","+00:00"))>start for x in busy)
+            if not overlap:
+                option["source"]="declarada + Google FreeBusy"
+                filtered.append(option)
+        result["options"]=filtered
+        result["total_feasible"]=len(filtered)
+        result["notice"]="Horarios del proveedor declarados y filtrados por ocupación del calendario autorizado. Requieren confirmación del prestador."
+        return result
 
 class BookingCreate(BaseModel):
     slot_id:str
@@ -244,13 +272,13 @@ def verify_provider(listing_id:str,data:VerifyPayload,user:User=Depends(security
         return {"id":listing_id,"verified":item.verified}
 
 @app.get("/api/google/status")
-def google_status(user:User=Depends(security.require("admin","coordinator"))):
+def google_status(user:User=Depends(security.require("admin","coordinator","provider"))):
     return {"configured":google_calendar.configured(),
             "connected":bool(google_calendar.token_for(user.id)) if google_calendar.configured() else False,
             "scope":"Calendario autorizado del coordinador, no disponibilidad universal de médicos."}
 
 @app.post("/api/google/connect",dependencies=[Depends(security.check_csrf)])
-def google_connect(user:User=Depends(security.require("admin","coordinator"))):
+def google_connect(user:User=Depends(security.require("admin","coordinator","provider"))):
     return {"url":google_calendar.authorize_url(user.id)}
 
 @app.get("/auth/google/callback")
@@ -260,7 +288,7 @@ def google_callback(code:str="",state:str="",error:str="",user:User=Depends(secu
     return RedirectResponse("/?calendar=connected",status_code=303)
 
 @app.post("/api/google/disconnect",dependencies=[Depends(security.check_csrf)])
-def google_disconnect(user:User=Depends(security.require("admin","coordinator"))):
+def google_disconnect(user:User=Depends(security.require("admin","coordinator","provider"))):
     google_calendar.disconnect(user.id)
     return {"connected":False}
 

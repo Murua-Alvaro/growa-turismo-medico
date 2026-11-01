@@ -39,6 +39,9 @@ function go(view){
   if(!state.user)showModal('login-modal');else msg('Esta sección es exclusiva de coordinación.',true);
   return;
  }
+ document.querySelector('.header')?.classList.remove('nav-open');
+ const toggle=$('#mobile-menu');
+ if(toggle){toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir menú principal');toggle.textContent='☰';}
  $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
  $$('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
  $$('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
@@ -51,7 +54,7 @@ function go(view){
 function setAccount(){
  const button=$('#account-button');
  button.textContent=state.user?'Salir · '+state.user.name.split(' ')[0]:'Iniciar sesión';
- $('.private').forEach(n=>n.hidden=!state.user || !['admin','coordinator','provider'].includes(state.user.role));
+ $$('.private').forEach(n=>n.hidden=!state.user || !['admin','coordinator','provider'].includes(state.user.role));
  window.GrowaCommunity?.syncAuth();
 }
 function formatDate(value){return new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value+'T12:00:00'));}
@@ -433,16 +436,23 @@ async function logout(){
 }
 async function account(){if(state.user){await logout();return;}showModal('login-modal');}
 function bind(){
- $('[data-go]').forEach(btn=>btn.onclick=()=>{
+ $('#mobile-menu').onclick=()=>{
+  const header=document.querySelector('.header');
+  const open=header.classList.toggle('nav-open');
+  $('#mobile-menu').setAttribute('aria-expanded',String(open));
+  $('#mobile-menu').setAttribute('aria-label',open?'Cerrar menú principal':'Abrir menú principal');
+  $('#mobile-menu').textContent=open?'×':'☰';
+ };
+ $$('[data-go]').forEach(btn=>btn.onclick=()=>{
   go(btn.dataset.go);
   btn.closest('details')?.removeAttribute('open');
   if(btn.dataset.storyTarget)requestAnimationFrame(()=>$('#'+btn.dataset.storyTarget)?.scrollIntoView({behavior:'smooth',block:'start'}));
  });
- $('[data-anchor]').forEach(btn=>btn.onclick=()=>$('#'+btn.dataset.anchor)?.scrollIntoView({behavior:'smooth',block:'start'}));
- $('#experience-filters [data-interest]').forEach(btn=>btn.onclick=()=>{
+ $$('[data-anchor]').forEach(btn=>btn.onclick=()=>$('#'+btn.dataset.anchor)?.scrollIntoView({behavior:'smooth',block:'start'}));
+ $$('#experience-filters [data-interest]').forEach(btn=>btn.onclick=()=>{
   const kind=btn.dataset.interest;
-  $('#experience-filters button').forEach(x=>x.classList.toggle('active',x===btn));
-  $('#experience-grid [data-interest]').forEach(x=>x.hidden=kind!=='all'&&!x.dataset.interest.split(' ').includes(kind));
+  $$('#experience-filters button').forEach(x=>x.classList.toggle('active',x===btn));
+  $$('#experience-grid [data-interest]').forEach(x=>x.hidden=kind!=='all'&&!x.dataset.interest.split(' ').includes(kind));
  });
  $$('[data-category]').forEach(btn=>btn.onclick=()=>{state.category=btn.dataset.category;categories();go('explore');});
  $$('[data-close]').forEach(btn=>btn.onclick=()=>hideModal(btn.dataset.close));

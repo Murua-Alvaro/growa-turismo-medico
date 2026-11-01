@@ -49,11 +49,12 @@ function history(){
  section('h-context','LECTURA CRÍTICA','Un puerto no se explica con una fecha','<p>La historia urbana debe distinguir los orígenes del poblamiento, el reconocimiento como puerto comercial, la expansión de los servicios y la protección del patrimonio. Son procesos interrelacionados, pero no idénticos.</p><p>El crecimiento del comercio marítimo transformó las oportunidades económicas, la arquitectura y las formas de convivencia. Es posible rastrear esas huellas en las calles del Centro Histórico, las plazas y los edificios que han tenido distintos usos.</p><p>La ciudad actual no es una fotografía inmóvil de su pasado: su actividad turística, los mercados y las zonas residenciales también forman parte de su historia contemporánea.</p>')+
  '</article></div>'+sourcesSection([0,1,2,3,4])+promo();
 }
+let savedMode=false;
 const categoryLabels={all:'Todos',patrimonio:'Patrimonio',cultura:'Museos y cultura',costa:'Costa',naturaleza:'Naturaleza',gastronomia:'Gastronomía'};
 function places(){
  document.title='Qué conocer en Mazatlán | Lugares con historia | Growa';
  root.innerHTML=crumb('Lugares para visitar')+pageIntro('EXPLORAR','Cada lugar tiene una historia propia.','No te quedes en una fotografía. Abre cada ficha para conocer su contexto, qué observar, indicaciones para la visita, fuentes y ubicación. Puedes guardar lugares en una lista personal de este navegador.')+
- '<section class="section-block" style="margin-top:35px"><div class="section-heading"><div><span class="overline">DIRECTORIO EDITORIAL</span><h2>Explorar por interés</h2><p>Escribe un lugar o selecciona el tipo de experiencia que te interesa.</p></div><button class="btn-outline" data-action="saved">Ver mi selección (<span id="saved-count">0</span>)</button></div><div class="filter-toolbar" id="place-toolbar"><input id="place-query" type="search" placeholder="Buscar lugares, zonas o experiencias…" aria-label="Buscar lugares">'+Object.entries(categoryLabels).map(([k,v])=>'<button class="'+(k==='all'?'active':'')+'" data-category="'+k+'" aria-pressed="'+(k==='all')+'">'+v+'</button>').join('')+'</div><p class="filter-description" id="place-count" role="status"></p><div class="place-grid" id="place-grid">'+D.places.map(placeCard).join('')+'</div><div id="place-empty" class="empty-result" hidden>No se encontraron lugares para esos filtros. Puedes borrar la búsqueda o cambiar la categoría.</div></section>'+sourcesSection([3,4,5,6])+promo();
+ '<section class="section-block" style="margin-top:35px"><div class="section-heading"><div><span class="overline">DIRECTORIO EDITORIAL</span><h2>Explorar por interés</h2><p>Escribe un lugar o selecciona el tipo de experiencia que te interesa.</p></div><button class="btn-outline" data-action="saved" id="saved-toggle">Ver mi selección (<span id="saved-count">0</span>)</button></div><div class="filter-toolbar" id="place-toolbar"><input id="place-query" type="search" placeholder="Buscar lugares, zonas o experiencias…" aria-label="Buscar lugares"><button type="button" data-action="clear">Limpiar filtros</button>'+Object.entries(categoryLabels).map(([k,v])=>'<button class="'+(k==='all'?'active':'')+'" data-category="'+k+'" aria-pressed="'+(k==='all')+'">'+v+'</button>').join('')+'</div><p class="filter-description" id="place-count" role="status"></p><div class="place-grid" id="place-grid">'+D.places.map(placeCard).join('')+'</div><div id="place-empty" class="empty-result" hidden>No se encontraron lugares para esos filtros. Puedes borrar la búsqueda o cambiar la categoría.</div></section>'+sourcesSection([3,4,5,6])+promo();
  document.getElementById('place-query').addEventListener('input',filterPlaces);
  qsa('#place-toolbar [data-category]').forEach(btn=>btn.addEventListener('click',()=>{qsa('#place-toolbar [data-category]').forEach(e=>{e.classList.toggle('active',e===btn);e.setAttribute('aria-pressed',String(e===btn))});filterPlaces()}));
  filterPlaces();
@@ -63,8 +64,9 @@ function filterPlaces(){
  const value=input.value.toLocaleLowerCase('es-MX').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
  const cat=qs('#place-toolbar [data-category].active')?.dataset.category||'all';let n=0;
  qsa('.place-card').forEach(card=>{const text=card.dataset.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'');const show=(cat==='all'||card.dataset.category===cat)&&text.includes(value);card.hidden=!show;if(show)n++});
- qs('#place-empty').hidden=n>0;qs('#place-count').textContent=n+' '+(n===1?'lugar encontrado':'lugares encontrados');
- qs('#saved-count').textContent=saved().length;
+ const empty=qs('#place-empty');empty.hidden=n>0;empty.textContent=savedMode?'Aún no hay sitios guardados que coincidan. Abre un lugar y elige «Guardar lugar».':'No se encontraron lugares para esos filtros. Puedes borrar la búsqueda o cambiar la categoría.';
+ qs('#place-count').textContent=n+' '+(n===1?'lugar encontrado':'lugares encontrados');
+ const savedCount=qs('#saved-count');if(savedCount)savedCount.textContent=saved().length;
 }
 function detail(p){
  document.title=p.name+' | Historia y guía de visita | Growa';
@@ -120,7 +122,15 @@ function save(slug){const a=saved(),next=a.includes(slug)?a.filter(x=>x!==slug):
 function syncSavedButton(){const p=location.pathname.split('/').at(-1);const btn=qs('[data-action="save"]');if(btn)btn.textContent=saved().includes(p)?'♥ Guardado · Quitar':'♡ Guardar lugar';if(qs('#saved-count'))qs('#saved-count').textContent=saved().length}
 function toast(message){const el=qs('#toast');el.textContent=message;el.hidden=false;clearTimeout(window.__growaToast);window.__growaToast=setTimeout(()=>el.hidden=true,3500)}
 async function share(){try{if(navigator.share){await navigator.share({title:document.title,url:location.href});return}if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(location.href);toast('Enlace copiado al portapapeles.');return}}catch(e){if(e.name==='AbortError')return}const field=document.createElement('textarea');field.value=location.href;document.body.appendChild(field);field.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}field.remove();toast(ok?'Enlace copiado.':'Puedes copiar la dirección de esta página desde tu navegador.')}
-function showSaved(){const items=saved().map(id=>D.places.find(p=>p.slug===id)).filter(Boolean);qs('#place-grid').innerHTML=items.length?items.map(placeCard).join(''):'<div class="empty-result">Todavía no guardaste lugares. Abre una ficha y usa «Guardar lugar».</div>';qs('#place-count').textContent=items.length+' lugares guardados en este navegador';qs('#place-empty').hidden=true;qs('#place-query').value='';qsa('#place-toolbar [data-category]').forEach(b=>{b.classList.toggle('active',b.dataset.category==='all');b.setAttribute('aria-pressed',String(b.dataset.category==='all'))});toast('Mostrando tu selección personal. Recarga para ver el catálogo completo.')}
+function showSaved(){
+ savedMode=!savedMode;
+ const selection=savedMode?saved().map(id=>D.places.find(p=>p.slug===id)).filter(Boolean):D.places;
+ qs('#place-grid').innerHTML=selection.map(placeCard).join('');
+ qs('#place-query').value='';
+ qsa('#place-toolbar [data-category]').forEach(b=>{b.classList.toggle('active',b.dataset.category==='all');b.setAttribute('aria-pressed',String(b.dataset.category==='all'))});
+ qs('#saved-toggle').innerHTML=savedMode?'Mostrar todos los lugares ↗':'Ver mi selección (<span id="saved-count">'+saved().length+'</span>)';
+ filterPlaces();toast(savedMode?'Mostrando los lugares que guardaste.':'Mostrando el catálogo completo.');
+}
 function initNav(){
  const button=qs('#destination-toggle'),menu=qs('#destination-menu');
  button.addEventListener('click',()=>{const next=menu.hidden;menu.hidden=!next;button.setAttribute('aria-expanded',String(next))});
@@ -136,6 +146,7 @@ function initNav(){
  },{passive:true});
  document.addEventListener('click',e=>{const button=e.target.closest('[data-action]');if(!button)return;const action=button.dataset.action;
   if(action==='share')share();if(action==='save')save(button.dataset.slug);if(action==='saved')showSaved();
+  if(action==='clear'){const query=qs('#place-query');if(query)query.value='';qsa('#place-toolbar [data-category]').forEach(b=>{b.classList.toggle('active',b.dataset.category==='all');b.setAttribute('aria-pressed',String(b.dataset.category==='all'))});filterPlaces();}
  });
 }
 function start(){

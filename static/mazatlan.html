@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#112c29">
+ <meta name="description" content="Descubre Mazatlán: historia del puerto, Centro Histórico, cultura, playas, patrimonio y guía de visita en Growa Hospitality.">
+ <title>Descubre Mazatlán | Growa Hospitality</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="/static/mazatlan.css">
+ <script src="/static/mazatlan-data.js" defer></script>
+ <script src="/static/mazatlan.js" defer></script>
+</head>
+<body>
+ <a href="#main" class="skip">Saltar al contenido</a>
+ <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+ <header class="site-header">
+   <div class="header-wrap">
+     <a class="brand" href="/" aria-label="Growa Hospitality, inicio"><span class="brand-mark">G</span><span>growa<small>HOSPITALITY</small></span></a>
+     <nav class="site-nav" aria-label="Navegación principal">
+       <a href="/">Inicio</a><a href="/explorar">Explorar servicios</a><a href="/planificar">Planificar</a>
+       <div class="nav-dropdown" id="destination-dropdown"><button type="button" id="destination-toggle" aria-expanded="false" aria-controls="destination-menu">Descubre Mazatlán <span aria-hidden="true">⌄</span></button>
+        <div id="destination-menu" class="nav-dropdown-menu" hidden>
+          <a href="/mazatlan">Panorama del destino <span>01</span></a>
+          <a href="/mazatlan/historia">Historia del puerto <span>02</span></a>
+          <a href="/mazatlan/lugares">Lugares para visitar <span>03</span></a>
+          <a href="/mazatlan/cultura">Cultura y tradiciones <span>04</span></a>
+          <a href="/mazatlan/guia">Guía del visitante <span>05</span></a>
+        </div>
+       </div>
+       <a href="/comunidad">Comunidad</a>
+     </nav>
+     <div class="head-actions"><span class="location-pill">◉ Mazatlán · Sinaloa</span><a class="head-cta" href="/planificar">Organiza tu visita <span>↗</span></a><button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Abrir menú">☰</button></div>
+   </div>
+   <nav id="mobile-navigation" class="mobile-navigation" aria-label="Menú móvil" hidden>
+     <a href="/">Inicio</a><a href="/explorar">Explorar servicios</a><a href="/planificar">Planificar</a>
+     <a href="/mazatlan">Descubre Mazatlán</a><a href="/mazatlan/historia">Historia</a><a href="/mazatlan/lugares">Lugares</a><a href="/mazatlan/cultura">Cultura</a><a href="/mazatlan/guia">Guía de visita</a><a href="/comunidad">Comunidad</a>
+   </nav>
+ </header>
+ <main id="main" tabindex="-1"><div class="shell-loading">Preparando tu recorrido por Mazatlán…</div></main>
+ <footer class="site-footer">
+  <div class="footer-grid"><div><a href="/" class="footer-logo">growa <span>HOSPITALITY</span></a><p>Explora el puerto desde su historia, su cultura y las personas que le dan vida. Una guía editorial independiente.</p></div>
+   <div><strong>Descubre</strong><a href="/mazatlan">Mazatlán</a><a href="/mazatlan/historia">Historia</a><a href="/mazatlan/lugares">Lugares</a><a href="/mazatlan/cultura">Cultura</a></div>
+   <div><strong>Growa</strong><a href="/explorar">Servicios</a><a href="/planificar">Itinerarios</a><a href="/comunidad">Comunidad</a><a href="/mazatlan/guia">Guía práctica</a></div>
+   <div><strong>Fuentes y transparencia</strong><p>Información cultural basada en fuentes institucionales. Verifica horarios, accesos y disponibilidad con cada prestador.</p><a href="https://lugares.inah.gob.mx/es/node/4835" target="_blank" rel="noopener noreferrer">INAH · Patrimonio de Mazatlán ↗</a><a href="https://visitsinaloa.travel/mazatlan/" target="_blank" rel="noopener noreferrer">Visita Sinaloa ↗</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 Growa Hospitality · Mazatlán, México</span><span>Prototipo editorial y de coordinación · No presta servicios clínicos</span></div>
+ </footer>
+ <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body></html>

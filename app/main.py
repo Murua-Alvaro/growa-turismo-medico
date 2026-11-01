@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from .db import (ROOT, PRODUCTION, SessionLocal, init_db, User, Listing, Slot,
                  Booking, BookingLeg, Audit, uid, now)
-from . import security,services,google_calendar,discovery,routing,optimizer,community
+from . import security,services,google_calendar,discovery,routing,optimizer,community,dental
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -40,8 +40,9 @@ async def lifespan(app:FastAPI):
             discovery.sync_index(db)
     yield
 
-app=FastAPI(title="Growa Hospitality Platform",version="0.7.0",lifespan=lifespan)
+app=FastAPI(title="Growa Hospitality Platform",version="0.8.1",lifespan=lifespan)
 app.include_router(community.router)
+app.include_router(dental.router)
 hosts=[x.strip() for x in os.getenv("ALLOWED_HOSTS","localhost,127.0.0.1,testserver").split(",") if x.strip()]
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=hosts)
 app.mount("/static",StaticFiles(directory=str(ROOT/"static")),name="static")
@@ -93,9 +94,20 @@ def mazatlan_section(section:str):
 def app_workspace():
     return FileResponse(ROOT/"static"/"index.html")
 
+@app.get("/odontologia")
+@app.get("/odontologia/")
+def dental_home():
+    return FileResponse(ROOT/"static"/"dental.html")
+
+@app.get("/odontologia/clinicas/{clinic_id}")
+def dental_clinic_page(clinic_id: str):
+    # The endpoint below validates the listing ID as a genuine dental entry.
+    dental.clinic_detail(clinic_id)
+    return FileResponse(ROOT/"static"/"dental.html")
+
 @app.get("/api/health")
 def health():
-    return {"status":"ok","version":"0.7.0","public_ready":False,
+    return {"status":"ok","version":"0.8.1","public_ready":False,
             "medical_availability":"only explicitly declared or authorized partner slots",
             "features":{"optimizer":"ortools-cp-sat" if optimizer.cp_model is not None else "deterministic",
                         "routing":routing.status(),

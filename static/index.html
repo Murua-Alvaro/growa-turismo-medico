@@ -11,6 +11,7 @@
  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
  <link href="/static/styles.css" rel="stylesheet">
+ <script src="/static/agenda.js" defer></script>
  <script src="/static/app.js" defer></script>
 </head>
 <body>
@@ -112,7 +113,7 @@
   <div class="planner-results-box"><div class="step-label">PASO 02 — ALTERNATIVAS</div><div class="planner-head"><h2>Itinerarios compatibles</h2><button class="btn outline compact" id="calendar-open" type="button">▦ Ver agenda</button></div><p id="planner-count">Selecciona tus preferencias para comparar.</p><div class="intelligence-note"><span aria-hidden="true">✦</span><p>Recomendaciones explicables: el sistema compara restricciones, costos y proximidad. Todas las opciones necesitan confirmación del prestador.</p></div><div id="route-preview" class="route-preview" hidden role="status"></div><div id="planner-results" class="planner-results"><div class="empty-state">✦<h3>Tu itinerario empieza aquí.</h3><p>Busca combinaciones de horarios, alojamiento y traslado.</p></div></div></div>
  </div>
  <section class="calendar-workspace" id="calendar-workspace" hidden aria-label="Vista de agenda">
-  <div class="calendar-heading"><div><span class="overline">AGENDA VISUAL</span><h2>Tu itinerario en el calendario</h2><p>Visualización de propuestas o solicitudes locales. No confirma citas ni reservaciones externas.</p></div><button class="btn outline compact" id="calendar-close" type="button">Cerrar agenda ×</button></div>
+  <div class="calendar-heading"><div><span class="overline">AGENDA VISUAL</span><h2>Tu itinerario en el calendario</h2><p>Visualización de propuestas o solicitudes locales. No confirma citas ni reservaciones externas.</p></div><div class="calendar-actions"><button class="btn outline compact" id="calendar-export" type="button">Guardar en calendario (.ics)</button><button class="btn outline compact" id="calendar-close" type="button">Cerrar agenda ×</button></div></div>
   <div id="journey-calendar"></div>
   <div id="calendar-fallback" class="calendar-fallback" hidden></div>
  </section>

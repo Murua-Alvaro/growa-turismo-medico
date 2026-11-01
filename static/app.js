@@ -35,7 +35,10 @@ function hideModal(id){
 }
 function canOperate(){return state.user && ['admin','coordinator'].includes(state.user.role);}
 function go(view){
- if(['trips','partners'].includes(view) && !state.user){showModal('login-modal');msg('Inicia sesión para abrir coordinación.');return;}
+ if(['trips','partners'].includes(view) && (!state.user || !['admin','coordinator','provider'].includes(state.user.role))){
+  if(!state.user)showModal('login-modal');else msg('Esta sección es exclusiva de coordinación.',true);
+  return;
+ }
  $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
  $$('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
  $$('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
@@ -43,11 +46,13 @@ function go(view){
  if(view==='explore')searchCatalog();
  if(view==='trips')loadTrips();
  if(view==='partners')googleStatus();
+ if(view==='community')window.GrowaCommunity?.onNavigate();
 }
 function setAccount(){
  const button=$('#account-button');
  button.textContent=state.user?'Salir · '+state.user.name.split(' ')[0]:'Iniciar sesión';
- $$('.private').forEach(n=>n.hidden=!state.user);
+ $('.private').forEach(n=>n.hidden=!state.user || !['admin','coordinator','provider'].includes(state.user.role));
+ window.GrowaCommunity?.syncAuth();
 }
 function formatDate(value){return new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value+'T12:00:00'));}
 function label(listing){
@@ -428,7 +433,17 @@ async function logout(){
 }
 async function account(){if(state.user){await logout();return;}showModal('login-modal');}
 function bind(){
- $$('[data-go]').forEach(btn=>btn.onclick=()=>go(btn.dataset.go));
+ $('[data-go]').forEach(btn=>btn.onclick=()=>{
+  go(btn.dataset.go);
+  btn.closest('details')?.removeAttribute('open');
+  if(btn.dataset.storyTarget)requestAnimationFrame(()=>$('#'+btn.dataset.storyTarget)?.scrollIntoView({behavior:'smooth',block:'start'}));
+ });
+ $('[data-anchor]').forEach(btn=>btn.onclick=()=>$('#'+btn.dataset.anchor)?.scrollIntoView({behavior:'smooth',block:'start'}));
+ $('#experience-filters [data-interest]').forEach(btn=>btn.onclick=()=>{
+  const kind=btn.dataset.interest;
+  $('#experience-filters button').forEach(x=>x.classList.toggle('active',x===btn));
+  $('#experience-grid [data-interest]').forEach(x=>x.hidden=kind!=='all'&&!x.dataset.interest.split(' ').includes(kind));
+ });
  $$('[data-category]').forEach(btn=>btn.onclick=()=>{state.category=btn.dataset.category;categories();go('explore');});
  $$('[data-close]').forEach(btn=>btn.onclick=()=>hideModal(btn.dataset.close));
  $$('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m)hideModal(m.id);});

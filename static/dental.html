@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8f9fb">
+<meta name="description" content="Explora odontología en Mazatlán. Compara información declarada, revisa opciones de tratamiento y prepara tu visita con Growa.">
+<title>Odontología en Mazatlán | Growa Hospitality</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/dental.css">
+<script src="/static/dental.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+<header class="global-header">
+ <div class="global-row">
+  <a class="logo" href="/" aria-label="Growa Hospitality, inicio"><span class="logo-mark">G</span><span class="logo-type">growa<small>HOSPITALITY</small></span></a>
+  <nav class="global-nav" aria-label="Navegación"><a href="/">Inicio</a><a href="/odontologia" aria-current="page">Odontología</a><a href="/explorar">Todos los servicios</a><a href="/mazatlan">Conocer Mazatlán</a><a href="/comunidad">Comunidad</a></nav>
+  <div class="header-right"><span class="place-indicator">Mazatlán, Sinaloa</span><a class="header-action" href="#clinicas">Explorar clínicas <span aria-hidden="true">↗</span></a><button type="button" id="mobile-nav-toggle" class="mobile-toggle" aria-expanded="false" aria-controls="mobile-nav" aria-label="Abrir menú">☰</button></div>
+ </div>
+ <nav class="mobile-nav" id="mobile-nav" aria-label="Navegación móvil" hidden><a href="/">Inicio</a><a href="/odontologia">Odontología</a><a href="/explorar">Todos los servicios</a><a href="/mazatlan">Descubre Mazatlán</a><a href="/comunidad">Comunidad</a></nav>
+</header>
+<main id="main" tabindex="-1"><div class="page-loading">Cargando opciones de odontología…</div></main>
+<footer class="footer"><div class="footer-grid">
+ <div class="footer-about"><a href="/" class="footer-brand">growa <small>HOSPITALITY</small></a><p>Una plataforma para organizar estancias y conocer proveedores. Growa no es un prestador de servicios odontológicos.</p></div>
+ <div><strong>Odontología</strong><a href="/odontologia">Explorar clínicas</a><a href="/odontologia#tratamientos">Tratamientos</a><a href="/odontologia#preguntas">Preguntas frecuentes</a></div>
+ <div><strong>Growa</strong><a href="/planificar">Planificar estancia</a><a href="/mazatlan">Mazatlán</a><a href="/comunidad">Comunidad</a></div>
+ <div><strong>Transparencia</strong><p>Los perfiles etiquetados DEMO son ficticios. No hay reseñas, resultados médicos, licencias o precios de procedimientos verificados. Las solicitudes del prototipo no se envían a prestadores.</p></div>
+ </div><div class="footer-line"><span>© 2026 Growa Hospitality · Mazatlán, México</span><span>Información orientativa, no asesoría clínica ni oferta médica confirmada</span></div></footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="compare-tray" id="compare-tray" hidden aria-label="Comparar opciones" aria-live="polite">
+ <div class="compare-tray-title"><span>Comparador de clínicas</span><button id="compare-close" aria-label="Cerrar comparador" type="button">×</button></div>
+ <div id="compare-list" class="compare-list"></div><div class="compare-tray-actions"><button type="button" class="outline-btn" id="compare-clear">Limpiar</button><button type="button" class="primary-btn" id="compare-show">Ver comparación</button></div>
+</aside>
+<div class="modal-shell" id="quote-shell" hidden role="dialog" aria-modal="true" aria-labelledby="quote-title">
+ <div class="quote-panel">
+  <div class="modal-head"><span class="eyebrow">GROWA · ORIENTACIÓN</span><button id="quote-close" aria-label="Cerrar formulario" type="button">×</button></div>
+  <h2 id="quote-title">Prepara tu solicitud de información</h2>
+  <p class="modal-description">Este prototipo genera un resumen privado. <strong>No envía datos a una clínica</strong> ni solicita tu historial de salud.</p>
+  <form id="quote-form">
+   <div class="field"><label for="quote-clinic">Proveedor</label><select id="quote-clinic" required></select></div>
+   <div class="field"><label for="quote-treatment">Tratamiento de interés</label><select id="quote-treatment" required></select></div>
+   <div class="field"><label for="quote-window">¿Cuándo podrías viajar?</label><select id="quote-window"><option value="sin_definir">Aún no lo sé</option><option value="proximo_mes">Durante el próximo mes</option><option value="tres_meses">En los próximos tres meses</option><option value="mas_adelante">Más adelante</option></select></div>
+   <div class="field"><label for="quote-language">Idioma preferido</label><select id="quote-language"><option value="es">Español</option><option value="en">Inglés / English</option></select></div>
+   <fieldset class="additional-needs"><legend>¿Deseas considerar otros servicios?</legend><label><input id="quote-hotel" type="checkbox"> Hospedaje</label><label><input id="quote-transport" type="checkbox"> Traslado local</label></fieldset>
+   <p id="quote-error" class="error-message" role="alert"></p>
+   <button class="primary-btn wide" type="submit" id="quote-submit">Preparar resumen <span>↗</span></button>
+  </form>
+  <div id="quote-result" hidden aria-live="polite"></div>
+ </div>
+</div>
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+</body></html>

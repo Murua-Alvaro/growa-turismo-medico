@@ -29,7 +29,12 @@ const pages=[
   {url:'/mazatlan/cultura',kicker:'TRADICIONES',title:'Cultura mazatleca'},
   {url:'/mazatlan/guia',kicker:'ANTES DE VIAJAR',title:'Guía del visitante'}
 ];
-const pageIntro=(name,title,desc)=>'<div class="editorial-intro"><span class="overline">GROWA · '+esc(name)+'</span><h1>'+title+'</h1><p>'+desc+'</p><div class="editorial-actions">'+link('/mazatlan','Volver a descubrir Mazatlán')+'<button class="btn-outline" type="button" data-action="share">Compartir esta página ↗</button></div></div>';
+const pageIntro=(name,title,desc)=>{
+ const photoKey=({HISTORIA:'machado',EXPLORAR:'olas',CULTURA:'teatro','GUÍA PRÁCTICA':'malecon'})[name]||'olas';
+ const media=D.photos[photoKey];
+ const cover=media?'<figure class="editorial-cover">'+photo(photoKey,'',true)+'<figcaption>Fotografía: <a href="'+media.page+'" target="_blank" rel="noopener noreferrer">'+esc(media.author)+'</a> · '+esc(media.licence)+' · Wikimedia Commons</figcaption></figure>':'';
+ return '<div class="editorial-intro"><span class="overline">GROWA · '+esc(name)+'</span><h1>'+title+'</h1><p>'+desc+'</p><div class="editorial-actions">'+link('/mazatlan','Volver a Mazatlán')+'<button class="btn-outline" type="button" data-action="share">Compartir enlace ↗</button></div></div>'+cover;
+};
 const side=(links)=>'<aside class="reading-sidebar" aria-label="Índice de esta página"><strong>EN ESTA PÁGINA</strong>'+links.map(x=>'<a href="#'+x.id+'">'+esc(x.label)+'</a>').join('')+'<div class="side-note">Contenido cultural informativo. Los horarios y accesos se confirman con las fuentes oficiales.</div></aside>';
 const section=(id,kicker,title,content)=>'<section id="'+id+'"><span class="overline">'+kicker+'</span><h2>'+title+'</h2>'+content+'</section>';
 function home(){

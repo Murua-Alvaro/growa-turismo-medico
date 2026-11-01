@@ -1,0 +1,234 @@
+/* GROWA HOSPITALITY — editorial system v0.9
+   No card pileups, decorative chat-style callouts, heavy border radii or
+   gradient-filled text boxes. Forms retain necessary boundaries. */
+:root{--editorial-paper:#fafaf7;--editorial-ink:#172821;--editorial-rule:#d9dfd7;--editorial-muted:#627267;--editorial-accent:#9a734f;--editorial-display:"Instrument Serif",Georgia,"Times New Roman",serif}
+body{background:var(--editorial-paper);color:var(--editorial-ink);font-size:14px}
+.container{max-width:1550px;padding:20px 5vw 100px}
+.header{background:rgba(250,250,247,.96);border-bottom:1px solid var(--editorial-rule);box-shadow:none;backdrop-filter:blur(16px)}
+.header-inner{max-width:1550px;min-height:76px;padding-left:5vw;padding-right:5vw;gap:16px}
+.brand{font-size:25px}
+.brand-symbol{border-radius:0;background:#183e31;box-shadow:none}
+.nav-item{font-size:12px;font-weight:650;border-radius:0;background:transparent}
+.nav-item:hover,.nav-item.selected{background:transparent;border-bottom:2px solid #194e35;color:#184532}
+.nav-mega-trigger{border-radius:0}
+.nav-mega-panel{border-radius:2px;box-shadow:0 18px 40px #183b2c18}
+.nav-mega-panel a{border-radius:0;border-bottom:1px solid #ecefe9}
+.nav-mega-panel a:hover{background:#f1f4ed}
+.header-actions .btn{border-radius:0}
+.btn{border-radius:0;font-size:11px;font-weight:800;letter-spacing:.045em;text-transform:uppercase;box-shadow:none;min-height:43px;transition:background .18s,color .18s,border-color .18s}
+.btn:hover{transform:none;box-shadow:none}
+.btn.dark{background:#183e32;color:#fff}
+.btn.dark:hover{background:#295f49}
+.btn.light,.btn.outline{background:transparent;color:#193f31;border:1px solid #9fb3a4}
+.btn.light:hover,.btn.outline:hover{background:#e9efe9}
+.btn.compact{border-radius:0}
+.overline,.step-label{font-size:10px;color:#997454;letter-spacing:.18em}
+.simple-link,.showcase-link{font-size:11px;font-weight:750;letter-spacing:.06em;text-transform:uppercase}
+.page-intro{border-bottom:1px solid var(--editorial-rule);padding:46px 0}
+.page-intro h1{font:400 clamp(53px,5.5vw,84px)/1 var(--editorial-display);letter-spacing:-.02em;margin:11px 0 19px}
+.page-intro p{font-size:15px;line-height:1.8;color:#68756b;max-width:890px}
+#view-home>.hero{display:block;position:relative;isolation:isolate;overflow:hidden;background:#234338;border-radius:0;min-height:690px;margin:0}
+#view-home .hero-photo{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0;background:linear-gradient(90deg,rgba(13,33,29,.85),rgba(13,31,25,.35)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Olas_Altas%2C_Mazatl%C3%A1n.jpg?width=1800") center/cover no-repeat}
+#view-home .hero-gradient{background:linear-gradient(90deg,rgba(8,27,20,.88) 0%,rgba(8,27,20,.64) 43%,rgba(13,39,28,.10) 100%)}
+#view-home .hero-copy{position:relative;z-index:2;max-width:880px;padding:107px 5.5% 105px;min-height:690px;justify-content:center}
+#view-home .hero-context{margin-bottom:40px}
+#view-home .hero-context span{color:#dce4d8;letter-spacing:.18em;font-size:10px;font-weight:750}
+#view-home .hero-context span+span{border-left-color:#ffffff63}
+#view-home .eyebrow{font-size:11px;color:#ebd2ae;font-weight:750;letter-spacing:.035em}
+#view-home .eyebrow-dot{background:#d3b28a;width:6px;height:6px}
+#view-home .hero h1{font:400 clamp(66px,6.7vw,105px)/.96 var(--editorial-display);letter-spacing:-.02em;color:#fff;margin:18px 0 28px;max-width:740px}
+#view-home .hero h1 em{color:#e5cbaa;font-weight:400;font-style:italic}
+#view-home .hero-copy>p{font-size:15px;line-height:1.88;color:#eef0eb;max-width:540px}
+#view-home .hero-buttons{gap:11px;margin:35px 0 0}
+#view-home .hero-buttons .btn.dark{background:#fafaf7;color:#1b4533;border:1px solid #fafaf7}
+#view-home .hero-buttons .btn.light{border:1px solid #f5f5f5aa;color:white;background:transparent}
+#view-home .hero-buttons .btn:hover{background:#e6eae1;color:#1b4533;border-color:#e6eae1}
+#view-home .hero-meta{border:0;padding-top:32px;color:#e2e5de;font-size:11px;gap:20px}
+#view-home .hero-meta span:not(:last-child){border-right-color:#ffffff44}
+#view-home .hero-meta b{font-weight:750;color:#fff}
+#view-home .hero-badge{display:none}
+#view-home .hero-photo-credit{font-size:10px;text-align:right;color:#687b6e;padding:9px 1px 0;line-height:1.6}
+#view-home .hero-photo-credit a{color:#275d42;text-decoration:underline;text-underline-offset:3px}
+#view-home .search-dock{margin:35px 0 0;max-width:none;border-radius:0;border:0;border-top:1px solid var(--editorial-rule);border-bottom:1px solid var(--editorial-rule);box-shadow:none;background:transparent;padding:26px 0 30px}
+#view-home .search-dock-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+#view-home .search-dock-title strong{font:400 27px var(--editorial-display);color:#293e31}
+#view-home .search-dock-title span{font-size:11px;color:#78897a}
+#view-home .search-bar{gap:0;border:1px solid #c9d4c9;background:#fff;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr) minmax(0,.85fr) auto}
+#view-home .search-bar label{background:transparent;border:0;border-right:1px solid #e5ebe4;border-radius:0;padding:14px 18px;min-height:70px}
+#view-home .search-bar label:focus-within{box-shadow:inset 0 -2px 0 #52866d;border-color:#e5ebe4}
+#view-home .search-bar label span{color:#7c8c7e;font-size:10px}
+#view-home .search-bar input,#view-home .search-bar select{font-size:13px}
+#view-home .search-submit{border-radius:0;min-width:144px;margin:6px;background:#183f33}
+#view-home .assurance-strip{margin:0;max-width:none;background:transparent;border:0;border-radius:0;overflow:visible;border-bottom:1px solid var(--editorial-rule)}
+#view-home .assurance-item{padding:28px 27px 26px 0;gap:15px}
+#view-home .assurance-item:not(:last-child){border:0;padding-right:30px}
+#view-home .assurance-icon{width:38px;height:auto;flex:0 0 38px;background:transparent;color:#9a7954;font:400 32px var(--editorial-display);border-radius:0;place-items:start}
+#view-home .assurance-item strong{font:700 12px Manrope,sans-serif;letter-spacing:.01em;color:#294533;margin:0 0 7px}
+#view-home .assurance-item p{font-size:12px;color:#6d7b6c;line-height:1.7}
+.content-section{margin-top:116px}
+.section-head{border-bottom:1px solid var(--editorial-rule);padding-bottom:24px;margin-bottom:35px;align-items:end}
+.section-head h2{font:400 clamp(45px,5vw,72px)/1.02 var(--editorial-display);letter-spacing:-.02em;margin:10px 0}
+.section-head p{font-size:13px;color:#647469;line-height:1.7}
+.category-showcase{gap:18px}
+.showcase{min-height:375px;border-radius:0;box-shadow:none;padding:23px;transition:filter .2s}
+.showcase:hover{transform:none;box-shadow:none;filter:brightness(1.07)}
+.showcase strong{font:400 35px/1.08 var(--editorial-display);letter-spacing:-.015em;max-width:265px}
+.showcase-number{font-size:10px;letter-spacing:.08em}
+.showcase-link{padding-top:16px;border-color:#ffffff77;font-size:10px}
+.listing-grid{gap:28px}
+.listing-card{border:0;border-radius:0;box-shadow:none;background:transparent;overflow:visible;min-width:0}
+.listing-card:hover{transform:none;box-shadow:none;border:0}
+.listing-image{height:260px;background:#d8e0d5;overflow:hidden}
+.listing-image img{transition:transform .35s}
+.listing-card:hover .listing-image img{transform:scale(1.03)}
+.listing-badges span{border-radius:0;padding:6px 9px;background:#fafaf7ed}
+.listing-info{padding:18px 0 0}
+.listing-info h3{font:400 28px/1.12 var(--editorial-display);letter-spacing:-.01em;margin:10px 0;min-height:0}
+.listing-info p{font-size:12px;color:#728174;line-height:1.7;min-height:0}
+.listing-zone{font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+.amenities span{border:0;border-radius:0;background:transparent;color:#6a826f;font-size:10px;padding:3px 7px 3px 0}
+.listing-bottom{border-top:1px solid var(--editorial-rule);margin-top:auto;padding-top:15px}
+.listing-bottom strong{font:400 26px var(--editorial-display)}
+.listing-bottom button{border-radius:0;background:transparent;color:#225e40;text-transform:uppercase;letter-spacing:.06em;font-size:10px;font-weight:800;border:0;padding:11px 0}
+.listing-bottom button:hover{background:transparent;text-decoration:underline}
+.destination-feature{margin-top:120px;display:grid;grid-template-columns:1fr 1.1fr;min-height:520px;background:transparent;border-radius:0;overflow:hidden;border-top:1px solid var(--editorial-rule);border-bottom:1px solid var(--editorial-rule)}
+.destination-feature-copy{padding:55px 55px 55px 0}
+.destination-feature h2{font:400 clamp(46px,4.8vw,73px)/1.02 var(--editorial-display);letter-spacing:-.025em;margin:16px 0 25px}
+.destination-feature p{font-size:14px;line-height:1.85;max-width:500px}
+.destination-feature-buttons{gap:12px}
+.destination-feature-art{min-height:490px;background-image:linear-gradient(0deg,rgba(7,28,20,.63),rgba(7,28,20,.02) 75%),url("https://commons.wikimedia.org/wiki/Special:FilePath/Plazuela_Machado_Mazatl%C3%A1n.jpg?width=1500");background-position:center;background-size:cover}
+.destination-feature-art:after{display:none}
+.destination-feature-glass{max-width:410px;position:absolute;bottom:32px;left:34px;right:30px;border:0;border-radius:0;padding:0;background:transparent;backdrop-filter:none;box-shadow:none;color:#fff}
+.destination-feature-glass span{color:#efdab5;font-size:10px}
+.destination-feature-glass strong{color:#fff;font:400 45px/1.05 var(--editorial-display);letter-spacing:-.02em}
+.destination-feature-glass small{color:#e5e5e3}
+.experience-banner{margin-top:120px;border:0;border-radius:0;background:linear-gradient(90deg,rgba(12,37,29,.94),rgba(12,37,29,.74)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Olas_Altas%2C_Mazatl%C3%A1n.jpg?width=1600") center/cover no-repeat;grid-template-columns:1.3fr .7fr;gap:55px;padding:75px 60px}
+.experience-banner h2{font:400 clamp(44px,4.5vw,68px)/1.04 var(--editorial-display);letter-spacing:-.02em}
+.experience-banner .overline{color:#dbc49d}
+.experience-banner p{font-size:14px;line-height:1.8}
+.experience-banner .btn.light{background:#fafaf7;color:#183e31;border:0;border-radius:0}
+.journey-line{gap:0}
+.journey-line div{padding:20px 0;border:0;border-bottom:1px solid #ffffff55;border-radius:0;background:transparent}
+.journey-line div:first-child{border-top:1px solid #ffffff55}
+.journey-line span{font:400 26px var(--editorial-display);color:#dec7a5}
+.journey-line strong{font-size:13px}
+.journey-line small{color:#c8d8cc}
+#view-community .community-hero{background:transparent;border:0;border-top:1px solid var(--editorial-rule);border-bottom:1px solid var(--editorial-rule);border-radius:0;min-height:570px;grid-template-columns:1.1fr .9fr;gap:0}
+#view-community .community-hero>div:first-child{padding:66px 70px 70px 0}
+#view-community .community-hero h1{font:400 clamp(58px,5.8vw,88px)/1 var(--editorial-display);letter-spacing:-.02em;max-width:740px}
+#view-community .community-hero p{font-size:14px;line-height:1.8}
+#view-community .community-hero-art{min-height:570px;padding:40px;color:white;background:linear-gradient(0deg,rgba(12,33,27,.8),rgba(12,33,27,.1)),url("https://commons.wikimedia.org/wiki/Special:FilePath/Plazuela_Machado_Mazatl%C3%A1n.jpg?width=1400") center/cover no-repeat}
+#view-community .community-hero-art:before{display:none}
+#view-community .avatar-stack,#view-community .network-thread{display:none}
+#view-community .community-hero-art>strong{font:400 clamp(34px,3.3vw,52px)/1.05 var(--editorial-display);letter-spacing:-.025em;max-width:375px;text-shadow:0 2px 15px #0004}
+#view-community .community-tabs{border:0;border-bottom:1px solid var(--editorial-rule);gap:25px}
+#view-community .community-tabs button{background:transparent;border:0;border-radius:0;color:#637567;padding:14px 0;font-size:12px}
+#view-community .community-tabs button.active{border-bottom:2px solid var(--editorial-pine);color:#163c2c}
+.community-filters input,.community-filters select{background:transparent;border:0;border-bottom:1px solid #bdc9bd;border-radius:0;font-size:13px}
+.community-grid{gap:25px}
+.community-card{background:transparent;box-shadow:none;border:0;border-top:1px solid var(--editorial-rule);border-radius:0;padding:23px 0}
+.community-card h3{font:400 29px var(--editorial-display)}
+.community-card .community-avatar{border-radius:0;background:#e1e9df}
+.community-card-actions .btn{border-radius:0}
+.community-tags span{background:transparent;border:0;border-radius:0;padding:6px 9px 6px 0}
+.community-empty{background:transparent;border:0;border-top:1px solid var(--editorial-rule);border-radius:0;text-align:left;padding:38px 0}
+.community-empty h3{font:400 35px var(--editorial-display)}
+.community-empty p{margin:0 0 20px;max-width:650px;font-size:13px}
+.community-empty-icon{display:none}
+.profile-layout{gap:75px}
+.community-panel{background:transparent;border:0;border-top:1px solid var(--editorial-rule);border-radius:0;box-shadow:none;padding:24px 0}
+.community-panel h2{font:400 47px var(--editorial-display)}
+.community-panel form input:not([type=checkbox]),.community-panel select,.community-panel textarea{background:transparent;border:0;border-bottom:1px solid #b8c5ba;border-radius:0;padding:13px 0}
+.community-panel .profile-consent,.interest-options{border:0;border-radius:0}
+.profile-privacy{background:transparent}
+.profile-privacy h3{font:400 42px var(--editorial-display)}
+.connection-card{border:0;border-bottom:1px solid var(--editorial-rule);border-radius:0;background:transparent;padding:20px 0}
+.connection-card strong{font:400 27px var(--editorial-display)}
+.connection-actions button{border-radius:0;background:transparent}
+.inbox-layout{border:1px solid var(--editorial-rule);border-radius:0;background:transparent}
+.inbox-contacts{background:#eff2ec}
+.inbox-contacts button{border-radius:0}
+.inbox-bubble{border-radius:0;background:#e7ede5}
+.inbox-bubble.mine{border-radius:0;background:#dbe9de}
+#community-message-form input{border-radius:0}
+.community-admin-panel{background:transparent;border:0;border-top:1px solid var(--editorial-rule);border-radius:0}
+.results-heading{border-top:1px solid var(--editorial-rule);padding-top:24px}
+.results-heading h2{font:400 33px var(--editorial-display)}
+.sort-control select,.explore-toolbar select,.search-input{border:0;border-bottom:1px solid #b6c9ba;border-radius:0;background:transparent}
+.category-pills{border-bottom:1px solid var(--editorial-rule)}
+.category-pills button{border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent}
+.category-pills button.active,.category-pills button.active:hover{background:transparent;color:#1d5439;border-bottom-color:#245539}
+.filter-row{border-bottom:1px solid var(--editorial-rule)}
+.planner-form-box,.planner-results-box,.operation-panel{border:0;border-top:1px solid var(--editorial-rule);border-radius:0;background:transparent;box-shadow:none;padding:28px 0}
+.planner-form-box h2,.planner-results-box h2{font:400 38px var(--editorial-display)}
+.planner-form-box form input,.planner-form-box form select{border-radius:0}
+.option{border:0;border-bottom:1px solid var(--editorial-rule);border-radius:0;background:transparent;padding:24px 0}
+.option-reason{background:transparent;border:0;border-left:2px solid #adbdae;border-radius:0}
+.intelligence-note{background:transparent;border:0;border-top:1px solid var(--editorial-rule);border-radius:0;padding:18px 0}
+.calendar-workspace{border:0;border-top:1px solid var(--editorial-rule);border-radius:0;box-shadow:none;background:transparent;padding:25px 0}
+.modal-card,.detail-modal-card{border-radius:0}
+.footer.footer-rich{max-width:1550px;border-top:1px solid var(--editorial-rule)}
+.footer-identity strong{font:400 36px var(--editorial-display);letter-spacing:0}
+.footer-links button,.footer-links a{font-size:12px}
+.footer-rich .footer-reassurance{max-width:285px}
+@media(max-width:1200px){
+ #view-home .hero{min-height:630px}
+ #view-home .hero-copy{min-height:630px}
+ #view-home .hero h1{font-size:clamp(68px,7vw,90px)}
+ .category-showcase{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .community-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .listing-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:930px){
+ .container{padding-inline:4vw}
+ .header-inner{padding-inline:4vw}
+ #view-home .hero-copy{max-width:800px;padding:80px 7%;width:100%}
+ #view-home .hero-photo{min-height:0}
+ .listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .destination-feature{grid-template-columns:1fr}
+ .destination-feature-copy{padding:55px 15px}
+ .destination-feature-art{min-height:380px}
+ .experience-banner{grid-template-columns:1fr}
+ #view-community .community-hero{grid-template-columns:1fr}
+ #view-community .community-hero>div:first-child{padding:50px 20px}
+ #view-community .community-hero-art{min-height:310px}
+ .profile-layout{grid-template-columns:1fr;gap:20px}
+}
+@media(max-width:700px){
+ .container{padding:13px 16px 70px}
+ .header-inner{padding:12px 16px}
+ #view-home>.hero{min-height:690px}
+ #view-home .hero-copy{min-height:690px;padding:90px 27px 48px;justify-content:flex-end}
+ #view-home .hero h1{font-size:clamp(65px,14vw,91px)}
+ #view-home .hero-copy>p{font-size:13px}
+ #view-home .hero-gradient{background:linear-gradient(0deg,rgba(7,29,20,.93),rgba(7,29,20,.48) 75%,rgba(7,29,20,.18))}
+ #view-home .hero-context{gap:10px;margin-bottom:18px}
+ #view-home .eyebrow{font-size:10px}
+ #view-home .hero-buttons{display:flex;flex-direction:column;gap:8px}
+ #view-home .hero-buttons .btn{width:100%}
+ #view-home .hero-meta{display:none}
+ #view-home .search-dock{margin-top:26px;padding:18px 0}
+ #view-home .search-dock-title{align-items:start;flex-direction:column;gap:3px}
+ #view-home .search-bar{display:block;border:0;background:transparent}
+ #view-home .search-bar label{border:1px solid var(--editorial-rule);margin-bottom:8px;background:#fff}
+ #view-home .search-submit{width:100%;min-height:51px;margin:1px 0 0}
+ #view-home .assurance-strip{grid-template-columns:1fr}
+ #view-home .assurance-item{padding:18px 0;border-bottom:1px solid var(--editorial-rule)}
+ .content-section{margin-top:70px}
+ .section-head h2{font-size:52px}
+ .category-showcase,.listing-grid,.community-grid{grid-template-columns:1fr}
+ .showcase{min-height:350px}
+ .showcase strong{font-size:39px}
+ .listing-image{height:280px}
+ .listing-info h3{font-size:32px}
+ .destination-feature{margin-top:70px}
+ .destination-feature h2{font-size:54px}
+ .destination-feature-art{min-height:350px}
+ .experience-banner{padding:40px 26px;margin-top:70px}
+ .experience-banner h2{font-size:53px}
+ #view-community .community-hero h1{font-size:62px}
+ #view-community .community-hero-art>strong{font-size:43px}
+ #view-community .community-tabs{gap:18px}
+ .community-panel h2{font-size:45px}
+ .footer.footer-rich{padding:44px 0 20px}
+}

@@ -2,7 +2,7 @@ services:
   - type: web
     name: growa-turismo-medico
     runtime: python
-    region: oregon
+    region: ohio
     plan: free
     autoDeploy: false
     buildCommand: pip install -r requirements.txt
@@ -15,6 +15,10 @@ services:
         value: "false"
       - key: PYTHON_VERSION
         value: "3.12.8"
+      - key: VECTOR_SEARCH_ENABLED
+        value: "false"
+      - key: ROUTING_BASE_URL
+        sync: false
       - key: ALLOWED_HOSTS
         value: "*.onrender.com"
       - key: DATABASE_URL

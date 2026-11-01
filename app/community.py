@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from time import monotonic
 from fastapi import APIRouter, Request, Response, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint, select, or_, and_
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint, select, or_, and_, delete
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.exc import IntegrityError
 from .db import Base, PRODUCTION, SessionLocal, User, Audit, now, uid
@@ -179,8 +179,7 @@ def update_my_profile(body:ProfileUpdate,user:User=Depends(security.current_user
 
 
 @router.get("/members")
-def members(q:str=Query("",max_length=80),kind:str="all",limit:int=Query(36,ge=1,le=60),
-            user:User|None=Depends(lambda:None)):
+def members(q:str=Query("",max_length=80),kind:str="all",limit:int=Query(36,ge=1,le=60)):
     # Directory is public but contains only expressly opted-in names/interests.
     if kind!="all" and kind not in ROLE_LABELS:raise HTTPException(422,"Filtro no válido.")
     with SessionLocal() as db:
@@ -308,3 +307,35 @@ def report(body:Report,user:User=Depends(security.current_user)):
         db.add(CommunityReport(reporter_id=user.id,target_id=body.member_id,reason=body.reason))
         db.add(Audit(user_id=user.id,action="community_report",target_id=body.member_id))
         return {"ok":True,"notice":"Reporte almacenado para revisión administrativa."}
+
+
+@router.post("/me/withdraw",dependencies=[Depends(security.check_csrf)])
+def withdraw_from_directory(user:User=Depends(security.current_user)):
+    """Erase optional social profile and authored messages; keep booking account."""
+    with SessionLocal.begin() as db:
+        p=db.get(CommunityProfile,user.id)
+        if p:db.delete(p)
+        db.execute(delete(CommunityMessage).where(CommunityMessage.sender_id==user.id))
+        for conn in _connections(db,user.id):
+            conn.status="removed"
+        db.add(Audit(user_id=user.id,action="community_withdrawn",target_id=user.id))
+        return {"ok":True,"notice":"Perfil público y mensajes enviados retirados. Tu cuenta de acceso permanece activa."}
+
+
+@router.get("/moderation/reports")
+def moderation_reports(user:User=Depends(security.require("admin"))):
+    with SessionLocal() as db:
+        rows=list(db.scalars(select(CommunityReport).order_by(
+            CommunityReport.created_at.desc()).limit(100)))
+        return {"items":[{"id":r.id,"target_id":r.target_id,
+                           "reason":r.reason,"created_at":r.created_at.isoformat()} for r in rows]}
+
+
+@router.post("/moderation/hide/{member_id}",dependencies=[Depends(security.check_csrf)])
+def moderation_hide(member_id:str,user:User=Depends(security.require("admin"))):
+    with SessionLocal.begin() as db:
+        p=db.get(CommunityProfile,member_id)
+        if not p:raise HTTPException(404,"Perfil inexistente.")
+        p.discoverable=False
+        db.add(Audit(user_id=user.id,action="community_moderation_hide",target_id=member_id))
+        return {"ok":True,"notice":"Perfil ocultado de búsqueda pública."}

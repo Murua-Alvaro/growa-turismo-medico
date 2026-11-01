@@ -53,3 +53,25 @@ Los perfiles `verified=false` no tienen enlace de contacto activado. Para activa
 - Validación visual E2E (Playwright) y pruebas de accesibilidad en dispositivos reales.
 
 El sistema no presta servicios clínicos, no realiza diagnóstico y no garantiza resultados.
+
+## Actualización fotográfica — noviembre de 2026
+
+Se ha reemplazado la imagen odontológica genérica por una selección específica de fotografías de Pexels. La portada de odontología muestra una recepción clínica con interacción humana; el acceso destacado desde la portada de Growa usa una recepción luminosa. Las fichas de demostración cuentan con fotografías distintas de equipos y espacios dentales; los perfiles individuales también muestran una pequeña galería de contexto.
+
+**Las imágenes son ilustrativas y no representan clínicas, personal o instalaciones de Mazatlán.** No implican que quienes aparecen respalden Growa. Se muestran las atribuciones correspondientes y enlaces a las fotografías originales.
+
+Selección y licencia:
+
+- Pavel Danilyuk: recepción dental, consultorio, equipo y atención en mostrador: https://www.pexels.com/photo/patient-talking-to-a-receptionist-at-a-dental-clinic-6809664/
+- Pavel Danilyuk: recepción luminosa: https://www.pexels.com/photo/a-dental-clinic-reception-desk-6809645/
+- Pavel Danilyuk: equipo de atención: https://www.pexels.com/photo/dental-chair-and-equipment-in-a-clinic-6812480/
+- Pavel Danilyuk: otro equipo: https://www.pexels.com/photo/a-dentist-clinic-equipment-6812444/
+- Cedric Fauntleroy: sillón odontológico: https://www.pexels.com/photo/a-dental-chair-in-a-clinic-4269265/
+- Anna Shvets: revisión dental: https://www.pexels.com/photo/woman-sitting-on-dental-chair-3845842/
+- Tima Miroshnichenko: odontólogo en consultorio: https://www.pexels.com/photo/dentist-sitting-on-a-dental-chair-5355862/
+
+Licencia de Pexels: https://www.pexels.com/license/. La licencia permite uso en websites y modificaciones y no debe interpretarse como autorización de respaldo o publicidad personal.
+
+Archivos actualizados: `static/dental-photos.js` (manifiesto con origen y textos accesibles), `static/dental.js` (galería, fotografías y reemplazo ante fallas), `static/dental.css`, `static/dental.html`, `static/img/dental-fallback.svg`, `static/index.html`, `static/growa-editorial.css` y `app/seed.py` (actualiza únicamente imágenes de datos ficticios).
+
+Las fotografías se cargan desde CDN Pexels para evitar empaquetar archivos externos de origen incierto en el repositorio; el fallback SVG es un archivo local verificable. Queda pendiente una prueba visual en navegador real y una comprobación de carga de cada CDN desde el ambiente de usuario.

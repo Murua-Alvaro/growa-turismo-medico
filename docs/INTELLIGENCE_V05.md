@@ -59,7 +59,7 @@ IDs**, never arbitrary URLs or coordinates. When the operator sets
 - Road distance in km, travel duration in minutes and optional polyline6 map shape.
 - The UI shows road routing or clearly marks a dashed straight-line fallback.
 
-**Do not use a public Valhalla demonstration server as a production SLA**. Official
+**The evaluation Render service may use the rate-limited FOSSGIS Valhalla demonstration endpoint; it is for low-volume testing only.** Never send names, addresses or clinical details to the routing provider (this adapter sends only synthetic listing coordinates).\n\n**Do not use a public Valhalla demonstration server as a production SLA**. Official
 public demos are rate-limited and intended for fair-use evaluation, with provider
 notification requested for public applications. Deploy a dedicated Valhalla
 instance or contract a routing service before user-facing scale. A routing

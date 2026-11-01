@@ -2,7 +2,7 @@
 'use strict';
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
-const state = {user:null, catalog:[], all:[], category:'all', plan:[], chosen:null, map:null, markers:[], mapVisible:false};
+const state = {user:null, catalog:[], all:[], category:'all', plan:[], chosen:null, map:null, markers:[], mapVisible:false, routeMap:null, calendar:null, trips:[]};
 const TYPES = {all:'Todas las opciones',hotel:'Hospedaje',medico:'Servicios médicos',transporte:'Transporte privado',negocio:'Negocios cercanos'};
 const STATUSES = {pending:'Pendiente',confirmed:'Confirmada',canceled:'Cancelada',rejected:'Rechazada',requires_review:'Revisión'};
 const money = n => new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n||0);
@@ -140,10 +140,12 @@ async function searchCatalog(){
    max_price:$('#catalog-price').value||'0',accessible:$('#filter-access').checked?'true':'false',
    english:$('#filter-english').checked?'true':'false',verified:$('#filter-verified').checked?'true':'false'});
  try{
-  const res=await req('/api/catalog?'+p);
+  const query=$('#catalog-q').value.trim();
+  if(query){p.delete('q');p.set('query',query);}
+  const res=await req((query?'/api/discover?':'/api/catalog?')+p);
   state.catalog=sortCatalog(res.items||[]);
   $('#results-title').textContent=state.category==='all'?'Opciones para tu estancia':TYPES[state.category];
-  $('#results-count').textContent=state.catalog.length+' resultados encontrados';
+  $('#results-count').textContent=state.catalog.length+' resultados · '+(res.engine==='pgvector-hybrid'?'búsqueda vectorial':res.engine==='contextual-local'?'búsqueda contextual':'catálogo general');
   $('#results').innerHTML=state.catalog.length?state.catalog.map(listingCard).join(''):
    '<div class="empty-state">⌕<h3>Sin coincidencias</h3><p>Prueba otros filtros o una zona diferente.</p></div>';
   wireCards($('#results'));drawMap();
@@ -188,22 +190,146 @@ async function planning(e){
   medical_id:$('#plan-medical').value,day:$('#plan-day').value,
   hotel_id:$('#plan-hotel').value||null,transport_id:$('#plan-transport').value||null,
   nights:Number($('#plan-nights').value),preferred_hour:Number($('#plan-hour').value),
-  max_budget:Number($('#plan-budget').value||0),accessible:$('#plan-access').checked
+  max_budget:Number($('#plan-budget').value||0),accessible:$('#plan-access').checked,
+  priority:$('#plan-priority').value
  };
+ $('#route-preview').hidden=true;
  try{
   const data=await req('/api/plan',{method:'POST',body:JSON.stringify(payload)});
   state.plan=data.options||[];
-  $('#planner-count').textContent=state.plan.length+' alternativas mostradas · '+data.total_feasible+' combinaciones viables.';
+  const engine=data.optimization?.engine==='ortools-cp-sat'?'optimización OR-Tools':'selección por reglas';
+  $('#planner-count').textContent=state.plan.length+' propuestas priorizadas · '+data.total_feasible+' combinaciones factibles · '+engine+'.';
   $('#planner-results').innerHTML=state.plan.length?state.plan.map((o,i)=>{
-   return '<article class="option"><div class="option-top"><strong>Alternativa '+String(i+1).padStart(2,'0')+'</strong><span class="availability">✓ Compatible</span></div>'+
+   return '<article class="option"><div class="option-top"><strong>Alternativa '+String(i+1).padStart(2,'0')+'</strong><span class="availability">✓ Compatible según datos declarados</span></div>'+
     '<div class="option-details"><div class="route-stop"><span>01 · Consulta</span><strong>'+safe(o.medical)+'<br>'+safe(o.time)+'</strong></div>'+
     '<div class="route-stop"><span>02 · Hospedaje</span><strong>'+safe(o.hotel)+'<br>'+o.nights+' noches</strong></div>'+
-    '<div class="route-stop"><span>03 · Transporte</span><strong>'+safe(o.transport)+'<br>'+o.distance_km+' km aprox.</strong></div></div>'+
-    '<div class="option-foot"><div><b>'+money(o.price_mxn)+'</b><small>Total ilustrativo · requiere confirmación externa</small></div>'+
-    '<button class="btn dark" data-book="'+i+'">Solicitar →</button></div></article>';
-  }).join(''):'<div class="empty-state">◌<h3>No hay coincidencias</h3><p>Cambia la fecha, presupuesto o condiciones de accesibilidad.</p></div>';
+    '<div class="route-stop"><span>03 · Transporte</span><strong>'+safe(o.transport)+'<br>'+safe(o.distance_km)+' km en línea recta</strong></div></div>'+
+    '<p class="option-reason">✦ '+safe(o.recommendation||'Opción factible sujeta a confirmación.')+'</p>'+
+    '<div class="option-foot"><div><b>'+money(o.price_mxn)+'</b><small>Importe orientativo · requiere confirmación externa</small></div>'+
+    '<div class="option-actions"><button class="btn outline compact" type="button" data-route="'+i+'">Ver trayecto</button>'+
+    '<button class="btn outline compact" type="button" data-calendar-option="'+i+'">Agenda</button>'+
+    '<button class="btn dark compact" data-book="'+i+'">Solicitar →</button></div></div></article>';
+  }).join(''):'<div class="empty-state">◌<h3>No hay combinaciones compatibles</h3><p>Prueba otra fecha, presupuesto u horario.</p></div>';
   $$('#planner-results [data-book]').forEach(btn=>btn.onclick=()=>bookOption(Number(btn.dataset.book)));
+  $$('#planner-results [data-route]').forEach(btn=>btn.onclick=()=>previewRoute(Number(btn.dataset.route)));
+  $$('#planner-results [data-calendar-option]').forEach(btn=>btn.onclick=()=>openCalendar(Number(btn.dataset.calendarOption)));
  }catch(e){msg(e.message,true);}
+}
+
+async function previewRoute(index){
+ const row=state.plan[index];if(!row)return;
+ const el=$('#route-preview');el.hidden=false;
+ el.innerHTML='<p>Calculando el recorrido entre el alojamiento y el servicio seleccionado...</p>';
+ try{
+  const args=new URLSearchParams({from_id:row.hotel_id,to_id:row.medical_id});
+  const d=await req('/api/route?'+args);
+  const amount=d.mode==='valhalla'?'Distancia vial estimada':'Distancia en línea recta';
+  const minutes=d.minutes===null?'Sin tiempo de viaje verificado':d.minutes+' min estimados en automóvil';
+  el.innerHTML='<div class="route-preview-head"><div><span class="overline">TRAYECTO</span><h3>'+safe(d.from_name)+' → '+safe(d.to_name)+'</h3></div>'+
+   '<button class="route-preview-close" id="route-preview-close" type="button" aria-label="Cerrar trayecto">×</button></div>'+
+   '<div class="route-metrics"><strong>'+safe(d.distance_km)+' km</strong><span>'+safe(amount)+'</span><strong>'+safe(minutes)+'</strong></div>'+
+   '<p class="route-disclaimer">'+safe(d.notice)+'</p><div id="route-map-canvas" class="route-map-canvas"></div>';
+  $('#route-preview-close').onclick=()=>{el.hidden=true;if(state.routeMap){state.routeMap.remove();state.routeMap=null;}};
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  const src=state.all.find(x=>x.id===row.hotel_id),dst=state.all.find(x=>x.id===row.medical_id);
+  if(src&&dst)drawRouteMap(d,src,dst);
+ }catch(e){el.textContent='No fue posible calcular el trayecto: '+e.message;}
+}
+
+async function loadMapLibre(){
+ if(window.maplibregl)return;
+ if(!window.growaMapLibrePromise){
+  window.growaMapLibrePromise=new Promise((resolve,reject)=>{
+   const script=document.createElement('script');
+   script.src='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js';
+   script.onload=resolve;script.onerror=()=>reject(new Error('Mapa no disponible.'));
+   document.head.appendChild(script);
+  });
+ }
+ return window.growaMapLibrePromise;
+}
+async function drawRouteMap(route,start,end){
+ try{
+  await loadMapLibre();
+  if($('#route-preview').hidden||!$('#route-map-canvas'))return;
+  if(state.routeMap)state.routeMap.remove();
+  const map=new maplibregl.Map({container:'route-map-canvas',
+    style:'https://demotiles.maplibre.org/style.json',center:[start.longitude,start.latitude],zoom:11});
+  state.routeMap=map;
+  const path=route.geometry?.length>1?route.geometry:
+   [[start.longitude,start.latitude],[end.longitude,end.latitude]];
+  map.on('load',()=>{
+   if(state.routeMap!==map)return;
+   map.addSource('itinerary-route',{type:'geojson',data:{type:'Feature',
+    geometry:{type:'LineString',coordinates:path},properties:{}}});
+   map.addLayer({id:'itinerary-route-line',type:'line',source:'itinerary-route',
+    paint:{'line-color':route.mode==='valhalla'?'#27654d':'#91a69b',
+           'line-width':4,'line-opacity':.9,'line-dasharray':route.mode==='valhalla'?[1,0]:[2,2]}});
+   const bounds=new maplibregl.LngLatBounds();
+   path.forEach(pt=>bounds.extend(pt));
+   map.fitBounds(bounds,{padding:38,maxZoom:14,duration:0});
+  });
+  new maplibregl.Marker({color:'#254d3e'}).setLngLat([start.longitude,start.latitude]).addTo(map);
+  new maplibregl.Marker({color:'#d98467'}).setLngLat([end.longitude,end.latitude]).addTo(map);
+ }catch(e){const el=$('#route-map-canvas');if(el)el.textContent='El mapa interactivo no está disponible; las medidas se muestran arriba.';}
+}
+function shiftDate(day,offset){const [y,m,d]=day.split('-').map(Number);return new Date(Date.UTC(y,m-1,d+offset)).toISOString().slice(0,10);}
+function plannedEvents(row){
+ if(!row)return [];
+ const arrive=shiftDate(row.day,-1);
+ return [
+  {title:'Estancia propuesta · '+row.hotel,start:arrive,end:shiftDate(arrive,row.nights),allDay:true,color:'#5b907a'},
+  {title:'Consulta por confirmar · '+row.medical,start:row.day+'T'+row.time+':00',color:'#c1795d'},
+  {title:'Traslado por coordinar · '+row.transport,start:row.day+'T'+row.time+':00',color:'#466c8a'}
+ ];
+}
+async function openCalendar(index=null,fromTrips=false){
+ let events=[],starting=null;
+ if(fromTrips){
+  try{state.trips=await req('/api/bookings');}catch(e){msg(e.message,true);return;}
+  for(const booking of state.trips){
+   for(const leg of booking.legs){
+    events.push({title:leg.kind+' · '+leg.name+' ('+(STATUSES[leg.status]||leg.status)+')',
+       start:leg.starts_at,end:leg.ends_at,color:leg.status==='confirmed'?'#407d5a':'#c58c62'});
+   }
+  }
+  starting=events[0]?.start?.slice(0,10)||$('#plan-day').value;
+  go('planner');
+ }else{
+  const row=index===null?state.plan[0]:state.plan[index];
+  events=plannedEvents(row);
+  starting=row?.day||$('#plan-day').value;
+ }
+ const workspace=$('#calendar-workspace');
+ workspace.hidden=false;
+ $('#calendar-fallback').hidden=true;
+ try{
+  if(!window.FullCalendar){
+   if(!window.growaCalendarPromise){
+    window.growaCalendarPromise=new Promise((resolve,reject)=>{
+     const tag=document.createElement('script');
+     tag.src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.21/index.global.min.js';
+     tag.onload=resolve;tag.onerror=()=>reject(new Error('No se pudo cargar FullCalendar.'));
+     document.head.appendChild(tag);
+    });
+   }
+   await window.growaCalendarPromise;
+  }
+  if(state.calendar){state.calendar.destroy();state.calendar=null;}
+  state.calendar=new FullCalendar.Calendar($('#journey-calendar'),{
+   initialView:window.innerWidth<700?'listWeek':'timeGridWeek',
+   locale:'es',firstDay:1,initialDate:starting,nowIndicator:true,
+   headerToolbar:{left:'prev,next today',center:'title',right:'timeGridWeek,dayGridMonth,listWeek'},
+   height:'auto',events,editable:false,selectable:false,
+   eventClick:info=>{info.jsEvent.preventDefault();msg(info.event.title+' · Vista informativa, sin confirmación externa.');}
+  });
+  state.calendar.render();
+ }catch(error){
+  $('#journey-calendar').textContent='';
+  const fallback=$('#calendar-fallback');fallback.hidden=false;
+  fallback.textContent='No fue posible cargar el calendario interactivo. '+events.length+' actividades disponibles en el itinerario.';
+ }
+ workspace.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function bookOption(i){
  if(!canOperate()){showModal('login-modal');msg('Las solicitudes son gestionadas por una cuenta de coordinación.');return;}
@@ -235,6 +361,7 @@ async function loadTrips(){
  if(!state.user)return;
  try{
   const rows=await req('/api/bookings');
+  state.trips=rows;
   $('#trip-list').innerHTML=rows.length?rows.map(tripCard).join(''):
    '<div class="empty-state">✦<h3>No hay solicitudes todavía.</h3><p>Comienza por crear una combinación desde Agenda.</p></div>';
   $$('[data-leg]').forEach(btn=>btn.onclick=()=>updateLeg(btn.dataset.leg,btn.dataset.action));
@@ -303,6 +430,9 @@ function bind(){
  ['catalog-zone','catalog-price','catalog-sort','filter-access','filter-english','filter-verified'].forEach(id=>$('#'+id).onchange=searchCatalog);
  let delay;$('#catalog-q').oninput=()=>{clearTimeout(delay);delay=setTimeout(searchCatalog,260);};
  $('#toggle-map').onclick=toggleMap;$('#plan-form').onsubmit=planning;$('#reserve-form').onsubmit=createBooking;
+ $('#calendar-open').onclick=()=>openCalendar();
+ $('#trips-calendar-open').onclick=()=>openCalendar(null,true);
+ $('#calendar-close').onclick=()=>{if(state.calendar){state.calendar.destroy();state.calendar=null;}$('#calendar-workspace').hidden=true;};
  $('#provider-form').onsubmit=providerCreate;$('#slots-form').onsubmit=slotsCreate;
  $('#google-connect').onclick=googleConnect;$('#google-disconnect').onclick=googleDisconnect;
  $('#plan-day').min=dateOffset(1);$('#plan-day').value=dateOffset(3);

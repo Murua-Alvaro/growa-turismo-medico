@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from datetime import date,timedelta
 os.environ["PRODUCTION"]="false"
-os.environ["DATABASE_URL"]="sqlite:///./test_growa.sqlite3"
+os.environ["DATABASE_URL"]=f"sqlite:///./test_growa_{os.getpid()}.sqlite3"
 os.environ["DEMO_SEED"]="true"
 os.environ["BOOTSTRAP_ADMIN_EMAIL"]="admin@example.test"
 os.environ["BOOTSTRAP_ADMIN_PASSWORD"]="CiOnlyStrongSecret-2026-NotProduction"

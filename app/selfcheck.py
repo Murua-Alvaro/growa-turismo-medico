@@ -43,7 +43,7 @@ def run_demo_checks() -> dict[str, str]:
     with SessionLocal() as db:
         expected={"community_profiles","community_connections","community_messages","community_reports"}
         assert expected.issubset(set(inspect(db.bind).get_table_names()))
-    example=community.CommunityProfile(user_id="synthetic",display_name="Visitante")
+    example=community.CommunityProfile(user_id="synthetic",display_name="Visitante",profile_kind="visitor",languages="es",interests="")
     visible=community.profile_public("synthetic",example)
     assert visible["name"]=="Visitante" and "email" not in visible
     assert community.signup_enabled() is True  # only invoked in nonproduction demo

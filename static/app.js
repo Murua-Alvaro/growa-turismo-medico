@@ -21,7 +21,7 @@ async function req(path,opt={}){
  return data;
 }
 let returnFocus=null;
-function syncModalLock(){document.body.classList.toggle('modal-open',$('.modal-backdrop').some(el=>!el.hidden));}
+function syncModalLock(){document.body.classList.toggle('modal-open',$$('.modal-backdrop').some(el=>!el.hidden));}
 function showModal(id){
  returnFocus=document.activeElement;
  $('#'+id).hidden=false;
@@ -31,14 +31,14 @@ function showModal(id){
 function hideModal(id){
  $('#'+id).hidden=true;
  syncModalLock();
- if(!$('.modal-backdrop').some(el=>!el.hidden))returnFocus?.focus?.();
+ if(!$$('.modal-backdrop').some(el=>!el.hidden))returnFocus?.focus?.();
 }
 function canOperate(){return state.user && ['admin','coordinator'].includes(state.user.role);}
 function go(view){
  if(['trips','partners'].includes(view) && !state.user){showModal('login-modal');msg('Inicia sesión para abrir coordinación.');return;}
  $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
- $('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
- $('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
+ $$('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
+ $$('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
  window.scrollTo({top:0,behavior:'smooth'});
  if(view==='explore')searchCatalog();
  if(view==='trips')loadTrips();
@@ -418,10 +418,10 @@ function bind(){
  $$('[data-go]').forEach(btn=>btn.onclick=()=>go(btn.dataset.go));
  $$('[data-category]').forEach(btn=>btn.onclick=()=>{state.category=btn.dataset.category;categories();go('explore');});
  $$('[data-close]').forEach(btn=>btn.onclick=()=>hideModal(btn.dataset.close));
- $('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m)hideModal(m.id);});
+ $$('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m)hideModal(m.id);});
  document.addEventListener('keydown',e=>{
   if(e.key!=='Escape')return;
-  const visible=$('.modal-backdrop').find(el=>!el.hidden);
+  const visible=$$('.modal-backdrop').find(el=>!el.hidden);
   if(visible)hideModal(visible.id);
  });
  $('#account-button').onclick=account;$('#login-form').onsubmit=login;

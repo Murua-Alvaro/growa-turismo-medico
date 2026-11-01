@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from .db import (ROOT, PRODUCTION, SessionLocal, init_db, User, Listing, Slot,
                  Booking, BookingLeg, Audit, uid, now)
-from . import security,services,google_calendar,discovery,routing,optimizer
+from . import security,services,google_calendar,discovery,routing,optimizer,community
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -40,7 +40,8 @@ async def lifespan(app:FastAPI):
             discovery.sync_index(db)
     yield
 
-app=FastAPI(title="Growa Hospitality Platform",version="0.6.0",lifespan=lifespan)
+app=FastAPI(title="Growa Hospitality Platform",version="0.7.0",lifespan=lifespan)
+app.include_router(community.router)
 hosts=[x.strip() for x in os.getenv("ALLOWED_HOSTS","localhost,127.0.0.1,testserver").split(",") if x.strip()]
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=hosts)
 app.mount("/static",StaticFiles(directory=str(ROOT/"static")),name="static")
@@ -62,12 +63,14 @@ def home():
 
 @app.get("/api/health")
 def health():
-    return {"status":"ok","version":"0.6.0","public_ready":False,
+    return {"status":"ok","version":"0.7.0","public_ready":False,
             "medical_availability":"only explicitly declared or authorized partner slots",
             "features":{"optimizer":"ortools-cp-sat" if optimizer.cp_model is not None else "deterministic",
                         "routing":routing.status(),
                         "discovery":"pgvector-hybrid" if os.getenv("VECTOR_SEARCH_ENABLED","false").lower()=="true" and PRODUCTION else "contextual-local",
-                        "calendar":"FullCalendar standard (client-side)"}}
+                        "calendar":"FullCalendar standard (client-side)",
+                        "community":"opt-in private contacts",
+                        "community_signup":community.signup_enabled()}}
 
 class LoginPayload(BaseModel):
     email:str=Field(min_length=5,max_length=180)

@@ -1,7 +1,12 @@
 """Synthetic demonstration offers. These are never represented as real businesses."""
 from datetime import timedelta
+import hashlib
 from sqlalchemy import select
 from .db import Listing, Slot, SessionLocal, now, uid
+
+def stable_dental_id(name: str) -> str:
+    """Stable synthetic IDs keep demo profile URLs usable across redeploys."""
+    return hashlib.sha256(("growa:dental:v1:"+name).encode("utf-8")).hexdigest()[:32]
 
 SAMPLES = [
  ("hotel","Estancias Bahía · DEMO","Hotel con accesibilidad","Marina",23.269,-106.461,1750,1,1,3,"Elevador, suite de estancia prolongada, desayunos y lavandería","https://images.unsplash.com/photo-1566073771259-6a8506099945?w=950&q=85"),
@@ -22,7 +27,7 @@ def seed_demo():
             return
         medical_ids = []
         for kind,name,subtype,zone,lat,lng,price,accessible,english,capacity,description,img in SAMPLES:
-            item = Listing(id=uid(),category=kind,name=name,subtype=subtype,zone=zone,latitude=lat,longitude=lng,
+            item = Listing(id=stable_dental_id(name) if "odontol" in subtype.casefold() else uid(),category=kind,name=name,subtype=subtype,zone=zone,latitude=lat,longitude=lng,
                            price_mxn=price,accessible=bool(accessible),english=bool(english),capacity=capacity,
                            description=description,image_url=img,verified=False,demo=True)
             db.add(item)
@@ -57,7 +62,7 @@ def seed_dental_demo() -> None:
         for name, zone, lat, lon, price, access, english, description, image_url in DENTAL_DEMO:
             if db.scalar(select(Listing.id).where(Listing.name == name).limit(1)):
                 continue
-            item = Listing(id=uid(),category="medico",name=name,subtype="Odontología",
+            item = Listing(id=stable_dental_id(name),category="medico",name=name,subtype="Odontología",
                 zone=zone,latitude=lat,longitude=lon,price_mxn=price,
                 accessible=access,english=english,capacity=1,description=description,
                 image_url=image_url,verified=False,demo=True)

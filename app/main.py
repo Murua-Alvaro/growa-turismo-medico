@@ -32,13 +32,15 @@ async def lifespan(app:FastAPI):
         from .seed import seed_demo
         seed_demo()
         from .selfcheck import run_demo_checks
-        run_demo_checks()
+        checks=run_demo_checks()
+        import logging
+        logging.getLogger("uvicorn.error").info("GROWA_DEMO_SELFTEST_PASSED %s", checks)
     if discovery.prepare_index():
         with SessionLocal.begin() as db:
             discovery.sync_index(db)
     yield
 
-app=FastAPI(title="Growa Hospitality Platform",version="0.5.0",lifespan=lifespan)
+app=FastAPI(title="Growa Hospitality Platform",version="0.6.0",lifespan=lifespan)
 hosts=[x.strip() for x in os.getenv("ALLOWED_HOSTS","localhost,127.0.0.1,testserver").split(",") if x.strip()]
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=hosts)
 app.mount("/static",StaticFiles(directory=str(ROOT/"static")),name="static")
@@ -60,7 +62,7 @@ def home():
 
 @app.get("/api/health")
 def health():
-    return {"status":"ok","version":"0.5.0","public_ready":False,
+    return {"status":"ok","version":"0.6.0","public_ready":False,
             "medical_availability":"only explicitly declared or authorized partner slots",
             "features":{"optimizer":"ortools-cp-sat" if optimizer.cp_model is not None else "deterministic",
                         "routing":routing.status(),

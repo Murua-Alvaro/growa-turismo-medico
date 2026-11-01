@@ -7,9 +7,9 @@ semantic index when a demo web process starts.
 from __future__ import annotations
 import logging
 from types import SimpleNamespace
-from . import discovery, optimizer, routing, services
+from . import discovery, optimizer, routing, services, community
 from .db import SessionLocal, Listing
-from sqlalchemy import select
+from sqlalchemy import select, inspect
 
 LOG = logging.getLogger("growa.selfcheck")
 
@@ -40,7 +40,14 @@ def run_demo_checks() -> dict[str, str]:
         assert db.scalar(select(Listing.id).where(Listing.demo.is_(True)).limit(1))
         catalog=services.search_catalog(db, category="hotel", accessible=True)
         assert catalog and all(x["category"]=="hotel" and x["accessible"] for x in catalog)
+    with SessionLocal() as db:
+        expected={"community_profiles","community_connections","community_messages","community_reports"}
+        assert expected.issubset(set(inspect(db.bind).get_table_names()))
+    example=community.CommunityProfile(user_id="synthetic",display_name="Visitante")
+    visible=community.profile_public("synthetic",example)
+    assert visible["name"]=="Visitante" and "email" not in visible
+    assert community.signup_enabled() is True  # only invoked in nonproduction demo
     result={"optimizer":engine,"semantic":"passed","catalog":"passed",
-            "geo_distance":"passed","routing":routing.status()}
+            "geo_distance":"passed","routing":routing.status(),"community":"passed"}
     LOG.info("GROWA_DEMO_SELFTEST_PASSED %s", result)
     return result

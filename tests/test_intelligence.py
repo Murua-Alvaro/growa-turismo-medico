@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from types import SimpleNamespace
 os.environ.setdefault("PRODUCTION","false")
-os.environ.setdefault("DATABASE_URL","sqlite:///./test_growa.sqlite3")
+os.environ.setdefault("DATABASE_URL",f"sqlite:///./test_growa_{os.getpid()}.sqlite3")
 os.environ.setdefault("DEMO_SEED","true")
 os.environ.setdefault("BOOTSTRAP_ADMIN_EMAIL","admin@example.test")
 os.environ.setdefault("BOOTSTRAP_ADMIN_PASSWORD","CiOnlyStrongSecret-2026-NotProduction")

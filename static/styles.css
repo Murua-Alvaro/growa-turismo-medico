@@ -485,3 +485,12 @@ body{background:#fefefd;color:var(--text)}
 .footer-bottom span{margin:0}
 @media(max-width:950px){.footer.footer-rich{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;padding:40px 25px 25px}}
 @media(max-width:600px){.footer.footer-rich{grid-template-columns:1fr 1fr;gap:28px 16px;padding:35px 16px 20px}.footer-identity,.footer-reassurance{grid-column:1/-1}.footer-bottom{flex-direction:column;gap:5px}}
+
+/* Dedicated destination menu entries: real anchors, not inert in-page buttons. */
+.nav-mega-panel a{display:grid;grid-template-columns:29px 1fr;gap:1px 10px;padding:13px 12px;border-radius:11px;text-decoration:none;color:var(--ink)}
+.nav-mega-panel a:hover,.nav-mega-panel a:focus-visible{background:#f3f7f3;color:#224f3c}
+.nav-mega-panel a>span{grid-row:span 2;font-weight:800;font-size:10px;color:#67937d}
+.nav-mega-panel a strong{font:700 12px Manrope,sans-serif}
+.nav-mega-panel a small{color:#83938a;font-size:10px;margin-top:3px}
+.footer-links a{display:block;text-align:left;font-size:11px;color:#718576;font-weight:600}
+.footer-links a:hover{color:#1d533a;text-decoration:underline}

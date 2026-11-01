@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Ilustración de consultorio odontológico">
+<defs>
+<linearGradient id="wall" x2="1" y2="1"><stop stop-color="#e4efeb"/><stop offset="1" stop-color="#c5ded8"/></linearGradient>
+<linearGradient id="wood" x2="0" y2="1"><stop stop-color="#e9d6bc"/><stop offset="1" stop-color="#c4b297"/></linearGradient>
+<linearGradient id="metal" x2="0" y2="1"><stop stop-color="#fefefe"/><stop offset="1" stop-color="#bacdca"/></linearGradient>
+</defs>
+<rect width="1200" height="800" fill="url(#wall)"/>
+<rect x="0" y="575" width="1200" height="225" fill="#e1e9e4"/>
+<path d="M0 575H1200" stroke="#b7cac2" stroke-width="8"/>
+<rect x="93" y="80" width="400" height="350" rx="8" fill="#fff" opacity=".74"/>
+<rect x="110" y="97" width="366" height="313" fill="#9cc6c0"/>
+<path d="M294 97V410M110 254H476" stroke="#f1f8f4" stroke-width="15"/>
+<path d="M110 410L190 302 248 353 338 268 476 396Z" fill="#8cac94" opacity=".65"/>
+<rect x="930" y="180" width="163" height="280" rx="10" fill="#f7fbf8" stroke="#b9d2c6" stroke-width="7"/>
+<circle cx="1013" cy="255" r="40" fill="#d5e5db"/><path d="M981 260q32-50 65 0" fill="none" stroke="#7eada3" stroke-width="12" stroke-linecap="round"/>
+<rect x="950" y="329" width="126" height="16" rx="8" fill="#cadbd3"/><rect x="965" y="365" width="94" height="16" rx="8" fill="#cadbd3"/>
+<rect x="320" y="516" width="560" height="70" rx="33" fill="#94bdb5"/>
+<rect x="350" y="488" width="500" height="72" rx="25" fill="#bedbd3"/>
+<rect x="527" y="565" width="144" height="91" rx="15" fill="#5d8d89"/><rect x="565" y="654" width="71" height="26" rx="7" fill="#718e8d"/>
+<rect x="404" y="383" width="160" height="151" rx="24" fill="url(#metal)" transform="rotate(-18 484 458)"/>
+<path d="M707 512V288Q707 267 735 267H819" stroke="#738f8c" stroke-width="17" fill="none" stroke-linecap="round"/>
+<circle cx="816" cy="267" r="53" fill="#e8f5ed" stroke="#8daea8" stroke-width="15"/>
+<path d="M800 263q19-18 37 0" stroke="#b9d4ca" stroke-width="9" fill="none"/>
+<rect x="850" y="520" width="25" height="150" rx="10" fill="#92b7aa"/>
+<rect x="802" y="481" width="117" height="66" rx="18" fill="#f9fbf9" stroke="#a3c1b7" stroke-width="8"/>
+<path d="M84 681H1110" stroke="#b5cac1" stroke-width="8" opacity=".6"/>
+</svg>

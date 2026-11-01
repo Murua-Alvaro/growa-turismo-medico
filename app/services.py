@@ -83,13 +83,15 @@ def feasible(db, med:Listing,hotel:Listing,trans:Listing,slot:Slot,nights:int,gu
 
 def plan(db:Session, medical_id:str, day:date, nights:int, preferred_hour:int,
          max_budget:int, accessible:bool, hotel_id=None, transport_id=None,
-         max_results:int=18, priority:str="balanced") -> dict:
+         max_results:int=18, priority:str="balanced", blocked_times:set[str]|None=None) -> dict:
     validate_day(day)
     med=db.get(Listing,medical_id)
     if not med or med.category!="medico" or not med.active:
         raise HTTPException(404,"Servicio médico no encontrado.")
     slots=list(db.scalars(select(Slot).where(Slot.listing_id==med.id,
              Slot.slot_date==day,Slot.enabled.is_(True)).order_by(Slot.time_hhmm)))
+    if blocked_times:
+        slots=[slot for slot in slots if slot.time_hhmm not in blocked_times]
     hotels=list(db.scalars(select(Listing).where(Listing.category=="hotel",Listing.active.is_(True))))
     transports=list(db.scalars(select(Listing).where(Listing.category=="transporte",Listing.active.is_(True))))
     if hotel_id: hotels=[h for h in hotels if h.id==hotel_id]

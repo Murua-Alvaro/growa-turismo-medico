@@ -75,3 +75,21 @@ Licencia de Pexels: https://www.pexels.com/license/. La licencia permite uso en 
 Archivos actualizados: `static/dental-photos.js` (manifiesto con origen y textos accesibles), `static/dental.js` (galería, fotografías y reemplazo ante fallas), `static/dental.css`, `static/dental.html`, `static/img/dental-fallback.svg`, `static/index.html`, `static/growa-editorial.css` y `app/seed.py` (actualiza únicamente imágenes de datos ficticios).
 
 Las fotografías se cargan desde CDN Pexels para evitar empaquetar archivos externos de origen incierto en el repositorio; el fallback SVG es un archivo local verificable. Queda pendiente una prueba visual en navegador real y una comprobación de carga de cada CDN desde el ambiente de usuario.
+
+## Rediseño del directorio — versión 1.0 (noviembre de 2026)
+
+Se sustituyó íntegramente la vista anterior de odontología, con hero de marketing, tarjetas decorativas y numerosos bloques introductorios, por un patrón de **directorio de clínicas orientado a búsqueda y comparación**, de densidad visual semejante a plataformas internacionales de turismo médico como Bookimed, sin copiar sus recursos propietarios.
+
+**Composición de escritorio**: barra de navegación discreta, título de búsqueda geográfica, buscador horizontal de clínica y tratamiento de interés, selector de procedimientos, filtros verticales persistentes (zona, inglés declarado, accesibilidad, estado verificado), listado vertical de fichas anchas, orden y resultados visibles. La fotografía acompaña la identificación del perfil; los datos ocupan el centro y el panel de acción se sitúa a la derecha.
+
+**Composición móvil**: buscador apilado, botones de procedimiento con desplazamiento horizontal, panel de filtros plegable y fichas reorganizadas para pantallas estrechas.
+
+**Perfil individual**: URL propia, galería compacta, navegación por secciones, datos prácticos y panel de preparación de solicitud. El formulario abre un panel lateral con gestión de foco, Escape y confirmación explícita de resumen no enviado.
+
+**Interacciones verificadas en prueba de JavaScript simulada**: carga de catálogo, generación del directorio, generación de ficha detallada, navegación por enlaces e interfaz del resumen no enviado. No existe de momento una auditoría visual E2E en navegadores físicos.
+
+**Datos médicos**: se mantiene la separación estricta entre consulta de referencia y precio de tratamiento; las fotografías de demostración siguen marcadas como ilustrativas. No se publican ratings, resultados, médicos o licencias sin información acreditada.
+
+Archivos sustituidos por un diseño coherente en vez de anexos CSS: `static/dental.js` y `static/dental.css`; `static/dental.html` y `app/selfcheck.py` recibieron ajustes menores.
+
+**Próximo requisito para calidad comercial comparable**: incorporar proveedores reales con consentimiento y documentos, inventario por tratamiento y presupuestos demostrables. La interfaz funcional ya admite su evolución, pero el contenido DEMO no debe presentarse como un marketplace con clínicas verificadas.

@@ -23,6 +23,7 @@
  }
  function syncAuth(){
   const user=state.user;
+  if(!user&&c.tab!=='directory')c.tab='directory';
   const join=byId('community-join');
   const mine=byId('community-myspace');
   if(join)join.textContent=user?'Editar mi perfil ↗':'Crear mi perfil ↗';
@@ -222,6 +223,7 @@
  function init(){
   if(!byId('community-join'))return;
   byId('community-join').onclick=()=>state.user?selectTab('profile'):showModal('join-modal');
+  byId('login-register-switch').onclick=()=>{hideModal('login-modal');showModal('join-modal');};
   byId('community-myspace').onclick=()=>state.user?selectTab('connections'):showModal('login-modal');
   byId('community-register-form').onsubmit=register;
   byId('community-profile-form').onsubmit=saveProfile;

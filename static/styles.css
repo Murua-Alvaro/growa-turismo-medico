@@ -466,3 +466,5 @@ body{background:#fefefd;color:var(--text)}
  .header-actions{gap:7px}
  .header-actions .btn{padding:10px 11px}
 }
+
+.login-switch{display:block;text-align:left;margin:8px 0 13px;padding:4px 0;color:#2c694b}

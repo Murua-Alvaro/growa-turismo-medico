@@ -21,6 +21,17 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 - **Revisión al iniciar:** un autodiagnóstico breve en demostración valida el motor de recomendaciones, vectores de búsqueda y catálogo; falla el arranque si detecta una regresión esencial.
 - **Auditoría técnica:** [evidencias, límites, riesgos y verificaciones pendientes](docs/AUDIT_V06.md).
 
+## Novedades v0.7 · Mazatlán y comunidad
+
+- **Experiencia editorial de destino:** historia del puerto sustentada en fuentes oficiales, lugares para explorar, filtros de interés, fotografías atribuidas y preguntas desplegables.
+- **Navegación ampliada:** mega menú en escritorio, menú móvil accesible y secciones independientes sin reemplazar el catálogo de hospitalidad.
+- **Growa Comunidad:** perfiles opt-in por visitante/residente/anfitrión/guía, directorio sin emails, solicitudes de conexión que requieren aceptación, mensajes internos y bloqueo.
+- **Privacidad y moderación:** controles para ocultar/retirar perfiles, reportes de abuso, revisión administrativa y cuentas privadas por defecto.
+- **Seguridad del piloto:** inscripción autogestionada solo en demostración. La inscripción abierta productiva se encuentra bloqueada hasta incorporar verificación de correo, moderación operativa y persistencia durable.
+- **Calidad de frontend:** corregidas seis selecciones de elementos que afectaban botones y filtros; sintaxis JavaScript y estructura del documento revisadas.
+
+Consulta [especificación y matriz de riesgos de la comunidad](docs/COMMUNITY_V07.md).
+
 ## Tecnologías
 
 - **Backend:** FastAPI y SQLAlchemy 2; SQLite solo para desarrollo, PostgreSQL compatible con Neon.

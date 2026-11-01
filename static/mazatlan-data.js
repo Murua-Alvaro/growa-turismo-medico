@@ -12,7 +12,7 @@ window.MZT_DATA=Object.freeze({
  ],
  photos:{
   machado:{url:"https://commons.wikimedia.org/wiki/Special:FilePath/Plazuela_Machado_Mazatl%C3%A1n.jpg?width=1200",author:"Gzzz",licence:"CC BY-SA 4.0",page:"https://commons.wikimedia.org/wiki/File:Plazuela_Machado_Mazatl%C3%A1n.jpg",alt:"Plazuela Machado y arquitectura del Centro Histórico de Mazatlán"},
-  teatro:{url:"https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_angela_peralta.jpg?width=1200",author:"Juanjosegzl",licence:"Consultar licencia CC en Commons",page:"https://commons.wikimedia.org/wiki/File:Teatro_angela_peralta.jpg",alt:"Fachada del Teatro Ángela Peralta en el Centro Histórico"},
+  teatro:{url:"https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_angela_peralta.jpg?width=1200",author:"Juanjosegzl",licence:"CC BY-SA 3.0",page:"https://commons.wikimedia.org/wiki/File:Teatro_angela_peralta.jpg",alt:"Fachada del Teatro Ángela Peralta en el Centro Histórico"},
   faro:{url:"https://commons.wikimedia.org/wiki/Special:FilePath/Faro_de_Mazatl%C3%A1n.JPG?width=1100",author:"BettasGDL",licence:"Dominio público",page:"https://commons.wikimedia.org/wiki/File:Faro_de_Mazatl%C3%A1n.JPG",alt:"El Faro del Cerro del Crestón en Mazatlán"}
  },
  chapters:[

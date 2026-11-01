@@ -20,13 +20,25 @@ async function req(path,opt={}){
  if(!response.ok){let detail=data&&data.detail?data.detail:'Error de solicitud';throw Error(typeof detail==='string'?detail:JSON.stringify(detail));}
  return data;
 }
-function showModal(id){$('#'+id).hidden=false;}
-function hideModal(id){$('#'+id).hidden=true;}
+let returnFocus=null;
+function syncModalLock(){document.body.classList.toggle('modal-open',$('.modal-backdrop').some(el=>!el.hidden));}
+function showModal(id){
+ returnFocus=document.activeElement;
+ $('#'+id).hidden=false;
+ syncModalLock();
+ $('#'+id+' .close-modal')?.focus();
+}
+function hideModal(id){
+ $('#'+id).hidden=true;
+ syncModalLock();
+ if(!$('.modal-backdrop').some(el=>!el.hidden))returnFocus?.focus?.();
+}
 function canOperate(){return state.user && ['admin','coordinator'].includes(state.user.role);}
 function go(view){
  if(['trips','partners'].includes(view) && !state.user){showModal('login-modal');msg('Inicia sesión para abrir coordinación.');return;}
  $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
- $$('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
+ $('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
+ $('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
  window.scrollTo({top:0,behavior:'smooth'});
  if(view==='explore')searchCatalog();
  if(view==='trips')loadTrips();
@@ -114,13 +126,22 @@ function fillProviders(){
  $('#plan-transport').innerHTML='<option value="">Recomendar automáticamente</option>'+opts('transporte');
  $('#slot-provider').innerHTML=opts('medico');
 }
+function sortCatalog(items){
+ const mode=$('#catalog-sort')?.value||'default';
+ if(mode==='default')return items;
+ const rows=[...items];
+ if(mode==='price-asc')return rows.sort((a,b)=>Number(a.price_mxn||0)-Number(b.price_mxn||0));
+ if(mode==='price-desc')return rows.sort((a,b)=>Number(b.price_mxn||0)-Number(a.price_mxn||0));
+ if(mode==='name')return rows.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'es'));
+ return rows;
+}
 async function searchCatalog(){
  const p=new URLSearchParams({category:state.category,q:$('#catalog-q').value||'',zone:$('#catalog-zone').value||'',
    max_price:$('#catalog-price').value||'0',accessible:$('#filter-access').checked?'true':'false',
    english:$('#filter-english').checked?'true':'false',verified:$('#filter-verified').checked?'true':'false'});
  try{
   const res=await req('/api/catalog?'+p);
-  state.catalog=res.items||[];
+  state.catalog=sortCatalog(res.items||[]);
   $('#results-title').textContent=state.category==='all'?'Opciones para tu estancia':TYPES[state.category];
   $('#results-count').textContent=state.catalog.length+' resultados encontrados';
   $('#results').innerHTML=state.catalog.length?state.catalog.map(listingCard).join(''):
@@ -270,11 +291,16 @@ function bind(){
  $$('[data-go]').forEach(btn=>btn.onclick=()=>go(btn.dataset.go));
  $$('[data-category]').forEach(btn=>btn.onclick=()=>{state.category=btn.dataset.category;categories();go('explore');});
  $$('[data-close]').forEach(btn=>btn.onclick=()=>hideModal(btn.dataset.close));
- $$('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m)m.hidden=true;});
+ $('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m)hideModal(m.id);});
+ document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  const visible=$('.modal-backdrop').find(el=>!el.hidden);
+  if(visible)hideModal(visible.id);
+ });
  $('#account-button').onclick=account;$('#login-form').onsubmit=login;
  $('#quick-submit').onclick=quickSearch;$('#quick-q').onkeydown=e=>{if(e.key==='Enter')quickSearch();};
  $('#clear-filters').onclick=()=>{state.category='all';$('#catalog-q').value='';$('#catalog-zone').value='';$('#catalog-price').value='0';['filter-access','filter-english','filter-verified'].forEach(id=>$('#'+id).checked=false);categories();searchCatalog();};
- ['catalog-zone','catalog-price','filter-access','filter-english','filter-verified'].forEach(id=>$('#'+id).onchange=searchCatalog);
+ ['catalog-zone','catalog-price','catalog-sort','filter-access','filter-english','filter-verified'].forEach(id=>$('#'+id).onchange=searchCatalog);
  let delay;$('#catalog-q').oninput=()=>{clearTimeout(delay);delay=setTimeout(searchCatalog,260);};
  $('#toggle-map').onclick=toggleMap;$('#plan-form').onsubmit=planning;$('#reserve-form').onsubmit=createBooking;
  $('#provider-form').onsubmit=providerCreate;$('#slots-form').onsubmit=slotsCreate;

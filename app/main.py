@@ -14,11 +14,12 @@ from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel, Field
+from typing import Literal
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from .db import (ROOT, PRODUCTION, SessionLocal, init_db, User, Listing, Slot,
                  Booking, BookingLeg, Audit, uid, now)
-from . import security,services,google_calendar
+from . import security,services,google_calendar,discovery,routing,optimizer
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -30,9 +31,12 @@ async def lifespan(app:FastAPI):
         if PRODUCTION:raise RuntimeError("DEMO_SEED is not permitted in production.")
         from .seed import seed_demo
         seed_demo()
+    if discovery.prepare_index():
+        with SessionLocal.begin() as db:
+            discovery.sync_index(db)
     yield
 
-app=FastAPI(title="Growa Hospitality Platform",version="0.4.0",lifespan=lifespan)
+app=FastAPI(title="Growa Hospitality Platform",version="0.5.0",lifespan=lifespan)
 hosts=[x.strip() for x in os.getenv("ALLOWED_HOSTS","localhost,127.0.0.1,testserver").split(",") if x.strip()]
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=hosts)
 app.mount("/static",StaticFiles(directory=str(ROOT/"static")),name="static")
@@ -54,8 +58,12 @@ def home():
 
 @app.get("/api/health")
 def health():
-    return {"status":"ok","version":"0.4.0","public_ready":False,
-            "medical_availability":"only explicitly declared or authorized partner slots"}
+    return {"status":"ok","version":"0.5.0","public_ready":False,
+            "medical_availability":"only explicitly declared or authorized partner slots",
+            "features":{"optimizer":"ortools-cp-sat" if optimizer.cp_model is not None else "deterministic",
+                        "routing":routing.status(),
+                        "discovery":"pgvector-hybrid" if os.getenv("VECTOR_SEARCH_ENABLED","false").lower()=="true" and PRODUCTION else "contextual-local",
+                        "calendar":"FullCalendar standard (client-side)"}}
 
 class LoginPayload(BaseModel):
     email:str=Field(min_length=5,max_length=180)
@@ -90,6 +98,27 @@ def catalog(category:str="all",q:str="",zone:str="",max_price:int=Query(0,ge=0),
         return {"items":services.search_catalog(db,category,q,zone,max_price,accessible,english,verified),
                 "notice":"Inventario de demo o declarado. La plataforma no certifica servicios médicos."}
 
+@app.get("/api/discover")
+def discover(query:str=Query("",max_length=160),category:str="all",zone:str="",
+             max_price:int=Query(0,ge=0),accessible:bool=False,english:bool=False,verified:bool=False):
+    with SessionLocal() as db:
+        return discovery.discover(db,query,category=category,zone=zone,max_price=max_price,
+                                  accessible=accessible,english=english,verified=verified)
+
+@app.get("/api/route")
+def route_estimate(from_id:str=Query(...,min_length=10,max_length=40),
+                   to_id:str=Query(...,min_length=10,max_length=40)):
+    if from_id == to_id:
+        raise HTTPException(422,"Selecciona dos servicios distintos.")
+    with SessionLocal() as db:
+        start=db.get(Listing,from_id)
+        finish=db.get(Listing,to_id)
+        if not start or not finish or not start.active or not finish.active:
+            raise HTTPException(404,"Servicio no encontrado.")
+        data=routing.route_between(start,finish)
+        return {"from_id":start.id,"to_id":finish.id,"from_name":start.name,
+                "to_name":finish.name,**data}
+
 @app.get("/api/zones")
 def zones():
     with SessionLocal() as db:
@@ -111,12 +140,14 @@ class PlanRequest(BaseModel):
     accessible:bool=False
     hotel_id:str|None=None
     transport_id:str|None=None
+    priority:Literal["balanced","economy","proximity","comfort"]="balanced"
 
 @app.post("/api/plan")
 def plan(body:PlanRequest):
     with SessionLocal() as db:
         result=services.plan(db,body.medical_id,body.day,body.nights,body.preferred_hour,
-                             body.max_budget,body.accessible,body.hotel_id,body.transport_id,max_results=300)
+                             body.max_budget,body.accessible,body.hotel_id,body.transport_id,
+                             max_results=8,priority=body.priority)
         medical=db.get(Listing,body.medical_id)
         if not medical or not medical.provider_user_id or not google_calendar.configured():
             result["options"]=result["options"][:18]
@@ -215,6 +246,7 @@ def create_provider(body:ListingCreate,user:User=Depends(security.require("admin
     with SessionLocal.begin() as db:
         item=Listing(**body.model_dump(),active=True,demo=False,verified=False)
         db.add(item);db.flush()
+        discovery.upsert(db,item)
         db.add(Audit(user_id=user.id,action="provider_created",target_id=item.id))
         return {"id":item.id,"verified":False,"notice":"Ficha pendiente de verificación documental."}
 

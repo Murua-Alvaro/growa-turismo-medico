@@ -212,7 +212,10 @@ def list_bookings(user:User=Depends(security.require("admin","coordinator","prov
 def update_leg(leg_id:str,action:str,user:User=Depends(security.require("admin","coordinator","provider"))):
     if action not in ("confirmed","rejected"):raise HTTPException(422,"Acción no admitida.")
     with SessionLocal.begin() as db:
-        return services.change_leg(db,user,leg_id,action)
+        result=services.change_leg(db,user,leg_id,action)
+    if result.get("expired"):
+        raise HTTPException(409,"La solicitud venció y pasó a revisión; no se confirmó el servicio.")
+    return result
 
 @app.post("/api/bookings/{booking_id}/cancel",dependencies=[Depends(security.check_csrf)])
 def cancel(booking_id:str,user:User=Depends(security.require("admin","coordinator"))):

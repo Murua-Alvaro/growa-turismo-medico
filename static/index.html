@@ -3,14 +3,15 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="theme-color" content="#ffffff">
+ <meta name="theme-color" content="#fafaf7">
  <meta name="description" content="Growa Hospitalidad, un espacio para explorar y coordinar hospedaje, movilidad y servicios independientes en Mazatlán.">
  <title>Growa | Hospitalidad inteligente</title>
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
  <link href="/static/styles.css" rel="stylesheet">
+ <link href="/static/growa-editorial.css" rel="stylesheet">
  <script src="/static/agenda.js" defer></script>
  <script src="/static/app.js" defer></script>
  <script src="/static/community.js" defer></script>
@@ -44,17 +45,18 @@
  <div class="hero">
   <div class="hero-copy">
    <div class="hero-context"><span>GROWA HOSPITALITY</span><span>MAZATLÁN, MÉXICO</span></div>
-   <div class="eyebrow"><span class="eyebrow-dot"></span> Una nueva forma de coordinar hospitalidad</div>
-   <h1>Todo lo que necesitas, <em>en una misma estancia.</em></h1>
-   <p>Descubre hospedaje, especialistas independientes, transporte privado y servicios para acompañantes. Explora alternativas y construye un itinerario inteligente.</p>
-   <div class="hero-buttons"><button class="btn dark" data-go="explore">Explorar experiencias <span>↗</span></button><button class="btn light" data-go="planner">Organizar mi estancia</button></div>
+   <div class="eyebrow"><span class="eyebrow-dot"></span> Hospitalidad, cultura y experiencias en una ciudad</div>
+   <h1>Mazatlán comienza aquí. <em>Tu estancia, a tu manera.</em></h1>
+   <p>Encuentra alojamiento, movilidad y servicios independientes. Conoce la historia del puerto y construye tu visita con información clara, desde un solo lugar.</p>
+   <div class="hero-buttons"><button class="btn dark" data-go="explore">Explorar servicios <span>↗</span></button><button class="btn light" data-go="planner">Organizar mi estancia</button></div>
    <div class="hero-meta"><span><b>4 categorías</b> conectadas</span><span>◉ Mazatlán · Sinaloa</span><span>Coordinación, no atención clínica</span></div>
   </div>
   <div class="hero-photo" aria-label="Imagen de hospitalidad">
    <div class="hero-gradient"></div>
-   <div class="hero-badge"><span class="badge-icon">✦</span><div><strong>Estancias mejor conectadas</strong><small>Hospedaje · Transporte · Agenda</small></div></div>
+   
   </div>
  </div>
+ <div class="hero-photo-credit">Fotografía de Olas Altas: <a href="https://commons.wikimedia.org/wiki/File:Olas_Altas%2C_Mazatl%C3%A1n.jpg" target="_blank" rel="noopener noreferrer">David Adame · CC BY-SA 4.0</a>. Imagen recortada para esta portada.</div>
  <div class="search-dock">
   <div class="search-dock-title"><strong>¿Qué te gustaría encontrar?</strong><span>Una búsqueda, todas las opciones</span></div>
   <div class="search-bar">
@@ -83,11 +85,11 @@
   <div class="listing-grid featured-listings" id="featured"></div>
  </section>
  <section class="destination-feature">
-  <div class="destination-feature-copy"><span class="overline">MAZATLÁN MÁS ALLÁ DE LA ESTANCIA</span><h2>Conoce el puerto. Descubre sus historias. Encuentra tu comunidad.</h2><p>Un destino de arquitectura, gastronomía, encuentros y tradición. Explora el legado cultural de Mazatlán y participa en una red de personas que eligen conectarse.</p><div class="destination-feature-buttons"><button class="btn dark" data-go="mazatlan">Conocer Mazatlán ↗</button><button class="btn outline" data-go="community">Explorar comunidad</button></div></div>
+  <div class="destination-feature-copy"><span class="overline">CONOCE EL DESTINO</span><h2>Una ciudad que merece ser recorrida con tiempo.</h2><p>Desde las calles del Centro Histórico hasta los paseos junto al mar. Conoce sus lugares, descubre la cultura local y conecta con personas que quieran compartir la experiencia de visitar el puerto.</p><div class="destination-feature-buttons"><button class="btn dark" data-go="mazatlan">Conocer Mazatlán ↗</button><button class="btn outline" data-go="community">Explorar comunidad</button></div></div>
   <div class="destination-feature-art"><div class="destination-feature-glass"><span>DESDE 1820</span><strong>Un puerto abierto al mundo.</strong><small>Historia • Cultura • Hospitalidad</small></div></div>
  </section>
  <section class="experience-banner">
-  <div><span class="overline">AGENDA INTELIGENTE</span><h2>Una estancia es más que una reservación.</h2><p>Encuentra combinaciones compatibles de cita, hotel y movilidad. Un solo itinerario y confirmaciones transparentes por proveedor.</p><button class="btn light" data-go="planner">Crear itinerario ↗</button></div>
+  <div><span class="overline">PLANEA TU VIAJE</span><h2>Organizar una visita debería ser más sencillo.</h2><p>Compara servicios, revisa horarios declarados y prepara un itinerario que se ajuste a tus prioridades. Cada solicitud requiere confirmación del proveedor.</p><button class="btn light" data-go="planner">Crear itinerario ↗</button></div>
   <div class="journey-line"><div><span>01</span><strong>Elige la atención</strong><small>Servicio y horario</small></div><div><span>02</span><strong>Agrega la estancia</strong><small>Hotel y noches</small></div><div><span>03</span><strong>Coordina movilidad</strong><small>Traslado privado</small></div></div>
  </section>
 </section>
@@ -178,7 +180,7 @@
  <nav class="footer-links" aria-label="Explorar Growa"><h3>Explorar</h3><button data-go="home">Inicio</button><button data-go="explore">Alojamientos y servicios</button><button data-go="planner">Planificador inteligente</button><a href="/mazatlan">Descubre Mazatlán ↗</a></nav>
  <nav class="footer-links" aria-label="Comunidad y recursos"><h3>Conectar</h3><button data-go="community">Comunidad Growa</button><a href="https://lugares.inah.gob.mx/es/node/4835" target="_blank" rel="noopener noreferrer">Patrimonio histórico ↗</a><a href="https://sic.cultura.gob.mx/ficha.php?table=frpintangible&table_id=418" target="_blank" rel="noopener noreferrer">Cultura de Mazatlán ↗</a></nav>
  <div class="footer-reassurance"><h3>Transparencia</h3><p>Plataforma de demostración. No proporciona atención clínica ni confirma automáticamente servicios externos. No publiques datos de salud ni información sensible.</p><span>Proveedores y perfiles no verificados salvo indicación expresa.</span></div>
- <div class="footer-bottom"><span>© 2026 Growa Hospitality · Prototipo de innovación</span><span>Diseñado para una hospitalidad más conectada.</span></div>
+ <div class="footer-bottom"><span>© 2026 Growa Hospitality · Prototipo editorial</span><span>Fotografía de portada: <a href="https://commons.wikimedia.org/wiki/File:Olas_Altas%2C_Mazatl%C3%A1n.jpg" target="_blank" rel="noopener noreferrer">David Adame · CC BY-SA 4.0</a> · Destino: <a href="https://commons.wikimedia.org/wiki/File:Plazuela_Machado_Mazatl%C3%A1n.jpg" target="_blank" rel="noopener noreferrer">Gzzz · CC BY-SA 4.0</a></span></div>
 </footer>
 
 <div class="modal-backdrop" id="join-modal" role="dialog" aria-modal="true" aria-label="Crear una cuenta Growa" hidden><div class="modal-card join-card"><button class="close-modal" data-close="join-modal" aria-label="Cerrar">×</button><span class="overline">FORMA PARTE DE GROWA</span><h2>Crea tu cuenta.</h2><p>Un espacio para personas adultas interesadas en Mazatlán. Tu perfil es privado por defecto.</p><form id="community-register-form"><label>Nombre visible<input id="join-name" maxlength="55" minlength="2" autocomplete="nickname" required></label><label>Correo electrónico (no público)<input id="join-email" type="email" autocomplete="email" required></label><label>Contraseña (mínimo 14 caracteres)<input id="join-password" type="password" minlength="14" maxlength="160" autocomplete="new-password" required></label><label class="check-inline"><input id="join-adult" type="checkbox" required> Confirmo tener 18 años o más</label><label class="check-inline"><input id="join-terms" type="checkbox" required> Acepto usar la red sin difundir datos clínicos, personales de terceros ni spam</label><button class="btn dark full" type="submit">Crear cuenta</button><p class="form-error" id="join-error" role="alert"></p></form><small>En modo demo las cuentas y mensajes pueden desaparecer al reiniciarse el servicio.</small></div></div>

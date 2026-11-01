@@ -81,7 +81,7 @@
 <section class="view" id="view-explore">
  <div class="page-intro"><span class="overline">DIRECTORIO DE HOSPITALIDAD</span><h1>Explora con libertad.</h1><p>Opciones, detalles y ubicaciones en una sola búsqueda. Compara por intereses y necesidades específicas.</p></div>
  <div class="explore-toolbar">
-  <div class="search-input">⌕ <input id="catalog-q" placeholder="Buscar alojamiento, especialidad, movilidad..."></div>
+  <div class="search-input">⌕ <input id="catalog-q" placeholder="Ej. hotel accesible, traslado o consulta..." aria-label="Buscar servicios por nombre o características"></div>
   <select id="catalog-zone" aria-label="Zona"><option value="">Todas las zonas</option></select>
   <select id="catalog-price" aria-label="Precio máximo"><option value="0">Cualquier precio</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select>
   <button class="btn outline" id="toggle-map">◩ Ver mapa</button>
@@ -104,18 +104,23 @@
     <label>Servicio médico<select id="plan-medical" required></select></label>
     <div class="form-cols"><label>Fecha de consulta<input type="date" id="plan-day" required></label><label>Noches<input type="number" id="plan-nights" min="1" max="30" value="2" required></label></div>
     <div class="form-cols"><label>Hotel<select id="plan-hotel"></select></label><label>Transporte<select id="plan-transport"></select></label></div>
-    <div class="form-cols"><label>Hora preferida<select id="plan-hour"><option value="8">08:00</option><option value="9">09:00</option><option value="10" selected>10:00</option><option value="11">11:00</option><option value="12">12:00</option><option value="15">15:00</option></select></label><label>Presupuesto total (MXN)<input type="number" id="plan-budget" min="0" value="5500"></label></div>
+    <div class="form-cols"><label>Prioridad para recomendar<select id="plan-priority"><option value="balanced">Equilibrio general</option><option value="economy">Menor costo</option><option value="proximity">Menos distancia</option><option value="comfort">Mayor comodidad</option></select></label><label>Hora preferida<select id="plan-hour"><option value="8">08:00</option><option value="9">09:00</option><option value="10" selected>10:00</option><option value="11">11:00</option><option value="12">12:00</option><option value="15">15:00</option></select></label><label>Presupuesto total (MXN)<input type="number" id="plan-budget" min="0" value="5500"></label></div>
     <label class="check-inline"><input id="plan-access" type="checkbox"> Exigir accesibilidad en los tres servicios</label>
     <button class="btn dark full" type="submit">Buscar combinaciones <span>↗</span></button>
    </form>
   </div>
-  <div class="planner-results-box"><div class="step-label">PASO 02 — ALTERNATIVAS</div><h2>Itinerarios compatibles</h2><p id="planner-count">Selecciona tus preferencias para comparar.</p><div id="planner-results" class="planner-results"><div class="empty-state">✦<h3>Tu itinerario empieza aquí.</h3><p>Busca combinaciones de horarios, alojamiento y traslado.</p></div></div></div>
+  <div class="planner-results-box"><div class="step-label">PASO 02 — ALTERNATIVAS</div><div class="planner-head"><h2>Itinerarios compatibles</h2><button class="btn outline compact" id="calendar-open" type="button">▦ Ver agenda</button></div><p id="planner-count">Selecciona tus preferencias para comparar.</p><div class="intelligence-note"><span aria-hidden="true">✦</span><p>Recomendaciones explicables: el sistema compara restricciones, costos y proximidad. Todas las opciones necesitan confirmación del prestador.</p></div><div id="route-preview" class="route-preview" hidden role="status"></div><div id="planner-results" class="planner-results"><div class="empty-state">✦<h3>Tu itinerario empieza aquí.</h3><p>Busca combinaciones de horarios, alojamiento y traslado.</p></div></div></div>
  </div>
+ <section class="calendar-workspace" id="calendar-workspace" hidden aria-label="Vista de agenda">
+  <div class="calendar-heading"><div><span class="overline">AGENDA VISUAL</span><h2>Tu itinerario en el calendario</h2><p>Visualización de propuestas o solicitudes locales. No confirma citas ni reservaciones externas.</p></div><button class="btn outline compact" id="calendar-close" type="button">Cerrar agenda ×</button></div>
+  <div id="journey-calendar"></div>
+  <div id="calendar-fallback" class="calendar-fallback" hidden></div>
+ </section>
 </section>
 
 <section class="view" id="view-trips">
  <div class="page-intro"><span class="overline">COORDINACIÓN DE ITINERARIOS</span><h1>Reservaciones con claridad.</h1><p>Cada componente se confirma de forma independiente. Consulta estados, capacidad y acciones pendientes.</p></div>
- <div id="trip-list" class="trip-list"></div>
+ <div class="trip-tools"><button class="btn outline" id="trips-calendar-open" type="button">▦ Ver agenda de itinerarios</button></div><div id="trip-list" class="trip-list"></div>
 </section>
 
 <section class="view" id="view-partners">

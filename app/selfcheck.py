@@ -56,6 +56,15 @@ def run_demo_checks() -> dict[str, str]:
         assert (ROOT/"static"/item).exists(), "Missing dental asset: "+item
     dental_assets=(ROOT/"static"/"dental-photos.js").read_text(encoding="utf-8")
     assert "Odontología Marina Norte · DEMO" in dental_assets and "pexels.com" in dental_assets
+    dental_ui=(ROOT/"static"/"dental.js").read_text(encoding="utf-8")
+    dental_css=(ROOT/"static"/"dental.css").read_text(encoding="utf-8")
+    assert all(marker in dental_ui for marker in (
+        "market-layout", "result-action", "profile-gallery",
+        "comparison-section", "quote-preview", "data-compare"
+    )), "Dental directory components missing"
+    assert all(marker in dental_css for marker in (
+        ".market-layout", ".filter-sidebar", ".result-action", ".profile-gallery"
+    )), "Dental directory styles missing"
     with SessionLocal() as db:
         rows=list(db.scalars(dental.dental_query().limit(20)))
         assert len(rows)>=3, "Synthetic dentistry catalogue not initialized"

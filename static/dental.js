@@ -17,7 +17,21 @@ const pathClinic=()=>location.pathname.match(/^\/odontologia\/clinicas\/([a-f0-9
 const crumbs=(items)=>'<nav class="breadcrumb" aria-label="Ruta"><a href="/">Inicio</a><span>›</span><a href="/odontologia">Odontología</a>'+items.map(x=>'<span>›</span>'+(x.url?'<a href="'+x.url+'">'+safe(x.label)+'</a>':'<span aria-current="page">'+safe(x.label)+'</span>')).join('')+'</nav>';
 const introTitle='Odontología en Mazatlán';
 const demoLabel=(clinic)=>clinic.demo?'<span class="tag demo">PERFIL DEMO</span>':clinic.verified?'<span class="tag">Ficha verificada por Growa*</span>':'<span class="tag unverified">Documentación pendiente</span>';
-const photo=(clinic,classname='')=>safePhoto(clinic.image_url)?'<img class="'+classname+'" src="'+safe(safePhoto(clinic.image_url))+'" loading="lazy" alt="Fotografía ilustrativa del servicio; instalaciones no verificadas" referrerpolicy="no-referrer">':'';
+const photos=window.GROWA_DENTAL_PHOTOS||{};
+const demoImage=(clinic)=>clinic?.demo&&photos[clinic.name]?photos[clinic.name]:null;
+const photoFor=(clinic)=>demoImage(clinic)||{url:clinic.image_url||'',alt:clinic.demo?'Imagen ilustrativa de un consultorio, no del proveedor':'Imagen facilitada en el catálogo del prestador',photographer:'',source:''};
+const photo=(clinic,classname='',priority=false)=>{
+ const img=photoFor(clinic),url=safePhoto(img.url);
+ return url?'<img class="'+safe(classname)+'" src="'+safe(url)+'" '+(priority?'fetchpriority="high" loading="eager"':'loading="lazy"')+' decoding="async" alt="'+safe(img.alt)+'" referrerpolicy="no-referrer" data-illustration="'+(clinic.demo?'true':'false')+'">':'';
+};
+const photographer=(clinic)=>{
+ const img=demoImage(clinic);
+ return img?'<span class="photographer-caption">Fotografía ilustrativa: '+safe(img.photographer)+' · Pexels</span>':'';
+};
+const profileCredit=(clinic)=>{
+ const img=demoImage(clinic);
+ return img?'<p class="profile-photo-credit">Imagen de referencia, no de esta clínica. Foto: <a href="'+safe(img.source)+'" target="_blank" rel="noopener noreferrer">'+safe(img.photographer)+' · Pexels ↗</a></p>':'';
+};
 const badges=c=>[c.english?'Atención en inglés declarada':'',c.accessible?'Accesibilidad declarada':''].filter(Boolean).map(x=>'<span>'+safe(x)+'</span>').join('')||'<span>Características por confirmar</span>';
 const treatmentOptions=()=>state.treatments.map(t=>'<option value="'+t.id+'">'+safe(t.name)+'</option>').join('');
 const sectionHeading=(label,title,description)=>'<div class="section-heading"><div><span class="eyebrow">'+label+'</span><h2>'+title+'</h2><p>'+description+'</p></div></div>';
@@ -30,7 +44,7 @@ function treatmentGrid(){
 function clinicCard(c){
  const id=safe(c.id),checked=state.compare.has(c.id);
  return '<article class="clinic-card">'+
-  '<a href="/odontologia/clinicas/'+id+'" class="clinic-photo" aria-label="Abrir perfil de '+safe(c.name)+'">'+photo(c)+'<span class="photo-flag">'+(c.demo?'IMAGEN ILUSTRATIVA · DEMO':'IMAGEN DEL PERFIL')+'</span></a>'+
+  '<a href="/odontologia/clinicas/'+id+'" class="clinic-photo" aria-label="Abrir perfil de '+safe(c.name)+'">'+photo(c)+'<span class="photo-flag">'+(c.demo?'IMAGEN ILUSTRATIVA · DEMO':'IMAGEN DEL PERFIL')+'</span>'+photographer(c)+'</a>'+
   '<div class="clinic-content"><div class="clinic-kicker">'+demoLabel(c)+'<span>◉ '+safe(c.zone)+', Mazatlán</span></div>'+
   '<h3><a href="/odontologia/clinicas/'+id+'">'+safe(c.name)+'</a></h3>'+
   '<p class="clinic-desc">'+safe(c.description)+'</p>'+
@@ -46,7 +60,7 @@ function renderHome(){
  '<section class="hero"><div class="hero-copy"><span class="eyebrow">GROWA · ODONTOLOGÍA EN MAZATLÁN</span><h1>Encuentra opciones de <em>atención dental</em> para tu estancia.</h1>'+
  '<p>Explora información de prestadores, compara características y prepara tu visita. Clínicas, hospedaje y movilidad en una misma experiencia, con información clara sobre lo que está verificado y lo que aún no.</p>'+
  '<div class="hero-actions"><a class="primary-btn" href="#clinicas">Explorar clínicas <span>↗</span></a><a class="outline-btn" href="#tratamientos">Ver tratamientos</a></div></div>'+
- '<div class="hero-media"><img src="https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1400&q=85" alt="Fotografía ilustrativa de atención odontológica; no representa una clínica de Growa" referrerpolicy="no-referrer"><div class="hero-media-note"><strong>Tu visita, mejor informada.</strong><span>Atención · Hospedaje · Movilidad</span></div></div></section>'+
+ '<div class="hero-media"><img src="'+safe(safePhoto(photos.hero?.url)||'/static/img/dental-fallback.svg')+'" alt="'+safe(photos.hero?.alt||'Recepción de odontología, imagen ilustrativa')+'" fetchpriority="high" loading="eager" decoding="async" referrerpolicy="no-referrer"><div class="hero-media-note"><strong>Tu visita, mejor informada.</strong><span>Atención · Hospedaje · Movilidad</span></div><span class="hero-photo-credit">Fotografía ilustrativa · '+safe(photos.hero?.photographer||'Growa')+' · Pexels</span></div></section>'+
  '<div class="announcement"><span>ⓘ</span><p><strong>Etapa de demostración.</strong> Los perfiles DEMO son ejemplos ficticios y sus importes son ilustrativos. Growa no garantiza procedimientos, reseñas, acreditaciones, disponibilidad ni precios clínicos. No compartas información médica en el formulario.</p></div>'+
  '<nav class="sticky-links" aria-label="Contenido de odontología"><a href="#tratamientos">Tratamientos</a><a href="#clinicas">Clínicas</a><a href="#como-funciona">Cómo funciona</a><a href="#preguntas">Preguntas frecuentes</a></nav>'+
  '<section class="section" id="tratamientos">'+sectionHeading('EXPLORA POR PROCEDIMIENTO','¿Qué tipo de atención estás buscando?','Selecciona tu interés para preparar una solicitud. La disponibilidad y el procedimiento que ofrece cada clínica deben confirmarse directamente; las categorías no garantizan prestación.')+
@@ -175,9 +189,9 @@ function profilePage(clinic){
  '<div class="clinic-kicker">'+demoLabel(clinic)+'<span>◉ '+safe(clinic.zone)+'</span></div>'+
  '<p>'+safe(clinic.description)+'</p><div class="clinic-perks">'+badges(clinic)+'</div>'+
  '<div class="profile-hero-actions"><button class="primary-btn" type="button" data-quote="'+safe(clinic.id)+'">Preparar consulta ↗</button><a class="outline-btn" href="/odontologia#clinicas">Volver a las clínicas</a></div></div>'+
- '<div class="profile-photo">'+photo(clinic)+'</div></section>'+
+ '<div class="profile-image-column"><div class="profile-photo">'+photo(clinic,'',true)+'</div>'+profileCredit(clinic)+'</div></section>'+
  '<div class="announcement"><span>ⓘ</span><p><strong>'+safe(clinic.demo?'Proveedor ficticio DEMO.':'Información declarada por el proveedor.')+'</strong> '+safe(clinic.notice)+' No se debe interpretar este perfil como acreditación, recomendación clínica ni disponibilidad confirmada.</p></div>'+
- '<div class="profile-facts"><div><small>Zona</small><strong>'+safe(clinic.zone)+', Mazatlán</strong></div><div><small>Consulta de referencia</small><strong>'+money(clinic.consultation_reference_mxn)+'</strong></div><div><small>Idioma</small><strong>'+safe(clinic.english?'Inglés declarado · por confirmar':'Español / confirmar idiomas')+'</strong></div></div>'+
+ (clinic.demo?'<section class="dental-gallery" aria-label="Imágenes ilustrativas de odontología"><div class="dental-gallery-head"><span class="eyebrow">ESPACIOS Y ATENCIÓN DENTAL</span><h2>Una mirada a la experiencia odontológica</h2><p>Fotografías de referencia. No muestran instalaciones, personal ni servicios de este proveedor ficticio.</p></div><div class="dental-gallery-grid">'+[photos.consultation,photos.profile].map(x=>'<figure><img src="'+safe(safePhoto(x?.url)||'/static/img/dental-fallback.svg')+'" loading="lazy" decoding="async" alt="'+safe(x?.alt||'Imagen ilustrativa')+'" referrerpolicy="no-referrer"><figcaption>Imagen ilustrativa · <a target="_blank" rel="noopener noreferrer" href="'+safe(x?.source||'https://www.pexels.com/')+'">'+safe(x?.photographer||'Pexels')+' · Pexels</a></figcaption></figure>').join('')+'</div></section>':'')+'<div class="profile-facts"><div><small>Zona</small><strong>'+safe(clinic.zone)+', Mazatlán</strong></div><div><small>Consulta de referencia</small><strong>'+money(clinic.consultation_reference_mxn)+'</strong></div><div><small>Idioma</small><strong>'+safe(clinic.english?'Inglés declarado · por confirmar':'Español / confirmar idiomas')+'</strong></div></div>'+
  '<div class="profile-info"><article class="profile-body"><span class="eyebrow">INFORMACIÓN GENERAL</span><h2>Qué sabemos de este perfil</h2>'+
  '<p>'+safe(clinic.description)+'</p><p>Growa no publica especialistas, años de experiencia, tasas de éxito, cédulas, reseñas ni certificaciones si no hay documentación que permita comprobarlas.</p>'+
  '<h2>Tratamientos sobre los que puedes preguntar</h2><p>Estas son categorías generales para preparar una conversación con una clínica; <strong>no son servicios acreditados como disponibles en este perfil.</strong></p>'+
@@ -241,6 +255,12 @@ async function submitQuote(e){
  }catch(err){$('#quote-error').textContent=err.message}finally{$('#quote-submit').disabled=false}
 }
 function wire(){
+ document.addEventListener('error',event=>{
+  const img=event.target;
+  if(img?.tagName==='IMG'&&img.dataset.fallback!=='1'){
+   img.dataset.fallback='1';img.src='/static/img/dental-fallback.svg';
+  }
+ },true);
  const mobile=$('#mobile-nav-toggle'),menu=$('#mobile-nav');
  mobile.addEventListener('click',()=>{menu.hidden=!menu.hidden;mobile.setAttribute('aria-expanded',String(!menu.hidden));mobile.textContent=menu.hidden?'☰':'×'});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#quote-shell').hidden){closeQuote();return}if(e.key==='Escape'&&!menu.hidden){menu.hidden=true;mobile.setAttribute('aria-expanded','false');mobile.textContent='☰'}});

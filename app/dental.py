@@ -100,7 +100,7 @@ def clinics(q: str = Query("", max_length=90),
         else:
             items.sort(key=lambda x: x["name"])
         return {"items": items[:limit], "total": len(items),
-                "zones": sorted({x["zone"] for x in rows and [record(r) for r in rows]}),
+                "zones": sorted({r.zone for r in rows}),
                 "source": "Growa listings", "verified_count": sum(x["verified"] for x in items),
                 "notice": "Los importes son referencias de consulta o ejemplos, nunca precios de tratamientos. No se muestran calificaciones ni acreditaciones no comprobadas."}
 

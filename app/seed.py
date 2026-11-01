@@ -14,7 +14,7 @@ SAMPLES = [
  ("hotel","Residencias Marina · DEMO","Departamento temporal","Sábalo Country",23.272,-106.462,2200,1,0,2,"Espacio de estancia extendida con cocina y elevador sujeto a confirmación","https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=950&q=85"),
  ("medico","Consulta de medicina interna · DEMO","Medicina interna","Centro",23.215,-106.428,980,1,1,1,"Directorio de profesionales independientes; horarios ficticios para demostración","https://images.unsplash.com/photo-1551076805-e1869033e561?w=950&q=85"),
  ("medico","Consulta de rehabilitación · DEMO","Rehabilitación","Zona Dorada",23.241,-106.448,820,1,0,1,"Valoración por especialista independiente, con cita confirmada por prestador","https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=950&q=85"),
- ("medico","Consulta odontológica · DEMO","Odontología","Marina",23.27,-106.453,1250,1,1,1,"Agenda de ejemplo. No representa una clínica real ni un cupo verificable","https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=950&q=85"),
+ ("medico","Consulta odontológica · DEMO","Odontología","Marina",23.27,-106.453,1250,1,1,1,"Agenda de ejemplo. No representa una clínica real ni un cupo verificable","https://images.pexels.com/photos/6812444/pexels-photo-6812444.jpeg?auto=compress&cs=tinysrgb&w=1200"),
  ("transporte","Traslado ejecutivo · DEMO","Vehículo privado","Marina",23.262,-106.451,720,1,1,2,"Recogida en aeropuerto, hotel y consultorio; precio ilustrativo","https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=950&q=85"),
  ("transporte","Movilidad accesible · DEMO","Transporte adaptado","Centro",23.222,-106.430,890,1,0,1,"Unidad adaptada sujeta a certificación y validación del operador","https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=950&q=85"),
  ("negocio","Cocina Local · DEMO","Alimentación","Centro",23.211,-106.421,270,1,1,12,"Restauración y entregas compatibles con preferencias del visitante","https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=950&q=85"),
@@ -46,13 +46,13 @@ def seed_demo():
 DENTAL_DEMO = (
  ("Odontología Marina Norte · DEMO", "Marina", 23.270, -106.453, 1250, True, True,
   "Ficha ficticia para demostrar comparación de consultas; sin tratamientos, médicos ni certificaciones comprobados.",
-  "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1000&q=82"),
+  "https://images.pexels.com/photos/6812480/pexels-photo-6812480.jpeg?auto=compress&cs=tinysrgb&w=1200"),
  ("Estudio Dental Centro · DEMO", "Centro", 23.217, -106.423, 850, False, True,
   "Proveedor sintético de odontología general. Referencias de atención y precios exclusivamente ilustrativos.",
-  "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=1000&q=82"),
+  "https://images.pexels.com/photos/6809645/pexels-photo-6809645.jpeg?auto=compress&cs=tinysrgb&w=1200"),
  ("Espacio Dental Zona Dorada · DEMO", "Zona Dorada", 23.246, -106.452, 1050, True, False,
   "Ejemplo ficticio para explorar filtros de movilidad, zona y propuestas de estancia, sin disponibilidad validada.",
-  "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1000&q=82"),
+  "https://images.pexels.com/photos/4269265/pexels-photo-4269265.jpeg?auto=compress&cs=tinysrgb&w=1200"),
 )
 
 
@@ -60,7 +60,12 @@ def seed_dental_demo() -> None:
     # Adding demo entries is idempotent even when older synthetic listings exist.
     with SessionLocal.begin() as db:
         for name, zone, lat, lon, price, access, english, description, image_url in DENTAL_DEMO:
-            if db.scalar(select(Listing.id).where(Listing.name == name).limit(1)):
+            existing = db.scalar(select(Listing).where(Listing.name == name).limit(1))
+            if existing:
+                if existing.demo:
+                    # Refresh photography only on synthetic demonstration profiles.
+                    # Never alter photos submitted by real healthcare providers.
+                    existing.image_url = image_url
                 continue
             item = Listing(id=stable_dental_id(name),category="medico",name=name,subtype="Odontología",
                 zone=zone,latitude=lat,longitude=lon,price_mxn=price,
@@ -73,3 +78,10 @@ def seed_dental_demo() -> None:
                 if day.weekday()>=5:continue
                 for hhmm in ("09:00","11:00","15:30"):
                     db.add(Slot(listing_id=item.id,slot_date=day,time_hhmm=hhmm,source="synthetic"))
+        legacy = db.scalar(select(Listing).where(
+            Listing.name == "Consulta odontológica · DEMO").limit(1))
+        if legacy and legacy.demo:
+            legacy.image_url = (
+                "https://images.pexels.com/photos/6812444/"
+                "pexels-photo-6812444.jpeg?auto=compress&cs=tinysrgb&w=1200"
+            )

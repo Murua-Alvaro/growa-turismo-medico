@@ -21,16 +21,18 @@ def utility(item: dict, priority: str = "balanced") -> int:
         raise ValueError("Unknown priority")
     amount = max(0.0, float(item.get("price_mxn", 0)))
     km = max(0.0, float(item.get("distance_km", 0)))
-    hour = int(str(item.get("time", "10:00"))[:2])
+    hour, minute = map(int, str(item.get("time", "10:00")).split(":")[:2])
     desired = max(6, min(20, int(item.get("preferred_hour", 10))))
-    delay = abs(hour - desired)
+    delay = abs((hour * 60 + minute) - desired * 60) / 60
     if not all(isfinite(v) for v in (amount, km)):
         return -1000000
     weights = {
         "balanced": (0.17, 5.0, 7.0),
         "economy": (0.37, 2.0, 6.0),
-        "proximity": (0.10, 17.0, 6.0),
-        "comfort": (0.12, 10.0, 12.0),
+        # A proximity preference must actually prefer nearer providers even
+        # when their reference price is moderately higher.
+        "proximity": (0.03, 50.0, 8.0),
+        "comfort": (0.06, 26.0, 16.0),
     }
     wc, wd, wt = weights[priority]
     return round(10000 - amount * wc - km * wd - delay * wt)

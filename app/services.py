@@ -170,8 +170,10 @@ def booking_view(db:Session,booking:Booking,provider_id=None)->dict:
         legs=[l for l in legs if db.get(Listing,l.listing_id).provider_user_id==provider_id]
         if not legs:raise HTTPException(403,"No tienes acceso a este itinerario.")
     return {"id":booking.id,"guest_alias":booking.guest_alias,"status":booking.status,
-            "medical_id":booking.medical_id,"hotel_id":booking.hotel_id,
-            "transport_id":booking.transport_id,"price_mxn":booking.price_mxn,
+            "medical_id":None if provider_id else booking.medical_id,
+            "hotel_id":None if provider_id else booking.hotel_id,
+            "transport_id":None if provider_id else booking.transport_id,
+            "price_mxn":sum(l.price_mxn for l in legs) if provider_id else booking.price_mxn,
             "arrival_date":booking.arrival_date.isoformat(),"nights":booking.nights,
             "expires_at":booking.expires_at.isoformat(),"calendar_synced":bool(booking.calendar_event_id),
             "legs":[{"id":l.id,"kind":l.kind,"name":db.get(Listing,l.listing_id).name,
@@ -188,8 +190,12 @@ def change_leg(db:Session,actor:User,leg_id:str,new_status:str)->dict:
     if booking.status not in ("pending","requires_review"):
         raise HTTPException(409,"Itinerario no modificable.")
     if booking.expires_at<=now() and booking.status=="pending":
+        # Return a sentinel so the API can commit 'requires_review' before
+        # sending HTTP 409; raising in the transaction would roll it back.
         booking.status="requires_review"
-        raise HTTPException(409,"La solicitud venció. Requiere revisión antes de confirmar.")
+        db.add(Audit(user_id=actor.id,action="booking_expired",target_id=booking.id))
+        db.flush()
+        return {"expired":True,"status":"requires_review"}
     if leg.status!="pending":raise HTTPException(409,"El componente ya fue procesado.")
     leg.status=new_status;leg.confirmed_by=actor.id
     statuses=list(db.scalars(select(BookingLeg.status).where(BookingLeg.booking_id==booking.id,BookingLeg.id!=leg.id)))

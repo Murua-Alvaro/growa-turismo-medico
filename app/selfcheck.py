@@ -47,7 +47,13 @@ def run_demo_checks() -> dict[str, str]:
     visible=community.profile_public("synthetic",example)
     assert visible["name"]=="Visitante" and "email" not in visible
     assert community.signup_enabled() is True  # only invoked in nonproduction demo
+    from .db import ROOT
+    for item in ("mazatlan.html", "mazatlan.css", "mazatlan.js", "mazatlan-data.js"):
+        assert (ROOT/"static"/item).exists(), "Missing destination asset: "+item
+    destination=(ROOT/"static"/"mazatlan.js").read_text(encoding="utf-8")
+    assert "function places()" in destination and "function detail(p)" in destination
     result={"optimizer":engine,"semantic":"passed","catalog":"passed",
-            "geo_distance":"passed","routing":routing.status(),"community":"passed"}
+            "geo_distance":"passed","routing":routing.status(),
+            "community":"passed","destination":"passed"}
     LOG.info("GROWA_DEMO_SELFTEST_PASSED %s", result)
     return result

@@ -2,7 +2,7 @@
 'use strict';
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => Array.from(document.querySelectorAll(s));
-const state = {user:null, catalog:[], all:[], category:'all', plan:[], chosen:null, map:null, markers:[], mapVisible:false, routeMap:null, calendar:null, trips:[]};
+const state = {user:null, catalog:[], all:[], category:'all', plan:[], chosen:null, map:null, markers:[], mapVisible:false, routeMap:null, calendar:null, calendarEvents:[], trips:[]};
 const TYPES = {all:'Todas las opciones',hotel:'Hospedaje',medico:'Servicios médicos',transporte:'Transporte privado',negocio:'Negocios cercanos'};
 const STATUSES = {pending:'Pendiente',confirmed:'Confirmada',canceled:'Cancelada',rejected:'Rechazada',requires_review:'Revisión'};
 const money = n => new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN',maximumFractionDigits:0}).format(n||0);
@@ -301,6 +301,7 @@ async function openCalendar(index=null,fromTrips=false){
   events=plannedEvents(row);
   starting=row?.day||$('#plan-day').value;
  }
+ state.calendarEvents=events;
  const workspace=$('#calendar-workspace');
  workspace.hidden=false;
  $('#calendar-fallback').hidden=true;
@@ -316,6 +317,16 @@ async function openCalendar(index=null,fromTrips=false){
    }
    await window.growaCalendarPromise;
   }
+  // Spanish translations are published separately from the FullCalendar bundle.
+  if(!window.growaSpanishCalendarPromise){
+   window.growaSpanishCalendarPromise=new Promise(resolve=>{
+    const script=document.createElement('script');
+    script.src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.21/locales/es.global.min.js';
+    script.onload=()=>resolve(true);script.onerror=()=>resolve(false);
+    document.head.appendChild(script);
+   });
+  }
+  await window.growaSpanishCalendarPromise;
   if(state.calendar){state.calendar.destroy();state.calendar=null;}
   state.calendar=new FullCalendar.Calendar($('#journey-calendar'),{
    initialView:window.innerWidth<700?'listWeek':'timeGridWeek',
@@ -328,7 +339,8 @@ async function openCalendar(index=null,fromTrips=false){
  }catch(error){
   $('#journey-calendar').textContent='';
   const fallback=$('#calendar-fallback');fallback.hidden=false;
-  fallback.textContent='No fue posible cargar el calendario interactivo. '+events.length+' actividades disponibles en el itinerario.';
+  if(window.GrowaAgenda)window.GrowaAgenda.fallback(fallback,events);
+  else fallback.textContent='No fue posible cargar el calendario interactivo. '+events.length+' actividades disponibles en el itinerario.';
  }
  workspace.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -432,6 +444,10 @@ function bind(){
  let delay;$('#catalog-q').oninput=()=>{clearTimeout(delay);delay=setTimeout(searchCatalog,260);};
  $('#toggle-map').onclick=toggleMap;$('#plan-form').onsubmit=planning;$('#reserve-form').onsubmit=createBooking;
  $('#calendar-open').onclick=()=>openCalendar();
+ $('#calendar-export').onclick=()=>{
+  if(!window.GrowaAgenda?.download(state.calendarEvents))msg('No hay actividades para exportar.',true);
+  else msg('Archivo de calendario preparado. Verifica cada servicio antes de confirmar.');
+ };
  $('#trips-calendar-open').onclick=()=>openCalendar(null,true);
  $('#calendar-close').onclick=()=>{if(state.calendar){state.calendar.destroy();state.calendar=null;}$('#calendar-workspace').hidden=true;};
  $('#provider-form').onsubmit=providerCreate;$('#slots-form').onsubmit=slotsCreate;

@@ -27,6 +27,8 @@
   const mine=byId('community-myspace');
   if(join)join.textContent=user?'Editar mi perfil ↗':'Crear mi perfil ↗';
   if(mine)mine.textContent=user?'Mis conexiones':'Iniciar sesión';
+  const admin=byId('community-admin-panel');
+  if(admin)admin.hidden=!(user&&user.role==='admin');
  }
  async function onNavigate(){
   syncAuth();
@@ -191,6 +193,32 @@
    input.value='';loadMessages();
   }catch(e){msg(e.message,true);}
  }
+ async function withdraw(){
+  if(requiresSession())return;
+  if(!confirm('¿Retirar tu perfil público y eliminar los mensajes que enviaste? La acción no puede deshacerse.'))return;
+  try{const out=await req('/api/community/me/withdraw',{method:'POST'});
+   c.active=null;
+   notice(out.notice);
+   selectTab('directory');
+  }catch(e){msg(e.message,true);}
+ }
+ async function loadModeration(){
+  if(state.user?.role!=='admin')return;
+  const panel=byId('community-reports');
+  try{
+   const data=await req('/api/community/moderation/reports');
+   const rows=data.items||[];
+   panel.innerHTML=rows.length?rows.map(x=>'<article class="connection-card"><div><strong>Reporte '+h(x.reason)+'</strong><p>Perfil '+h(x.target_id.slice(0,10))+' · '+h(x.created_at.slice(0,10))+'</p></div><div class="connection-actions"><button data-hide-member="'+h(x.target_id)+'">Ocultar perfil</button></div></article>').join(''):
+    '<div class="community-empty"><h3>Sin reportes recientes.</h3><p>No existen incidencias pendientes en esta vista.</p></div>';
+   panel.querySelectorAll('[data-hide-member]').forEach(btn=>btn.onclick=()=>hideMember(btn.dataset.hideMember));
+  }catch(e){panel.textContent=e.message;}
+ }
+ async function hideMember(id){
+  if(!confirm('¿Ocultar el perfil señalado del directorio público?'))return;
+  try{const result=await req('/api/community/moderation/hide/'+encodeURIComponent(id),{method:'POST'});
+   notice(result.notice);loadModeration();loadMembers();
+  }catch(e){msg(e.message,true);}
+ }
  function init(){
   if(!byId('community-join'))return;
   byId('community-join').onclick=()=>state.user?selectTab('profile'):showModal('join-modal');
@@ -202,6 +230,8 @@
   byId('community-q').onkeydown=e=>{if(e.key==='Enter')loadMembers();};
   byId('community-kind').onchange=loadMembers;
   byId('community-refresh').onclick=()=>loadConnections(false);
+  byId('community-withdraw').onclick=withdraw;
+  byId('community-audit').onclick=loadModeration;
   document.querySelectorAll('[data-community-tab]').forEach(btn=>btn.onclick=()=>selectTab(btn.dataset.communityTab));
   syncAuth();
  }

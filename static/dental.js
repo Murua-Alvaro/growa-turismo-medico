@@ -88,6 +88,9 @@ async function refresh(){
   const r=await api('/api/dental/clinics?'+p.toString());
   if(serial!==state.request)return;
   state.visible=r.items||[];
+  for(const clinic of state.visible){
+   if(!state.all.some(existing=>existing.id===clinic.id))state.all.push(clinic);
+  }
   displayList();activePills();updateAddress(p);
  }catch(e){
   if(serial!==state.request)return;
@@ -100,8 +103,8 @@ function reset(){
  $('#clinic-access').checked=false;$('#clinic-verified').checked=false;$('#clinic-sort').value='name';
  refresh();
 }
-function selectInterest(id){
- state.interest=state.interest===id?'':id;
+function selectInterest(id,toggle=true){
+ state.interest=toggle&&state.interest===id?'':id;
  $$('.procedure-item').forEach(b=>{const active=b.dataset.procedure===state.interest;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
  const title=$('#selected-procedure');if(title)title.textContent=state.interest?'Interés: '+categoryName(state.interest):'Selecciona un tratamiento de interés';
  const p=$('#procedure-disclosure');if(p)p.hidden=!state.interest;
@@ -294,7 +297,7 @@ function setup(){
  root.addEventListener('change',e=>{
   const el=e.target;
   if(el.hasAttribute('data-compare')){toggleCompare(el.dataset.compare,el.checked);return}
-  if(el.id==='procedure-select'){selectInterest(el.value);return}
+  if(el.id==='procedure-select'){selectInterest(el.value,false);return}
   if(['clinic-zone','clinic-english','clinic-access','clinic-verified','clinic-sort'].includes(el.id))refresh();
  });
  root.addEventListener('input',e=>{

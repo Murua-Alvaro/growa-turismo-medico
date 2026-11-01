@@ -34,10 +34,17 @@ function hideModal(id){
  if(!$$('.modal-backdrop').some(el=>!el.hidden))returnFocus?.focus?.();
 }
 function canOperate(){return state.user && ['admin','coordinator'].includes(state.user.role);}
-function go(view){
+const WORKSPACE_PATHS={home:'/',explore:'/explorar',planner:'/planificar',community:'/comunidad',trips:'/itinerarios',partners:'/aliados'};
+const PATH_WORKSPACES=Object.fromEntries(Object.entries(WORKSPACE_PATHS).map(([k,v])=>[v,k]));
+function go(view,writeHistory=true){
+ if(view==='mazatlan'){window.location.assign('/mazatlan');return;}
+ if(!WORKSPACE_PATHS[view])return;
  if(['trips','partners'].includes(view) && (!state.user || !['admin','coordinator','provider'].includes(state.user.role))){
   if(!state.user)showModal('login-modal');else msg('Esta sección es exclusiva de coordinación.',true);
   return;
+ }
+ if(writeHistory&&window.location.pathname!==WORKSPACE_PATHS[view]){
+  window.history.pushState({view},'',WORKSPACE_PATHS[view]);
  }
  document.querySelector('.header')?.classList.remove('nav-open');
  const toggle=$('#mobile-menu');
@@ -483,8 +490,19 @@ function bind(){
 }
 async function startup(){
  bind();
+ // Browser Back/Forward and direct-link refresh resolve to the same workspace.
+ window.addEventListener('popstate',()=>{
+  const target=PATH_WORKSPACES[window.location.pathname]||'home';
+  go(target,false);
+ });
  try{state.user=await req('/api/me');setAccount();}catch(e){}
  try{await loadAll();await searchCatalog();}catch(e){msg('No fue posible cargar el catálogo: '+e.message,true);}
+ const requestedCategory=new URLSearchParams(location.search).get('categoria');
+ if(requestedCategory&&['hotel','medico','transporte','negocio'].includes(requestedCategory)){
+  state.category=requestedCategory;categories();
+ }
+ const initialView=PATH_WORKSPACES[window.location.pathname]||'home';
+ if(initialView!=='home')go(initialView,false);
  if(new URLSearchParams(location.search).has('calendar')){msg('Se recibió el retorno de Google Calendar.');history.replaceState(null,'',location.pathname);}
 }
 startup();

@@ -96,3 +96,57 @@ def test_missing_route_and_category_errors():
     with TestClient(app) as client:
         assert client.get("/api/route",params={"from_id":"1234567890","to_id":"9999999999"}).status_code==404
         assert client.get("/api/discover",params={"query":"x","category":"bad"}).status_code==422
+
+
+def test_expired_reservation_becomes_review_before_409():
+    from datetime import timedelta
+    from app.db import Booking, BookingLeg, now
+    with TestClient(app) as client:
+        login=client.post("/api/login",json={"email":"admin@example.test",
+                                 "password":"CiOnlyStrongSecret-2026-NotProduction"})
+        assert login.status_code==200
+        headers={"x-csrf-token":client.cookies.get("growa_csrf")}
+        with SessionLocal() as db:
+            med=db.scalar(select(Slot).order_by(Slot.slot_date,Slot.time_hhmm))
+        response=client.post("/api/plan",json={"medical_id":med.listing_id,
+                                 "day":med.slot_date.isoformat(),"nights":2,"max_budget":100000})
+        assert response.status_code==200
+        option=response.json()["options"][0]
+        booking=client.post("/api/bookings",json={"slot_id":option["slot_id"],
+           "hotel_id":option["hotel_id"],"transport_id":option["transport_id"],
+           "nights":2,"guests":1,"guest_alias":"Test vencimiento",
+           "idempotency_key":"expiry-"+str(os.getpid())},headers=headers)
+        assert booking.status_code==201,booking.text
+        booking_id=booking.json()["id"]
+        leg_id=booking.json()["legs"][0]["id"]
+        with SessionLocal.begin() as db:
+            row=db.get(Booking,booking_id)
+            row.expires_at=now()-timedelta(minutes=1)
+        rejection=client.patch("/api/legs/"+leg_id+"/confirmed",headers=headers)
+        assert rejection.status_code==409
+        with SessionLocal() as db:
+            persisted=db.get(Booking,booking_id)
+            assert persisted.status=="requires_review"
+        client.post("/api/bookings/"+booking_id+"/cancel",headers=headers)
+
+
+def test_valhalla_adapter_parses_mocked_road_route(monkeypatch):
+    class FakeResponse:
+        def raise_for_status(self):pass
+        def json(self):return {"trip":{"summary":{"length":7.3,"time":780},
+                                     "legs":[{"shape":""}]}}
+    class Client:
+        def __init__(self,*args,**kwargs):pass
+        def __enter__(self):return self
+        def __exit__(self,*args):pass
+        def get(self,*args,**kwargs):
+            assert kwargs["headers"]["X-Client-Id"]
+            return FakeResponse()
+    monkeypatch.setenv("ROUTING_BASE_URL","https://routing.example.test")
+    monkeypatch.setattr(routing.httpx,"Client",Client)
+    a=SimpleNamespace(latitude=23.252,longitude=-106.441)
+    b=SimpleNamespace(latitude=23.241,longitude=-106.410)
+    result=routing.route_between(a,b)
+    assert result["mode"]=="valhalla"
+    assert result["distance_km"]==7.3
+    assert result["minutes"]==13

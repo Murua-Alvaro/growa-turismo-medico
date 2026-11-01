@@ -220,3 +220,46 @@ body.modal-open{overflow:hidden}
  .footer{padding:30px 15px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* Intelligence modules: compact additions that preserve v0.5 visual language */
+.planner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.planner-head h2{margin:6px 0}
+.btn.compact{padding:10px 13px;font-size:11px;border-radius:9px;gap:7px}
+.intelligence-note{display:flex;gap:11px;align-items:flex-start;background:#f5f8f3;border:1px solid #e4ede2;border-radius:12px;padding:13px 15px;margin:15px 0}
+.intelligence-note span{font-size:17px;color:#438067}
+.intelligence-note p{font-size:11px;line-height:1.55;color:#6c8070;margin:0}
+.option-reason{margin:-2px 0 15px;padding:10px 11px;border-left:3px solid #87af96;background:#f6faf5;border-radius:0 8px 8px 0;color:#526a5a;font-size:11px;line-height:1.55}
+.option-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.option-foot{align-items:center;flex-wrap:wrap}
+.option-foot>div:first-child{min-width:160px}
+.route-preview{padding:21px;margin:18px 0;border:1px solid #dce8df;background:#f8faf7;border-radius:16px;scroll-margin-top:110px}
+.route-preview-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.route-preview-head h3{font:800 16px/1.4 Manrope,sans-serif;margin:9px 0 14px}
+.route-preview-close{border:1px solid #dae4da;border-radius:50%;width:30px;height:30px;background:white;font-size:19px;color:#567665}
+.route-metrics{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.route-metrics strong{font:800 17px Manrope,sans-serif}
+.route-metrics span{padding:5px 10px;border-radius:8px;background:#e8f1e9;font-size:11px;font-weight:700;color:#54775e}
+.route-disclaimer{margin:12px 0 15px;font-size:11px!important;line-height:1.5;color:#819185}
+.route-map-canvas{height:260px;border:1px solid #e3eae0;border-radius:12px;background:#e9efea;overflow:hidden;font-size:11px;color:#627365}
+.calendar-workspace{margin:26px 0 8px;border:1px solid #e5ebe4;border-radius:20px;padding:28px 30px;background:#fff;box-shadow:var(--shadow-soft);scroll-margin-top:108px}
+.calendar-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px}
+.calendar-heading h2{font:800 23px/1.25 Manrope,sans-serif;letter-spacing:-.7px;margin:7px 0}
+.calendar-heading p{margin:0;color:#809085;font-size:12px;line-height:1.6}
+.calendar-fallback{border:1px dashed #d7e3d8;border-radius:10px;padding:20px;font-size:12px;color:#67816d;margin-top:15px}
+#journey-calendar{font-size:12px;--fc-border-color:#e5ede4;--fc-button-bg-color:#254b3d;--fc-button-border-color:#254b3d;--fc-button-hover-bg-color:#163a2d;--fc-button-active-bg-color:#163a2d;--fc-event-bg-color:#43846a;--fc-event-border-color:#43846a;--fc-today-bg-color:#f3f8f3}
+#journey-calendar .fc-toolbar-title{font-family:Manrope,sans-serif;font-size:19px;letter-spacing:-.4px}
+#journey-calendar .fc .fc-button{border-radius:7px;font-size:11px;padding:7px 11px}
+#journey-calendar .fc-col-header-cell-cushion,#journey-calendar .fc-daygrid-day-number{color:#3b5949}
+.trip-tools{display:flex;justify-content:flex-end;margin:0 0 20px}
+@media(max-width:950px){.option-actions{justify-content:flex-start}.calendar-workspace{padding:20px}}
+@media(max-width:700px){
+ .option-foot{align-items:stretch;flex-direction:column}
+ .option-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .option-actions .btn:last-child{grid-column:1/-1}
+ .route-map-canvas{height:210px}
+ .calendar-heading{flex-direction:column}
+ .calendar-workspace{padding:15px 12px;border-radius:12px}
+ #journey-calendar .fc-toolbar{align-items:start;gap:12px;flex-direction:column}
+ #journey-calendar .fc-toolbar-title{font-size:17px}
+}

@@ -501,6 +501,10 @@ async function startup(){
  if(requestedCategory&&['hotel','medico','transporte','negocio'].includes(requestedCategory)){
   state.category=requestedCategory;categories();
  }
+ const requestedProvider=new URLSearchParams(location.search).get('prestador');
+ if(requestedProvider && state.all.some(item=>item.id===requestedProvider && item.category==='medico')){
+  $('#plan-medical').value=requestedProvider;
+ }
  const initialView=PATH_WORKSPACES[window.location.pathname]||'home';
  if(initialView!=='home')go(initialView,false);
  if(new URLSearchParams(location.search).has('calendar')){msg('Se recibió el retorno de Google Calendar.');history.replaceState(null,'',location.pathname);}

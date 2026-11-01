@@ -14,6 +14,7 @@
  <script src="/static/app.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#view-home">Saltar al contenido</a>
 <header class="header">
  <div class="header-inner">
   <button class="brand" data-go="home" aria-label="Growa, inicio"><span class="brand-symbol">G</span><span>growa<small>HOSPITALITY</small></span></button>
@@ -32,6 +33,7 @@
 <section class="view active" id="view-home">
  <div class="hero">
   <div class="hero-copy">
+   <div class="hero-context"><span>GROWA HOSPITALITY</span><span>MAZATLÁN, MÉXICO</span></div>
    <div class="eyebrow"><span class="eyebrow-dot"></span> Una nueva forma de coordinar hospitalidad</div>
    <h1>Todo lo que necesitas, <em>en una misma estancia.</em></h1>
    <p>Descubre hospedaje, especialistas independientes, transporte privado y servicios para acompañantes. Explora alternativas y construye un itinerario inteligente.</p>
@@ -51,6 +53,11 @@
    <label><span>Presupuesto</span><select id="quick-price"><option value="0">Flexible</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select></label>
    <button class="btn search-submit" id="quick-submit">Buscar <span>→</span></button>
   </div>
+ </div>
+ <div class="assurance-strip" aria-label="Cómo te ayuda Growa">
+  <div class="assurance-item"><span class="assurance-icon" aria-hidden="true">01</span><div><strong>Descubre opciones</strong><p>Hospedaje, movilidad y profesionales en una misma plataforma.</p></div></div>
+  <div class="assurance-item"><span class="assurance-icon" aria-hidden="true">02</span><div><strong>Compara con claridad</strong><p>Consulta precios de referencia y condiciones declaradas.</p></div></div>
+  <div class="assurance-item"><span class="assurance-icon" aria-hidden="true">03</span><div><strong>Diseña tu itinerario</strong><p>Coordina alternativas sujetas a confirmación de cada proveedor.</p></div></div>
  </div>
  <section class="content-section">
   <div class="section-head"><div><span class="overline">EXPLORA A TU MANERA</span><h2>Cada servicio, en un mismo lugar.</h2><p>Explora proveedores y organiza una experiencia completa.</p></div></div>
@@ -81,7 +88,7 @@
  </div>
  <div class="category-pills" id="category-pills"></div>
  <div class="filter-row"><label><input id="filter-access" type="checkbox"> Accesibilidad</label><label><input id="filter-english" type="checkbox"> Atención en inglés</label><label><input id="filter-verified" type="checkbox"> Verificados</label><button class="simple-link" id="clear-filters">Limpiar filtros</button></div>
- <div class="results-heading"><div><h2 id="results-title">Opciones para tu estancia</h2><p id="results-count">Cargando oferta...</p></div><span class="demo-hint">Las fichas demo no representan empresas reales.</span></div>
+ <div class="results-heading"><div><h2 id="results-title">Opciones para tu estancia</h2><p id="results-count" role="status" aria-live="polite">Cargando oferta...</p></div><div class="results-tools"><span class="demo-hint">Las fichas demo no representan empresas reales.</span><label class="sort-control">Ordenar por <select id="catalog-sort" aria-label="Ordenar resultados"><option value="default">Orden del catálogo</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre A–Z</option></select></label></div></div>
  <div class="explore-layout">
   <div class="listing-grid" id="results"></div>
   <div id="map-panel" class="map-panel" hidden><div id="map"></div><small>Ubicaciones ilustrativas en demostración.</small></div>
@@ -92,7 +99,7 @@
  <div class="page-intro"><span class="overline">COORDINACIÓN INTEGRAL</span><h1>Tu agenda, con todo conectado.</h1><p>Combinamos horarios declarados, alojamientos y transportes en alternativas viables. No son reservaciones externas confirmadas.</p></div>
  <div class="planner-grid">
   <div class="planner-form-box">
-   <div class="step-label">PASO 01 — PREFEFERENCIAS</div><h2>Organiza tu estancia</h2><p>Personaliza tu búsqueda. El sistema comprueba capacidad local y calcula opciones.</p>
+   <div class="step-label">PASO 01 — PREFERENCIAS</div><h2>Organiza tu estancia</h2><p>Personaliza tu búsqueda. El sistema comprueba capacidad local y calcula opciones.</p>
    <form id="plan-form">
     <label>Servicio médico<select id="plan-medical" required></select></label>
     <div class="form-cols"><label>Fecha de consulta<input type="date" id="plan-day" required></label><label>Noches<input type="number" id="plan-nights" min="1" max="30" value="2" required></label></div>
@@ -138,10 +145,10 @@
 
 <footer class="footer"><div><strong>GROWA</strong><span>Hospitality Intelligence</span></div><p>Prototipo de coordinación logística · No presta servicios médicos · Datos sintéticos identificados</p><span>MAZATLÁN · MÉXICO</span></footer>
 
-<div class="modal-backdrop" id="detail-modal" hidden><div class="detail-modal-card"><button class="close-modal" data-close="detail-modal" aria-label="Cerrar">×</button><div id="detail-content"></div></div></div>
+<div class="modal-backdrop" id="detail-modal" role="dialog" aria-modal="true" aria-label="Detalles del servicio" hidden><div class="detail-modal-card"><button class="close-modal" data-close="detail-modal" aria-label="Cerrar">×</button><div id="detail-content"></div></div></div>
 
-<div class="modal-backdrop" id="login-modal" hidden><div class="modal-card"><button class="close-modal" data-close="login-modal" aria-label="Cerrar">×</button><span class="overline">ACCESO A COORDINACIÓN</span><h2>Bienvenido a Growa.</h2><p>Inicia sesión para gestionar solicitudes y administrar proveedores.</p><form id="login-form"><label>Correo<input type="email" id="login-email" autocomplete="username" required></label><label>Contraseña<input type="password" id="login-password" autocomplete="current-password" required></label><button class="btn dark full">Acceder</button><p class="form-error" id="login-error"></p></form></div></div>
+<div class="modal-backdrop" id="login-modal" role="dialog" aria-modal="true" aria-label="Acceso de usuario" hidden><div class="modal-card"><button class="close-modal" data-close="login-modal" aria-label="Cerrar">×</button><span class="overline">ACCESO A COORDINACIÓN</span><h2>Bienvenido a Growa.</h2><p>Inicia sesión para gestionar solicitudes y administrar proveedores.</p><form id="login-form"><label>Correo<input type="email" id="login-email" autocomplete="username" required></label><label>Contraseña<input type="password" id="login-password" autocomplete="current-password" required></label><button class="btn dark full">Acceder</button><p class="form-error" id="login-error"></p></form></div></div>
 
-<div class="modal-backdrop" id="reserve-modal" hidden><div class="modal-card"><button class="close-modal" data-close="reserve-modal" aria-label="Cerrar">×</button><span class="overline">SOLICITUD DE COORDINACIÓN</span><h2>Solicitar itinerario</h2><p id="reserve-summary">Esta solicitud no confirma por sí sola servicios externos.</p><form id="reserve-form"><label>Alias del visitante (sin datos clínicos)<input id="reserve-alias" maxlength="90" minlength="2" required placeholder="Visitante 001"></label><label>Personas<input type="number" id="reserve-guests" min="1" max="12" value="1"></label><button class="btn dark full">Crear solicitud</button></form></div></div>
+<div class="modal-backdrop" id="reserve-modal" role="dialog" aria-modal="true" aria-label="Solicitud de itinerario" hidden><div class="modal-card"><button class="close-modal" data-close="reserve-modal" aria-label="Cerrar">×</button><span class="overline">SOLICITUD DE COORDINACIÓN</span><h2>Solicitar itinerario</h2><p id="reserve-summary">Esta solicitud no confirma por sí sola servicios externos.</p><form id="reserve-form"><label>Alias del visitante (sin datos clínicos)<input id="reserve-alias" maxlength="90" minlength="2" required placeholder="Visitante 001"></label><label>Personas<input type="number" id="reserve-guests" min="1" max="12" value="1"></label><button class="btn dark full">Crear solicitud</button></form></div></div>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body></html>

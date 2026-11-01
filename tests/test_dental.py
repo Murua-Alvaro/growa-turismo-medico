@@ -19,7 +19,7 @@ def test_dentistry_page_and_assets_are_public():
         assert 'id="quote-form"' in home.text
         assert "/static/dental.js" in home.text
         assert "/static/dental.css" in home.text
-        for path in ("/static/dental.js","/static/dental.css"):
+        for path in ("/static/dental.js","/static/dental.css","/static/dental-photos.js","/static/img/dental-fallback.svg"):
             assert client.get(path).status_code==200
 
 
@@ -71,3 +71,22 @@ def test_individual_dental_pages_and_anonymous_quote_preview():
         assert bad.status_code==422
         assert client.get("/api/dental/clinics/"+"f"*32).status_code==404
         assert client.get("/odontologia/clinicas/"+"f"*32).status_code==404
+
+def test_dental_photo_sources_are_identified_as_illustrative():
+    with TestClient(app) as client:
+        html=client.get("/odontologia").text
+        assert "Pexels" in html
+        assert "no corresponden a las clínicas ficticias" in html
+        catalog=client.get("/api/dental/clinics").json()["items"]
+        demo=[x for x in catalog if x["demo"]]
+        assert demo
+        # Illustrative catalog photos are not evidence of real clinic identity.
+        assert all(x["verified"] is False for x in demo)
+        assert all(x["reviews"] is None for x in demo)
+        photo_js=client.get("/static/dental-photos.js").text
+        for name in ("Odontología Marina Norte · DEMO",
+                     "Estudio Dental Centro · DEMO",
+                     "Espacio Dental Zona Dorada · DEMO"):
+            assert name in photo_js
+        assert "Pavel Danilyuk" in photo_js
+        assert "Cedric Fauntleroy" in photo_js

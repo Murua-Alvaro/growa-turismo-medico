@@ -52,8 +52,10 @@ def run_demo_checks() -> dict[str, str]:
         assert (ROOT/"static"/item).exists(), "Missing destination asset: "+item
     destination=(ROOT/"static"/"mazatlan.js").read_text(encoding="utf-8")
     assert "function places()" in destination and "function detail(p)" in destination
-    for item in ("dental.html","dental.css","dental.js"):
+    for item in ("dental.html","dental.css","dental.js","dental-photos.js","img/dental-fallback.svg"):
         assert (ROOT/"static"/item).exists(), "Missing dental asset: "+item
+    dental_assets=(ROOT/"static"/"dental-photos.js").read_text(encoding="utf-8")
+    assert "Odontología Marina Norte · DEMO" in dental_assets and "pexels.com" in dental_assets
     with SessionLocal() as db:
         rows=list(db.scalars(dental.dental_query().limit(20)))
         assert len(rows)>=3, "Synthetic dentistry catalogue not initialized"

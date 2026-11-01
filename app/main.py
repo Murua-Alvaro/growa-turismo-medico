@@ -147,38 +147,44 @@ class PlanRequest(BaseModel):
 @app.post("/api/plan")
 def plan(body:PlanRequest):
     with SessionLocal() as db:
+        medical=db.get(Listing,body.medical_id)
+        calendar_linked=bool(medical and medical.provider_user_id
+                             and google_calendar.configured()
+                             and google_calendar.token_for(medical.provider_user_id))
+        blocked_times=set()
+        if calendar_linked:
+            # Calendar exclusion must happen BEFORE the optimizer ranks a
+            # shortlist. Filtering only the winners can hide viable slots.
+            services.validate_day(body.day)
+            tz=ZoneInfo("America/Mazatlan")
+            begin=datetime.combine(body.day,time(0,0)).replace(tzinfo=tz)
+            end=begin+timedelta(days=1)
+            try:
+                busy=google_calendar.freebusy(medical.provider_user_id,begin,end)
+                intervals=[(datetime.fromisoformat(row["start"].replace("Z","+00:00")),
+                            datetime.fromisoformat(row["end"].replace("Z","+00:00"))) for row in busy]
+                slots=list(db.scalars(select(Slot).where(Slot.listing_id==medical.id,
+                           Slot.slot_date==body.day,Slot.enabled.is_(True))))
+                for slot in slots:
+                    start=datetime.combine(body.day,time.fromisoformat(slot.time_hhmm)).replace(tzinfo=tz)
+                    finish=start+timedelta(hours=1)
+                    if any(left<finish and right>start for left,right in intervals):
+                        blocked_times.add(slot.time_hhmm)
+            except (HTTPException,KeyError,ValueError,TypeError,AttributeError):
+                return {"options":[],"total_feasible":0,
+                        "notice":"No se pudo comprobar la agenda Google autorizada. No se ofrecen horarios sin verificar.",
+                        "optimization":{"engine":"unavailable","calendar_filter":"failed_closed"}}
         result=services.plan(db,body.medical_id,body.day,body.nights,body.preferred_hour,
                              body.max_budget,body.accessible,body.hotel_id,body.transport_id,
-                             max_results=8,priority=body.priority)
-        medical=db.get(Listing,body.medical_id)
-        if not medical or not medical.provider_user_id or not google_calendar.configured():
-            result["options"]=result["options"][:18]
-            return result
-        if not google_calendar.token_for(medical.provider_user_id):
-            result["options"]=result["options"][:18]
-            return result
-        tz=ZoneInfo("America/Mazatlan")
-        begin=datetime.combine(body.day,time(0,0)).replace(tzinfo=tz)
-        end=begin+timedelta(days=1)
-        try:
-            busy=google_calendar.freebusy(medical.provider_user_id,begin,end)
-        except HTTPException:
-            # Fail closed: never advertise availability when the linked provider calendar fails.
-            return {"options":[],"total_feasible":0,
-                    "notice":"No se pudo verificar la agenda Google del prestador. Reintenta o solicita confirmación directa."}
-        filtered=[]
-        for option in result["options"]:
-            start=datetime.combine(body.day,time.fromisoformat(option["time"])).replace(tzinfo=tz)
-            finish=start+timedelta(hours=1)
-            overlap=any(datetime.fromisoformat(x["start"].replace("Z","+00:00"))<finish and
-                        datetime.fromisoformat(x["end"].replace("Z","+00:00"))>start for x in busy)
-            if not overlap:
-                option["source"]="declarada + Google FreeBusy"
-                filtered.append(option)
-        result["options"]=filtered[:18]
-        result["total_feasible"]=len(filtered)
-        result["notice"]="Horarios del proveedor declarados y filtrados por ocupación del calendario autorizado. Requieren confirmación del prestador."
+                             max_results=8,priority=body.priority,blocked_times=blocked_times)
+        if calendar_linked:
+            for option in result["options"]:
+                option["source"]="declarada + Google FreeBusy autorizado"
+            result["optimization"]["calendar_filter"]="authorized_freebusy"
+            result["optimization"]["calendar_conflicts"]=len(blocked_times)
+            result["notice"]="Alternativas filtradas por calendario autorizado antes de optimizar; requieren confirmación externa."
         return result
+
 
 class BookingCreate(BaseModel):
     slot_id:str

@@ -31,6 +31,8 @@ async def lifespan(app:FastAPI):
         if PRODUCTION:raise RuntimeError("DEMO_SEED is not permitted in production.")
         from .seed import seed_demo
         seed_demo()
+        from .selfcheck import run_demo_checks
+        run_demo_checks()
     if discovery.prepare_index():
         with SessionLocal.begin() as db:
             discovery.sync_index(db)

@@ -150,3 +150,36 @@ def test_valhalla_adapter_parses_mocked_road_route(monkeypatch):
     assert result["mode"]=="valhalla"
     assert result["distance_km"]==7.3
     assert result["minutes"]==13
+
+
+def test_calendar_filter_applied_before_optimization(monkeypatch):
+    """Authorized Google conflicts must be excluded before candidate ranking."""
+    from app import google_calendar
+    from app.db import User
+    monkeypatch.setattr(google_calendar, "configured", lambda: True)
+    monkeypatch.setattr(google_calendar, "token_for", lambda user_id: "authorized-demo-token")
+    with TestClient(app) as client:
+        with SessionLocal.begin() as db:
+            slot=db.scalar(select(Slot).order_by(Slot.slot_date,Slot.time_hhmm))
+            user=db.scalar(select(User).where(User.role=="admin"))
+            medical=db.get(Listing,slot.listing_id)
+            medical.provider_user_id=user.id
+            listing_id=medical.id
+            day=slot.slot_date.isoformat()
+        def fake_busy(user_id, begin, end):
+            assert user_id
+            return [{"start":day+"T08:00:00-07:00", "end":day+"T15:10:00-07:00"}]
+        monkeypatch.setattr(google_calendar, "freebusy", fake_busy)
+        try:
+            reply=client.post("/api/plan",json={"medical_id":listing_id,
+                               "day":day,"nights":2,"max_budget":100000,
+                               "priority":"proximity"})
+            assert reply.status_code==200,reply.text
+            result=reply.json()
+            assert result["optimization"]["calendar_filter"]=="authorized_freebusy"
+            assert result["optimization"]["calendar_conflicts"]>=3
+            assert result["options"],"Remaining afternoon slot should still be recommended."
+            assert all(x["time"]=="15:30" for x in result["options"])
+        finally:
+            with SessionLocal.begin() as db:
+                db.get(Listing,listing_id).provider_user_id=None

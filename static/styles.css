@@ -263,3 +263,11 @@ body.modal-open{overflow:hidden}
  #journey-calendar .fc-toolbar{align-items:start;gap:12px;flex-direction:column}
  #journey-calendar .fc-toolbar-title{font-size:17px}
 }
+
+/* Agenda resilience and accessible export */
+.calendar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.calendar-fallback-list{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.calendar-fallback-list li{padding:10px 12px;border:1px solid #e2eae1;border-radius:10px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.calendar-fallback-list time{min-width:134px;color:#657b6b;font-size:11px}
+.calendar-fallback-list strong{font-weight:700;color:#274737}
+@media(max-width:700px){.calendar-actions{width:100%}.calendar-actions .btn{flex:1;white-space:normal}}

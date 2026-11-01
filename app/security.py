@@ -46,9 +46,11 @@ def create_session(db, response: Response, user: User):
     raw = secrets.token_urlsafe(40)
     csrf = secrets.token_urlsafe(30)
     db.add(SessionToken(token_hash=token_digest(raw), user_id=user.id, expires_at=now() + ONE_WEEK))
-    response.set_cookie(SESSION_NAME, raw, max_age=604800, httponly=True, secure=PRODUCTION,
+    # Secure cookies are essential on the publicly served HTTPS demo too.
+    secure_cookies=PRODUCTION or os.getenv("PUBLIC_BASE_URL","").startswith("https://")
+    response.set_cookie(SESSION_NAME, raw, max_age=604800, httponly=True, secure=secure_cookies,
                         samesite="lax", path="/")
-    response.set_cookie(CSRF_NAME, csrf, max_age=604800, httponly=False, secure=PRODUCTION,
+    response.set_cookie(CSRF_NAME, csrf, max_age=604800, httponly=False, secure=secure_cookies,
                         samesite="lax", path="/")
     return {"id":user.id, "name":user.name, "role":user.role, "email":user.email}
 

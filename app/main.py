@@ -29,8 +29,9 @@ async def lifespan(app:FastAPI):
     security.bootstrap_admin()
     if os.getenv("DEMO_SEED","false").lower()=="true":
         if PRODUCTION:raise RuntimeError("DEMO_SEED is not permitted in production.")
-        from .seed import seed_demo
+        from .seed import seed_demo, seed_dental_demo
         seed_demo()
+        seed_dental_demo()
         from .selfcheck import run_demo_checks
         checks=run_demo_checks()
         import logging

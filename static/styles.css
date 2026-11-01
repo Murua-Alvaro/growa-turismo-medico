@@ -452,3 +452,17 @@ body{background:#fefefd;color:var(--text)}
 .profile-exit .btn{font-size:11px;border-color:#e8d9d1;color:#835b50}
 .community-admin-panel{margin:35px 0;padding:26px;border-radius:18px;background:#fcfaf6;border:1px solid #ece4d8}
 .community-admin-panel .connection-card{box-shadow:none}
+
+/* Mobile navigation: keyboard-accessible disclosure, not just horizontal scrolling */
+.mobile-menu-button{display:none;align-items:center;justify-content:center;width:39px;height:39px;border:1px solid #dae6db;border-radius:10px;background:white;color:#204e3a;font-size:22px}
+@media(max-width:700px){
+ .mobile-menu-button{display:inline-flex}
+ .header .nav{display:none;width:100%;order:3;overflow:visible;flex-direction:column;gap:3px;align-items:stretch;background:white;padding:11px 0 6px;border-top:1px solid #e7eee6}
+ .header.nav-open .nav{display:flex}
+ .header .nav-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:13px 15px;width:100%;text-align:left}
+ .header .nav-mega{width:100%}
+ .header .nav-mega-panel{position:static;box-shadow:none;min-width:0;width:100%;margin:0 0 8px;border-radius:12px;background:#f7faf6}
+ .header .nav-mega-panel button{width:100%}
+ .header-actions{gap:7px}
+ .header-actions .btn{padding:10px 11px}
+}

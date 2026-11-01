@@ -13,6 +13,14 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 
 **Arquitectura, licencias, auditoría y configuración:** [docs/INTELLIGENCE_V05.md](docs/INTELLIGENCE_V05.md).
 
+## Mejoras de confiabilidad v0.6
+
+- **Calendario portable:** exportación local `.ics` con eventos tentativos y zona de Mazatlán, traducción al español y alternativa legible sin CDN.
+- **Optimización ajustada:** la preferencia de cercanía se pondera correctamente y los horarios consideran diferencias en minutos.
+- **Disponibilidad reordenada:** se consultan calendarios Google autorizados y se excluyen conflictos **antes** de optimizar alternativas; nunca se deduce disponibilidad de un proveedor sin autorización.
+- **Revisión al iniciar:** un autodiagnóstico breve en demostración valida el motor de recomendaciones, vectores de búsqueda y catálogo; falla el arranque si detecta una regresión esencial.
+- **Auditoría técnica:** [evidencias, límites, riesgos y verificaciones pendientes](docs/AUDIT_V06.md).
+
 ## Tecnologías
 
 - **Backend:** FastAPI y SQLAlchemy 2; SQLite solo para desarrollo, PostgreSQL compatible con Neon.

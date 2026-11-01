@@ -9,3 +9,4 @@ itsdangerous>=2.2,<3
 cryptography>=43,<47
 python-dotenv>=1.0,<2
 pytest>=8.3,<10
+ortools>=9.14,<10

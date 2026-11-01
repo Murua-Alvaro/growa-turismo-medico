@@ -193,6 +193,7 @@ async function openQuote(clinicId){
  const shell=$('#quote-shell'),select=$('#quote-clinic');
  state.returnFocus=document.activeElement;
  const items=state.allClinics;
+ if(!items.length){toast('No hay perfiles disponibles para preparar esta solicitud.');return;}
  select.innerHTML=items.map(x=>'<option value="'+safe(x.id)+'">'+safe(x.name)+'</option>').join('');
  if(clinicId&&items.some(x=>x.id===clinicId))select.value=clinicId;
  $('#quote-treatment').innerHTML=treatmentOptions();

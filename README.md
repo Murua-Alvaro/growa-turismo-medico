@@ -4,10 +4,19 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 
 **Estado:** proyecto de desarrollo. Los proveedores semilla y sus precios son exclusivamente demostrativos. No representan ofertas reales ni disponibilidad médica verificable.
 
+## Novedades de inteligencia v0.5
+
+- **Planificador con OR-Tools CP-SAT:** selección diversa y explicable de itinerarios; cuatro criterios (equilibrio, menor costo, cercanía y comodidad), con restricciones de capacidad preservadas.
+- **Rutas Valhalla (configuración opcional):** consulta vial por identificadores de proveedores; cuando no existe servidor configurado muestra distancia en línea recta sin inventar minutos de viaje.
+- **Búsqueda contextual en español y pgvector:** búsquedas por necesidades y características. Vectores deterministas y recuperación HNSW en Neon cuando se active `VECTOR_SEARCH_ENABLED`, no un modelo clínico ni un LLM.
+- **Agenda FullCalendar estándar:** vista semanal, mensual y lista de propuestas y solicitudes locales, sin modificar reservas externas.
+
+**Arquitectura, licencias, auditoría y configuración:** [docs/INTELLIGENCE_V05.md](docs/INTELLIGENCE_V05.md).
+
 ## Tecnologías
 
 - **Backend:** FastAPI y SQLAlchemy 2; SQLite solo para desarrollo, PostgreSQL compatible con Neon.
-- **Frontend:** interfaz web responsiva con explorador visual, mapa MapLibre, filtros y agenda.
+- **Frontend:** interfaz web responsiva con explorador visual, mapa MapLibre, filtros, agenda FullCalendar y búsqueda contextual.
 - **Seguridad:** sesiones revocables y cookies HttpOnly, roles de coordinador y proveedor; sin usuarios predeterminados en producción.
 - **Integraciones:** Google Calendar mediante OAuth autorizado; el calendario no representa citas de terceros.
 - **Despliegue:** Render mediante render.yaml, con controles de seguridad previos al uso público.
@@ -21,6 +30,16 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 5. `uvicorn app.main:app --reload` y abre http://localhost:8000.
 
 El despliegue público requiere Neon, variables seguras y una auditoría adicional. Consulta `docs/DEPLOYMENT.md`.
+
+## Comprobaciones
+
+```bash
+pip install -r requirements.txt
+pytest -q
+node --check static/app.js
+```
+
+La instalación de OR-Tools consume recursos adicionales en Render Free. Comprueba memoria y tiempos de arranque; hay una selección determinista de reserva si el motor CP-SAT no está disponible.
 
 ## Limitaciones
 

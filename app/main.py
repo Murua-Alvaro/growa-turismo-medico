@@ -61,6 +61,38 @@ async def headers(request,call_next):
 def home():
     return FileResponse(ROOT/"static"/"index.html")
 
+# Public, independently addressable destination pages. These routes serve an
+# editorial portal, never private booking or medical information.
+MAZATLAN_SECTIONS={"historia","lugares","cultura","guia"}
+MAZATLAN_PLACES={"plazuela-machado","teatro-angela-peralta","olas-altas",
+                 "catedral","museo-arqueologico","faro","malecon",
+                 "mercado-pino-suarez","plazuela-republica"}
+
+@app.get("/mazatlan")
+@app.get("/mazatlan/")
+def mazatlan_home():
+    return FileResponse(ROOT/"static"/"mazatlan.html")
+
+@app.get("/mazatlan/lugares/{slug}")
+def mazatlan_place(slug:str):
+    if slug not in MAZATLAN_PLACES:raise HTTPException(404,"Este lugar no está en el directorio.")
+    return FileResponse(ROOT/"static"/"mazatlan.html")
+
+@app.get("/mazatlan/{section}")
+def mazatlan_section(section:str):
+    if section not in MAZATLAN_SECTIONS:raise HTTPException(404,"La sección no existe.")
+    return FileResponse(ROOT/"static"/"mazatlan.html")
+
+# A refreshable URL for every application workspace. Access to private data is
+# still enforced by existing API authorization, not by page navigation.
+@app.get("/explorar")
+@app.get("/planificar")
+@app.get("/comunidad")
+@app.get("/itinerarios")
+@app.get("/aliados")
+def app_workspace():
+    return FileResponse(ROOT/"static"/"index.html")
+
 @app.get("/api/health")
 def health():
     return {"status":"ok","version":"0.7.0","public_ready":False,

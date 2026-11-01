@@ -7,7 +7,7 @@
 | Integración | Implementación | Activo en la demostración | Requisito de producción |
 |---|---|---|---|
 | **OR-Tools CP-SAT** | `app/optimizer.py`: selección multiobjetivo acotada, diversidad de alternativas, cuatro preferencias | Sí, cuando la librería se importa correctamente; fallback determinista | Medir latencia y memoria con inventario creciente |
-| **Valhalla / OSM** | `app/routing.py`: consulta vial HTTPS, timeout, caché y límite de frecuencia | No hay servicio externo configurado: distancia en línea recta sin minutos | Configurar instancia propia `ROUTING_BASE_URL`, acuerdos de uso y calidad del mapa |
+| **Valhalla / OSM** | `app/routing.py`: consulta vial HTTPS, timeout, caché y límite de frecuencia | Render indica `ROUTING_BASE_URL` configurada; aún no se ha probado la calidad/disponibilidad de ese servidor. En caso de error, distancia en línea recta sin ETA | Confirmar proveedor autorizado, pruebas de rutas y calidad de mapas antes de uso real |
 | **pgvector / Neon** | `app/discovery.py`: vectores hash deterministas (96 dimensiones), índice HNSW y búsqueda textual contextual | Búsqueda local. La instancia Render demo **no está conectada a Neon** | `DATABASE_URL` privado, `PRODUCTION=true`, `VECTOR_SEARCH_ENABLED=true` |
 | **FullCalendar** | Calendario solo visual; vista semanal / mensual y lista; eventos no editables | Sí si carga el recurso CDN; vista simplificada como respaldo | Evaluar CDN/SRI/autohospedaje y reglas de consentimiento |
 | **Archivo .ics** | `static/agenda.js`: exportación local desde el navegador | Sí | Revisar zona horaria en clientes internacionales y confirmación por prestador |
@@ -40,7 +40,7 @@
 3. **Disponibilidad real:** contratos, consentimiento y sincronización individual por hotel, médico y transporte, con un modelo formal de cupos.
 4. **Escalabilidad:** migraciones Alembic, manejo de tareas de fondo, caché persistente, observabilidad, límites distribuidos y cola de trabajos si crecen usuarios.
 5. **Seguridad / legal:** amenaza y privacidad, almacenamiento mínimo, cumplimiento aplicable, accesibilidad y pruebas de penetración antes de capturar datos identificables.
-6. **Ruteo vial:** sin proveedor Valhalla propio no se presenta ETA; las distancias geográficas no representan trayecto transitable ni accesibilidad en movilidad.
+6. **Ruteo vial:** hay un endpoint Valhalla configurado, pero el indicador de configuración no demuestra que esté accesible ni licenciado para este uso. Al fallar, se devuelve distancia aérea sin ETA; verificar los tiempos viales antes de comunicarlos comercialmente.
 7. **Calendario:** archivos .ics son orientativos; una exportación no envía ni confirma solicitudes. El tiempo local de agenda debe probarse en varios sistemas operativos y husos horarios.
 8. **Proveedor demo:** las fotos, precios, direcciones y horarios sintéticos no son ofertas verificadas.
 

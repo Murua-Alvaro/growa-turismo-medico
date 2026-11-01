@@ -43,7 +43,7 @@ El antiguo módulo `view-mazatlan` era una sección oculta de una página única
 - Instituto Nacional de Antropología e Historia, catálogo de monumentos y Museo Arqueológico.
 - Secretaría de Cultura, patrimonio inmaterial del Carnaval y Plazuela Machado.
 - Secretaría de Turismo de Sinaloa y turismo municipal, sitios de interés y entorno urbano.
-- Fotografías de Wikimedia Commons: Gzzz (CC BY-SA 4.0), Juanjosegzl (CC BY-SA 3.0) y BettasGDL (dominio público). Fotografías mostradas mediante encuadres responsivos, autores y condiciones visibles en pie de página y fichas.
+- Fotografías verificadas en Wikimedia Commons: Plazuela Machado (Gzzz, CC BY-SA 4.0), Teatro Ángela Peralta (Juanjosegzl, CC BY-SA 3.0), Faro (BettasGDL, dominio público), Olas Altas (David Adame, CC BY-SA 4.0), Catedral (CC0), Malecón (Danimussino, CC BY-SA 3.0), Mercado Pino Suárez y Plazuela República (Dennis S. Hurd, Public Domain Mark). Créditos y licencias visibles en el portal; para lugares sin fotografía específica se muestra una superficie neutra en vez de una imagen incorrecta.
 
 ## Auditoría técnica y límites
 

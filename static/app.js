@@ -262,9 +262,10 @@ async function drawRouteMap(route,start,end){
    if(state.routeMap!==map)return;
    map.addSource('itinerary-route',{type:'geojson',data:{type:'Feature',
     geometry:{type:'LineString',coordinates:path},properties:{}}});
-   map.addLayer({id:'itinerary-route-line',type:'line',source:'itinerary-route',
-    paint:{'line-color':route.mode==='valhalla'?'#27654d':'#91a69b',
-           'line-width':4,'line-opacity':.9,'line-dasharray':route.mode==='valhalla'?[1,0]:[2,2]}});
+   const roadPaint={'line-color':route.mode==='valhalla'?'#27654d':'#91a69b',
+                    'line-width':4,'line-opacity':.9};
+   if(route.mode!=='valhalla')roadPaint['line-dasharray']=[2,2];
+   map.addLayer({id:'itinerary-route-line',type:'line',source:'itinerary-route',paint:roadPaint});
    const bounds=new maplibregl.LngLatBounds();
    path.forEach(pt=>bounds.extend(pt));
    map.fitBounds(bounds,{padding:38,maxZoom:14,duration:0});

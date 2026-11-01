@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from .db import Audit, Booking, BookingLeg, Listing, Slot, User, now, uid
+from . import optimizer
 
 KINDS = {"hotel", "medico", "transporte", "negocio"}
 
@@ -82,7 +83,7 @@ def feasible(db, med:Listing,hotel:Listing,trans:Listing,slot:Slot,nights:int,gu
 
 def plan(db:Session, medical_id:str, day:date, nights:int, preferred_hour:int,
          max_budget:int, accessible:bool, hotel_id=None, transport_id=None,
-         max_results:int=18) -> dict:
+         max_results:int=18, priority:str="balanced") -> dict:
     validate_day(day)
     med=db.get(Listing,medical_id)
     if not med or med.category!="medico" or not med.active:
@@ -122,11 +123,13 @@ def plan(db:Session, medical_id:str, day:date, nights:int, preferred_hour:int,
                 options.append({"slot_id":slot.id,"medical_id":med.id,"hotel_id":h.id,"transport_id":t.id,
                                 "time":slot.time_hhmm,"day":day.isoformat(),"medical":med.name,"hotel":h.name,
                                 "transport":t.name,"nights":nights,"price_mxn":total,
-                                "distance_km":distance[h.id],"score":round(score,1),"source":slot.source,
+                                "distance_km":distance[h.id],"score":round(score,1),"preferred_hour":preferred_hour,"source":slot.source,
                                 "demo":med.demo or h.demo or t.demo})
-    options.sort(key=lambda x:(-x["score"],x["price_mxn"]))
-    return {"options":options[:max_results],"total_feasible":len(options),
-            "notice":"Horarios y precios de demostración o declarados por proveedores. Ninguna combinación constituye una reserva externa confirmada."}
+    recommended, engine = optimizer.shortlist(options, priority=priority, max_results=min(max_results, 8))
+    return {"options":recommended,"total_feasible":len(options),
+            "optimization":{"engine":engine,"priority":priority,"candidates":len(options),
+                            "shortlist":len(recommended),"distance_basis":"straight_line"},
+            "notice":"Combinaciones factibles según datos locales y horarios declarados. Distancias geográficas, no rutas viales. Ninguna opción equivale a reserva externa."}
 
 def make_booking(db:Session, actor:User, slot_id:str, hotel_id:str, transport_id:str,
                  nights:int,guests:int,alias:str,idempotency_key:str|None=None) -> Booking:
@@ -195,6 +198,7 @@ def change_leg(db:Session,actor:User,leg_id:str,new_status:str)->dict:
     elif all(x=="confirmed" for x in statuses):booking.status="confirmed"
     else:booking.status="pending"
     db.add(Audit(user_id=actor.id,action="leg_"+new_status,target_id=leg.id))
+    db.flush()
     return booking_view(db,booking)
 
 def cancel(db:Session,actor:User,booking:Booking):

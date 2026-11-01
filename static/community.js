@@ -54,6 +54,7 @@
    byId('join-password').value='';
    hideModal('join-modal');
    setAccount();syncAuth();notice(data.notice);
+   go('community');
    selectTab('profile');
   }catch(e){err.textContent=e.message;}
  }

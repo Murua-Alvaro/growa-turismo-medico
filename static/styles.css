@@ -445,3 +445,10 @@ body{background:#fefefd;color:var(--text)}
 .community-empty h3{font:800 20px Manrope,sans-serif;letter-spacing:-.7px;margin:10px 0}
 .community-empty p{font-size:12px;color:#7b8c7c;line-height:1.7;max-width:530px;margin:0 auto 18px}
 .community-empty-icon{font-size:33px;color:#7da48e}
+
+/* Privacy and moderation controls */
+.profile-exit{margin-top:28px;padding-top:19px;border-top:1px solid #e5ebe5}
+.profile-exit p{font-size:11px;line-height:1.7;color:#809084}
+.profile-exit .btn{font-size:11px;border-color:#e8d9d1;color:#835b50}
+.community-admin-panel{margin:35px 0;padding:26px;border-radius:18px;background:#fcfaf6;border:1px solid #ece4d8}
+.community-admin-panel .connection-card{box-shadow:none}

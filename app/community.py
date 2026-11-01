@@ -75,8 +75,9 @@ def throttle(key:str,max_count:int,window:int):
 
 
 def signup_enabled():
-    return not PRODUCTION or (os.getenv("COMMUNITY_SIGNUP_ENABLED","false").lower()=="true"
-                              and os.getenv("COMMUNITY_EMAIL_VERIFICATION_READY","false").lower()=="true")
+    # Email ownership verification is not implemented; production self-signup
+    # cannot be enabled with an env flag alone.
+    return not PRODUCTION and os.getenv("COMMUNITY_DEMO_SIGNUP_ENABLED","true").lower()=="true"
 
 
 def valid_email(email:str)->str:

@@ -34,3 +34,37 @@ def seed_demo():
             for medical_id in medical_ids:
                 for hhmm in ("09:00","10:30","12:00","15:30"):
                     db.add(Slot(listing_id=medical_id,slot_date=day,time_hhmm=hhmm,source="synthetic"))
+
+
+# Additional synthetic dental entries solely to exercise filtering/comparison.
+# They must never be represented as partner clinics or verified professionals.
+DENTAL_DEMO = (
+ ("Odontología Marina Norte · DEMO", "Marina", 23.270, -106.453, 1250, True, True,
+  "Ficha ficticia para demostrar comparación de consultas; sin tratamientos, médicos ni certificaciones comprobados.",
+  "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1000&q=82"),
+ ("Estudio Dental Centro · DEMO", "Centro", 23.217, -106.423, 850, False, True,
+  "Proveedor sintético de odontología general. Referencias de atención y precios exclusivamente ilustrativos.",
+  "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=1000&q=82"),
+ ("Espacio Dental Zona Dorada · DEMO", "Zona Dorada", 23.246, -106.452, 1050, True, False,
+  "Ejemplo ficticio para explorar filtros de movilidad, zona y propuestas de estancia, sin disponibilidad validada.",
+  "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1000&q=82"),
+)
+
+
+def seed_dental_demo() -> None:
+    # Adding demo entries is idempotent even when older synthetic listings exist.
+    with SessionLocal.begin() as db:
+        for name, zone, lat, lon, price, access, english, description, image_url in DENTAL_DEMO:
+            if db.scalar(select(Listing.id).where(Listing.name == name).limit(1)):
+                continue
+            item = Listing(id=uid(),category="medico",name=name,subtype="Odontología",
+                zone=zone,latitude=lat,longitude=lon,price_mxn=price,
+                accessible=access,english=english,capacity=1,description=description,
+                image_url=image_url,verified=False,demo=True)
+            db.add(item)
+            db.flush()
+            for offset in range(1,31):
+                day = now().date()+timedelta(days=offset)
+                if day.weekday()>=5:continue
+                for hhmm in ("09:00","11:00","15:30"):
+                    db.add(Slot(listing_id=item.id,slot_date=day,time_hhmm=hhmm,source="synthetic"))

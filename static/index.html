@@ -12,6 +12,7 @@
  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
  <link href="/static/styles.css" rel="stylesheet">
  <link href="/static/growa-editorial.css" rel="stylesheet">
+ <link href="/static/explore-monochrome.css" rel="stylesheet">
  <script src="/static/agenda.js" defer></script>
  <script src="/static/app.js" defer></script>
  <script src="/static/community.js" defer></script>
@@ -115,21 +116,46 @@
  <section class="community-admin-panel" id="community-admin-panel" hidden aria-label="Moderación comunitaria"><div class="section-head"><div><span class="overline">GESTIÓN RESPONSABLE</span><h2>Revisión de reportes</h2><p>Solo disponible para administradores autorizados.</p></div><button class="btn outline" id="community-audit">Actualizar reportes</button></div><div id="community-reports" class="connection-grid"></div></section>
 </section>
 
-<section class="view" id="view-explore">
- <div class="page-intro"><span class="overline">DIRECTORIO DE HOSPITALIDAD</span><h1>Explora con libertad.</h1><p>Opciones, detalles y ubicaciones en una sola búsqueda. Compara por intereses y necesidades específicas.</p></div>
- <div class="explore-toolbar">
-  <div class="search-input">⌕ <input id="catalog-q" placeholder="Ej. hotel accesible, traslado o consulta..." aria-label="Buscar servicios por nombre o características"></div>
-  <select id="catalog-zone" aria-label="Zona"><option value="">Todas las zonas</option></select>
-  <select id="catalog-price" aria-label="Precio máximo"><option value="0">Cualquier precio</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select>
-  <button class="btn outline" id="toggle-map">◩ Ver mapa</button>
+<section class="view" id="view-explore" aria-label="Explorar servicios en Mazatlán">
+ <div class="explore-hero">
+  <div class="explore-hero-content">
+   <div class="explore-hero-overline"><span>GROWA / HOSPITALIDAD MÉDICA</span><span>MAZATLÁN, MÉXICO — 2026</span></div>
+   <div class="explore-hero-main">
+    <span class="explore-hero-index">01 — DESCUBRE TU DESTINO</span>
+    <h1>Explorar es <em>encontrar.</em></h1>
+    <p>Una forma más sencilla de descubrir hospedaje, atención independiente, movilidad y experiencias para acompañar tu estancia.</p>
+    <div class="explore-hero-cta">
+     <button type="button" data-anchor="explore-catalog-anchor" class="explore-cta-primary">Explorar el directorio <span aria-hidden="true">↘</span></button>
+     <a href="/odontologia" class="explore-cta-secondary">Ver odontología <span aria-hidden="true">↗</span></a>
+    </div>
+   </div>
+   <div class="explore-hero-foot"><span>Un destino. Distintas posibilidades.</span><span>DESLIZA PARA DESCUBRIR ↓</span></div>
+  </div>
+  <div class="explore-hero-media">
+   <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Paisaje de playa, imagen ilustrativa de una estancia junto al mar" fetchpriority="high">
+   <div class="explore-hero-media-caption"><span>EL VIAJE TAMBIÉN IMPORTA</span><span>IMAGEN ILUSTRATIVA · COSTA</span></div>
+   <span class="explore-hero-vertical" aria-hidden="true">EXPLORE / EXPERIENCE / CONNECT</span>
+  </div>
  </div>
- <div class="category-pills" id="category-pills"></div>
- <div class="filter-row"><label><input id="filter-access" type="checkbox"> Accesibilidad</label><label><input id="filter-english" type="checkbox"> Atención en inglés</label><label><input id="filter-verified" type="checkbox"> Verificados</label><button class="simple-link" id="clear-filters">Limpiar filtros</button></div>
- <div class="results-heading"><div><h2 id="results-title">Opciones para tu estancia</h2><p id="results-count" role="status" aria-live="polite">Cargando oferta...</p></div><div class="results-tools"><span class="demo-hint">Las fichas demo no representan empresas reales.</span><label class="sort-control">Ordenar por <select id="catalog-sort" aria-label="Ordenar resultados"><option value="default">Orden del catálogo</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre A–Z</option></select></label></div></div>
- <div class="explore-layout">
-  <div class="listing-grid" id="results"></div>
-  <div id="map-panel" class="map-panel" hidden><div id="map"></div><small>Ubicaciones ilustrativas en demostración.</small></div>
+ <div class="explore-utility-line" aria-label="Áreas del directorio"><span>01 / HOSPEDAJE</span><span>02 / SERVICIOS MÉDICOS</span><span>03 / MOVILIDAD</span><span>04 / COMERCIO LOCAL</span></div>
+ <div class="explore-catalog" id="explore-catalog-anchor">
+  <div class="explore-chapter-head">
+   <div><span class="explore-chapter-no">02 / DIRECTORIO</span><h2>Todo lo que necesitas, <em>a tu ritmo.</em></h2></div>
+   <p>Busca por nombre, zona o características. Examina las opciones y conoce los detalles antes de contactar o planificar.</p>
+  </div>
+  <div class="explore-toolbar" role="search" aria-label="Búsqueda de servicios">
+   <label class="explore-field explore-field-search"><span class="explore-field-label">¿QUÉ ESTÁS BUSCANDO?</span><span class="search-input"><span class="explore-search-icon" aria-hidden="true">⌕</span><input id="catalog-q" type="search" placeholder="Busca hoteles, profesionales, traslados…" autocomplete="off" aria-label="Buscar servicios por nombre o características"></span></label>
+   <label class="explore-field explore-field-zone"><span class="explore-field-label">UBICACIÓN</span><select id="catalog-zone" aria-label="Zona"><option value="">Todas las zonas</option></select></label>
+   <label class="explore-field explore-field-price"><span class="explore-field-label">PRESUPUESTO</span><select id="catalog-price" aria-label="Precio máximo"><option value="0">Sin límite</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select></label>
+   <button type="button" class="explore-map-toggle" id="toggle-map"><span aria-hidden="true">⌖</span> Ver mapa</button>
+  </div>
+  <div class="explore-category-wrap"><span class="explore-filter-label">EXPLORAR POR CATEGORÍA</span><div class="category-pills" id="category-pills" role="group" aria-label="Categoría de servicios"></div></div>
+  <div class="filter-row"><span class="explore-filter-label">FILTRAR POR</span><label><input id="filter-access" type="checkbox"> Accesibilidad</label><label><input id="filter-english" type="checkbox"> Atención en inglés</label><label><input id="filter-verified" type="checkbox"> Verificados</label><button type="button" class="simple-link" id="clear-filters">Restablecer filtros <span aria-hidden="true">↺</span></button></div>
+  <div class="results-heading"><div><span class="explore-results-overline">EL DIRECTORIO</span><h2 id="results-title">Opciones para tu estancia</h2><p id="results-count" role="status" aria-live="polite">Cargando oferta...</p></div><div class="results-tools"><label class="sort-control"><span>ORDENAR POR</span><select id="catalog-sort" aria-label="Ordenar resultados"><option value="default">Relevancia del catálogo</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre A–Z</option></select></label></div></div>
+  <div class="explore-layout"><div class="listing-grid" id="results"></div><div id="map-panel" class="map-panel" hidden><div id="map"></div><small>Ubicaciones ilustrativas en demostración.</small></div></div>
+  <p class="explore-disclaimer">INFORMACIÓN IMPORTANTE — Las fichas de demostración no representan ofertas reales. Los precios, servicios, disponibilidades y condiciones publicados por terceros requieren confirmación directa.</p>
  </div>
+ <div class="explore-closer"><div class="explore-closer-image" role="img" aria-label="Interior de hospitalidad, imagen ilustrativa"></div><div class="explore-closer-content"><span>03 / SIGUIENTE PASO</span><h2>Tu estancia, <em>mejor planeada.</em></h2><p>Después de explorar, reúne hospedaje, traslados y servicios independientes en una propuesta de itinerario.</p><button type="button" data-go="planner">Comenzar a planificar <span aria-hidden="true">↗</span></button><small>La solicitud no sustituye la confirmación con cada proveedor.</small></div></div>
 </section>
 
 <section class="view" id="view-planner">

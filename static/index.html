@@ -3,21 +3,22 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="theme-color" content="#fafaf7">
+ <meta name="theme-color" content="#ffffff">
  <meta name="description" content="Growa Hospitalidad, un espacio para explorar y coordinar hospedaje, movilidad y servicios independientes en Mazatlán.">
  <title>Growa | Hospitalidad inteligente</title>
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
  <link href="/static/styles.css" rel="stylesheet">
  <link href="/static/growa-editorial.css" rel="stylesheet">
  <link href="/static/explore-monochrome.css?v=explore-fix-20261102" rel="stylesheet">
+ <link href="/static/growa-home-premium.css?v=1" rel="stylesheet">
  <script src="/static/agenda.js" defer></script>
- <script src="/static/app.js?v=explore-fix-20261102" defer></script>
+ <script src="/static/app.js?v=home-premium-20261102" defer></script>
  <script src="/static/community.js" defer></script>
 </head>
-<body>
+<body class="home-is-active">
 <a class="skip-link" href="#view-home">Saltar al contenido</a>
 <header class="header">
  <div class="header-inner">
@@ -25,9 +26,9 @@
   <nav class="nav" id="main-nav" aria-label="Secciones">
    <button class="nav-item selected" data-go="home">Inicio</button>
    <a class="nav-item" href="/explorar">Explorar</a>
-   <a class="nav-item" href="/odontologia">Odontología ↗</a>
-   <a class="nav-item" href="/mi-proceso">Mi proceso ↗</a>
-   <a class="nav-item" href="/red-medica">Red médica ↗</a>
+   <a class="nav-item" href="/odontologia">Odontología</a>
+   <a class="nav-item" href="/mi-proceso">Mi proceso</a>
+   <a class="nav-item" href="/red-medica">Red médica</a>
    <button class="nav-item" data-go="planner">Planificar</button>
    <a href="/mazatlan" class="nav-item">Descubre Mazatlán ↗</a>
    <details class="nav-mega"><summary class="nav-item nav-mega-trigger">Secciones <span aria-hidden="true">⌄</span></summary><div class="nav-mega-panel">
@@ -48,21 +49,21 @@
 <section class="view active" id="view-home">
  <div class="hero">
   <div class="hero-copy">
-   <div class="hero-context"><span>GROWA HOSPITALITY</span><span>MAZATLÁN, MÉXICO</span></div>
-   <div class="eyebrow"><span class="eyebrow-dot"></span> Hospitalidad, cultura y experiencias en una ciudad</div>
-   <h1>Mazatlán comienza aquí. <em>Tu estancia, a tu manera.</em></h1>
-   <p>Encuentra alojamiento, movilidad y servicios independientes. Conoce la historia del puerto y construye tu visita con información clara, desde un solo lugar.</p>
-   <div class="hero-buttons"><button class="btn dark" data-go="explore">Explorar servicios <span>↗</span></button><button class="btn light" data-go="planner">Organizar mi estancia</button><a class="btn light" href="/mi-proceso">Seguir mi proceso ↗</a></div>
-   <div class="hero-meta"><span><b>4 categorías</b> conectadas</span><span>◉ Mazatlán · Sinaloa</span><span>Coordinación, no atención clínica</span></div>
+   <div class="hero-context"><span>GROWA HOSPITALITY</span><span>MAZATLÁN · MÉXICO</span></div>
+   <div class="eyebrow">ATENCIÓN · ESTANCIA · DESTINO</div>
+   <h1>Tu visita a Mazatlán, <em>mejor conectada.</em></h1>
+   <p>Explora opciones de atención odontológica, organiza tu estancia y conoce el destino. Información y herramientas para que cada paso de tu viaje sea más sencillo.</p>
+   <div class="hero-buttons"><a class="btn dark" href="/odontologia">Explorar odontología <span aria-hidden="true">↗</span></a><button class="btn light" data-go="explore">Ver hospedaje y servicios <span aria-hidden="true">↗</span></button></div>
+   <div class="hero-meta"><span>DIRECTORIO INDEPENDIENTE</span><span>SERVICIOS SUJETOS A CONFIRMACIÓN</span></div>
   </div>
-  <div class="hero-photo" aria-label="Imagen de hospitalidad">
+  <div class="hero-photo" aria-label="Vista del puerto de Mazatlán, fotografía ilustrativa">
    <div class="hero-gradient"></div>
    
   </div>
  </div>
  <div class="hero-photo-credit">Fotografía de Olas Altas: <a href="https://commons.wikimedia.org/wiki/File:Olas_Altas%2C_Mazatl%C3%A1n.jpg" target="_blank" rel="noopener noreferrer">David Adame · CC BY-SA 4.0</a>. Imagen recortada para esta portada.</div>
  <div class="search-dock">
-  <div class="search-dock-title"><strong>¿Qué te gustaría encontrar?</strong><span>Una búsqueda, todas las opciones</span></div>
+  <div class="search-dock-title"><strong>Encuentra lo que necesitas.</strong><span>Busca alojamientos, movilidad y servicios del directorio.</span></div>
   <div class="search-bar">
    <label><span>Buscar</span><input id="quick-q" placeholder="Hotel, rehabilitación, traslado privado..." autocomplete="off"></label>
    <label><span>Zona</span><select id="quick-zone"><option value="">Toda Mazatlán</option></select></label>
@@ -76,7 +77,7 @@
   <div class="assurance-item"><span class="assurance-icon" aria-hidden="true">03</span><div><strong>Diseña tu itinerario</strong><p>Coordina alternativas sujetas a confirmación de cada proveedor.</p></div></div>
  </div>
  <section class="content-section">
-  <div class="section-head"><div><span class="overline">EXPLORA A TU MANERA</span><h2>Cada servicio, en un mismo lugar.</h2><p>Explora proveedores y organiza una experiencia completa.</p></div></div>
+  <div class="section-head"><div><span class="overline">01 / SERVICIOS</span><h2>Todo lo necesario para <em>planear tu visita.</em></h2><p>Información organizada por categorías para explorar opciones y preparar tu estancia con claridad.</p></div></div>
   <div class="category-showcase">
    <button class="showcase show-hotel" data-category="hotel"><span class="showcase-number">01 / Hospedaje</span><strong>Encuentra un lugar para estar bien.</strong><span class="showcase-link">Ver alojamientos <b>↗</b></span></button>
    <a class="showcase show-medical" href="/odontologia"><span class="showcase-number">02 / Odontología</span><strong>Explora clínicas, tratamientos y estancias.</strong><span class="showcase-link">Conocer odontología <b>↗</b></span></a>
@@ -85,23 +86,23 @@
   </div>
  </section>
  <section class="dental-feature" aria-labelledby="dental-feature-title">
-  <div class="dental-feature-body"><span class="overline">ESPECIALIDAD · ODONTOLOGÍA</span>
-   <h2 id="dental-feature-title">Una experiencia dental más sencilla, desde la primera consulta.</h2>
+  <div class="dental-feature-body"><span class="overline">02 / ODONTOLOGÍA EN MAZATLÁN</span>
+   <h2 id="dental-feature-title">Odontología y hospitalidad, <em>en un mismo viaje.</em></h2>
    <p>Explora tratamientos, compara perfiles de odontología y prepara una estancia en Mazatlán. Con información clara sobre los proveedores y sus condiciones de verificación.</p>
    <a class="btn dark" href="/odontologia">Entrar a odontología <span aria-hidden="true">↗</span></a>
   </div>
   <div class="dental-feature-media" role="img" aria-label="Fotografía ilustrativa de una recepción dental moderna, no correspondiente a un proveedor de Growa"><span class="dental-feature-credit">Imagen ilustrativa · <a href="https://www.pexels.com/photo/a-dental-clinic-reception-desk-6809645/" target="_blank" rel="noopener noreferrer">Pavel Danilyuk · Pexels</a></span></div>
  </section>
  <section class="content-section">
-  <div class="section-head"><div><span class="overline">SELECCIÓN PARA EXPLORAR</span><h2>Opciones destacadas</h2><p>Fichas de demostración. Los precios y horarios no están verificados.</p></div><button class="simple-link" data-go="explore">Ver todas las opciones ↗</button></div>
+  <div class="section-head"><div><span class="overline">03 / DIRECTORIO</span><h2>Explora algunos <em>servicios del catálogo.</em></h2><p>Perfiles de demostración. Importes, disponibilidad y servicios sujetos a confirmación.</p></div><button class="simple-link" data-go="explore">Ver todas las opciones ↗</button></div>
   <div class="listing-grid featured-listings" id="featured"></div>
  </section>
  <section class="destination-feature">
-  <div class="destination-feature-copy"><span class="overline">CONOCE EL DESTINO</span><h2>Una ciudad que merece ser recorrida con tiempo.</h2><p>Desde las calles del Centro Histórico hasta los paseos junto al mar. Conoce sus lugares, descubre la cultura local y conecta con personas que quieran compartir la experiencia de visitar el puerto.</p><div class="destination-feature-buttons"><button class="btn dark" data-go="mazatlan">Conocer Mazatlán ↗</button><button class="btn outline" data-go="community">Explorar comunidad</button></div></div>
+  <div class="destination-feature-copy"><span class="overline">04 / MAZATLÁN</span><h2>Un destino con identidad, cultura y mar.</h2><p>Desde las calles del Centro Histórico hasta los paseos junto al mar. Conoce sus lugares, descubre la cultura local y conecta con personas que quieran compartir la experiencia de visitar el puerto.</p><div class="destination-feature-buttons"><button class="btn dark" data-go="mazatlan">Conocer Mazatlán ↗</button><button class="btn outline" data-go="community">Explorar comunidad</button></div></div>
   <div class="destination-feature-art"><div class="destination-feature-glass"><span>DESDE 1820</span><strong>Un puerto abierto al mundo.</strong><small>Historia • Cultura • Hospitalidad</small></div></div>
  </section>
  <section class="experience-banner">
-  <div><span class="overline">PLANEA TU VIAJE</span><h2>Organizar una visita debería ser más sencillo.</h2><p>Compara servicios, revisa horarios declarados y prepara un itinerario que se ajuste a tus prioridades. Cada solicitud requiere confirmación del proveedor.</p><button class="btn light" data-go="planner">Crear itinerario ↗</button></div>
+  <div><span class="overline">05 / ORGANIZA TU ESTANCIA</span><h2>Cada parte de tu viaje, <em>en orden.</em></h2><p>Compara servicios, revisa horarios declarados y prepara un itinerario que se ajuste a tus prioridades. Cada solicitud requiere confirmación del proveedor.</p><button class="btn light" data-go="planner">Planificar mi estancia <span aria-hidden="true">↗</span></button></div>
   <div class="journey-line"><div><span>01</span><strong>Elige la atención</strong><small>Servicio y horario</small></div><div><span>02</span><strong>Agrega la estancia</strong><small>Hotel y noches</small></div><div><span>03</span><strong>Coordina movilidad</strong><small>Traslado privado</small></div></div>
  </section>
 </section>

@@ -4,6 +4,16 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 
 **Estado:** proyecto de desarrollo. Los proveedores semilla y sus precios son exclusivamente demostrativos. No representan ofertas reales ni disponibilidad médica verificable.
 
+## Growa Journey v0.9 · seguimiento de consultas y trámites
+
+El sistema dispone de **dos espacios con permisos separados**: [Mi proceso](/mi-proceso) para el paciente y [Panel médico](/panel-medico) para profesionales/proveedores autorizados. Permite registrar solicitudes administrativas, invitar pacientes, organizar tareas, proponer y confirmar citas, resolver consultas logísticas y consultar un historial de eventos.
+
+**Vistas ficticias para revisar la interfaz** (no guardan ni consultan datos de pacientes): \`/mi-proceso?demo=patient\` y \`/panel-medico?demo=doctor\`.
+
+Las cuentas de pacientes se vinculan mediante invitaciones privadas de un solo uso. Los procesos solo se pueden crear para clínicas reales verificadas que tengan una cuenta de proveedor asignada. El sistema no almacena expedientes médicos ni realiza consultas clínicas.
+
+**Especificación y controles de privacidad:** [docs/JOURNEY_V09.md](docs/JOURNEY_V09.md). **Estado de despliegue, base de datos y auditoría:** deben verificarse por separado. La implementación de código no autoriza el uso con información clínica ni con datos personales reales durante el piloto.
+
 ## Novedades de inteligencia v0.5
 
 - **Planificador con OR-Tools CP-SAT:** selección diversa y explicable de itinerarios; cuatro criterios (equilibrio, menor costo, cercanía y comodidad), con restricciones de capacidad preservadas.

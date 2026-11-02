@@ -73,7 +73,7 @@ def test_journey_invite_tasks_appointments_and_role_isolation():
         assert stranger.get("/api/journey/cases/"+case_id).status_code == 404
         claim = patient.post("/api/journey/claim", json={
             "token": invite_token, "email": patient_email,
-            "name": "Paciente ficticio", "password": PASS})
+            "name": "Paciente ficticio", "password": PASS, "accept_terms": True})
         assert claim.status_code == 201, claim.text
         csrf = {"x-csrf-token": patient.cookies.get("growa_csrf")}
         assert patient.get("/api/journey/cases/"+case_id).status_code == 200

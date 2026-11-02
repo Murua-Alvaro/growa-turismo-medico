@@ -90,6 +90,11 @@ def mazatlan_section(section:str):
 # A refreshable URL for every application workspace. Access to private data is
 # still enforced by existing API authorization, not by page navigation.
 @app.get("/explorar")
+@app.get("/explorar/")
+def explore_page():
+    # Public directory renders without depending on the multi-workspace SPA startup.
+    return FileResponse(ROOT/"static"/"explorar.html")
+
 @app.get("/planificar")
 @app.get("/comunidad")
 @app.get("/itinerarios")

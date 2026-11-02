@@ -268,7 +268,7 @@ def valid_invite(db, token: str, email: str):
 def claim(body: Claim, request: Request, response: Response):
     check_origin(request)
     if not body.accept_terms:
-        raise HTTPException(422, "Debes aceptar el aviso de privacidad y las condiciones del piloto.")
+        raise HTTPException(422, "Debes reconocer las condiciones de uso administrativo del piloto.")
     throttle(request.client.host if request.client else "unknown")
     try:
         with SessionLocal.begin() as db:

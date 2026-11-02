@@ -37,7 +37,11 @@ function canOperate(){return state.user && ['admin','coordinator'].includes(stat
 const WORKSPACE_PATHS={home:'/',explore:'/explorar',planner:'/planificar',community:'/comunidad',trips:'/itinerarios',partners:'/aliados'};
 const PATH_WORKSPACES=Object.fromEntries(Object.entries(WORKSPACE_PATHS).map(([k,v])=>[v,k]));
 function go(view,writeHistory=true){
- if(view==='explore'){window.location.assign('/explorar');return;}
+ if(view==='explore' && window.location.pathname!=='/explorar'){
+  const params=new URLSearchParams();
+  if(state.category!=='all')params.set('categoria',state.category);
+  window.location.assign('/explorar'+(params.toString()?'?'+params:''));return;
+ }
  if(view==='mazatlan'){window.location.assign('/mazatlan');return;}
  if(!WORKSPACE_PATHS[view])return;
  if(['trips','partners'].includes(view) && (!state.user || !['admin','coordinator','provider'].includes(state.user.role))){
@@ -52,6 +56,7 @@ function go(view,writeHistory=true){
  if(toggle){toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir menú principal');toggle.textContent='☰';}
  $('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
  document.body.classList.toggle('explore-is-active',view==='explore');
+ document.body.classList.toggle('home-is-active',view==='home');
  $$('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
  $$('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
  window.scrollTo({top:0,behavior:'smooth'});
@@ -169,10 +174,11 @@ async function searchCatalog(){
  }catch(e){msg(e.message,true);}
 }
 function quickSearch(){
- $('#catalog-q').value=$('#quick-q').value;
- $('#catalog-zone').value=$('#quick-zone').value;
- $('#catalog-price').value=$('#quick-price').value;
- state.category='all';categories();go('explore');
+ const p=new URLSearchParams();
+ const q=$('#quick-q')?.value.trim();if(q)p.set('q',q);
+ const zone=$('#quick-zone')?.value;if(zone)p.set('zona',zone);
+ const max=$('#quick-price')?.value;if(max&&max!=='0')p.set('precio',max);
+ window.location.assign('/explorar'+(p.toString()?'?'+p.toString():''));
 }
 async function loadMap(){
  if(!state.mapVisible)return;
@@ -501,13 +507,23 @@ async function startup(){
   state.category=requestedCategory;categories();
  }
  if(initialView!=='home')go(initialView,false);
+  else document.body.classList.add('home-is-active');
  // Browser Back/Forward and direct-link refresh resolve to the same workspace.
  window.addEventListener('popstate',()=>{
   const target=PATH_WORKSPACES[window.location.pathname]||'home';
   go(target,false);
  });
  try{state.user=await req('/api/me');setAccount();}catch(e){}
- try{await loadAll();await searchCatalog();}catch(e){msg('No fue posible cargar el catálogo: '+e.message,true);}
+ try{
+   await loadAll();
+   if(initialView==='explore'){
+     const q=new URLSearchParams(location.search);
+     if(q.get('q'))$('#catalog-q').value=q.get('q').slice(0,160);
+     if(q.get('zona')&&Array.from($('#catalog-zone').options).some(x=>x.value===q.get('zona')))$('#catalog-zone').value=q.get('zona');
+     if(['1000','2000','3000'].includes(q.get('precio')))$('#catalog-price').value=q.get('precio');
+   }
+   await searchCatalog();
+  }catch(e){msg('No fue posible cargar el catálogo: '+e.message,true);}
  const requestedProvider=new URLSearchParams(location.search).get('prestador');
  if(requestedProvider && state.all.some(item=>item.id===requestedProvider && item.category==='medico')){
   $('#plan-medical').value=requestedProvider;

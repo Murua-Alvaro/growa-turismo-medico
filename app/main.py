@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from .db import (ROOT, PRODUCTION, SessionLocal, init_db, User, Listing, Slot,
                  Booking, BookingLeg, Audit, uid, now)
-from . import security,services,google_calendar,discovery,routing,optimizer,community,dental,journey
+from . import security,services,google_calendar,discovery,routing,optimizer,community,dental,journey,demo_network
 
 @asynccontextmanager
 async def lifespan(app:FastAPI):
@@ -45,6 +45,7 @@ app=FastAPI(title="Growa Hospitality Platform",version="0.8.1",lifespan=lifespan
 app.include_router(community.router)
 app.include_router(dental.router)
 app.include_router(journey.router)
+app.include_router(demo_network.router)
 hosts=[x.strip() for x in os.getenv("ALLOWED_HOSTS","localhost,127.0.0.1,testserver").split(",") if x.strip()]
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=hosts)
 app.mount("/static",StaticFiles(directory=str(ROOT/"static")),name="static")
@@ -95,6 +96,10 @@ def mazatlan_section(section:str):
 @app.get("/aliados")
 def app_workspace():
     return FileResponse(ROOT/"static"/"index.html")
+
+@app.get("/red-medica")
+def medical_network():
+    return FileResponse(ROOT/"static"/"network.html")
 
 @app.get("/mi-proceso")
 @app.get("/mi-proceso/")

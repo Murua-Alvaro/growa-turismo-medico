@@ -119,7 +119,7 @@
    if(!Number.isFinite(latitude)||!Number.isFinite(longitude)||Math.abs(latitude)>90||Math.abs(longitude)>180)return;
    const el=document.createElement('div');
    el.textContent=money(item.price_mxn);
-   el.style.cssText='background:#131313;color:#fff;border:2px solid #fff;padding:8px 10px;font:600 10px Arial;box-shadow:0 2px 9px #0003';
+   el.style.cssText='background:#0b4968;color:#fff;border:2px solid #fff;border-radius:3px;padding:8px 10px;font:700 10px DM Sans,Arial;box-shadow:0 2px 9px #102f4736';
    const popup=new maplibregl.Popup({offset:14}).setDOMContent((()=>{
     const node=document.createElement('div');
     const title=document.createElement('strong');title.textContent=text(item.name);

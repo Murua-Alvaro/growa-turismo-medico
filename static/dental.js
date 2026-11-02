@@ -141,8 +141,8 @@ function renderHome(){
  '<div class="treatment-select-mobile"><label for="procedure-select">Elegir tratamiento</label><select id="procedure-select"><option value="">Todos los tratamientos</option>'+t.map(x=>field(x.id,x.name)).join('')+'</select></div>'+
  '<div id="procedure-disclosure" class="procedure-disclosure" hidden><div><span class="procedure-disclosure-prefix">TRATAMIENTO DE INTERÉS</span><strong id="selected-procedure"></strong></div><p id="procedure-description"></p><button type="button" data-quote="">Preparar consulta <span aria-hidden="true">↗</span></button></div></section>'+
  '<section class="market-results" id="clinicas"><div class="directory-heading"><div><p class="directory-eyebrow">DIRECTORIO DE ODONTOLOGÍA / MAZATLÁN</p><h2>Clínicas de odontología<br><em>en Mazatlán.</em></h2><p>Explora información publicada por los prestadores. Los perfiles DEMO son ficticios.</p></div><div class="directory-heading-action"><a href="/planificar">Planifica tu estancia <span aria-hidden="true">↗</span></a></div></div>'+
- '<div class="market-layout">'+
- '<aside class="filter-sidebar" id="filters" aria-label="Filtros del directorio"><div class="filter-title"><h2>Refinar búsqueda</h2><button type="button" data-reset>Restablecer</button></div>'+
+ '<div class="market-layout"><button type="button" id="filters-backdrop" class="filters-backdrop" aria-label="Cerrar filtros" hidden></button>'+
+ '<aside class="filter-sidebar" id="filters" aria-label="Filtros del directorio"><div class="filter-title"><h2>Refinar búsqueda</h2><button type="button" data-reset>Restablecer</button><button type="button" class="filter-mobile-close" data-close-filters aria-label="Cerrar filtros">×</button></div>'+
  '<div class="filter-group"><label for="clinic-zone">Ubicación</label><select id="clinic-zone"><option value="">Todo Mazatlán</option>'+z.map(x=>field(x,x)).join('')+'</select></div>'+
  '<div class="filter-group"><span class="filter-label">Servicios e instalaciones</span>'+
  '<label class="filter-check"><input id="clinic-english" type="checkbox"> Atención en inglés</label>'+
@@ -291,7 +291,7 @@ function setup(){
  $('#compare-clear').onclick=()=>{state.selected.clear();updateCompareUI();const area=$('#comparison');if(area)area.hidden=true};
  $('#compare-show').onclick=showComparison;
  document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if(!$('#quote-shell').hidden)closeQuote();else if(!navigation.hidden){navigation.hidden=true;mobile.setAttribute('aria-expanded','false');mobile.textContent='☰'}}
+  if(e.key==='Escape'){if(!$('#quote-shell').hidden)closeQuote();else if(!navigation.hidden){navigation.hidden=true;mobile.setAttribute('aria-expanded','false');mobile.textContent='☰'}else if(state.filtersOpen){state.filtersOpen=false;$('#filters')?.classList.remove('open');const back=$('#filters-backdrop');if(back)back.hidden=true;$('#toggle-filters')?.setAttribute('aria-expanded','false');document.body.style.overflow='';$('#toggle-filters')?.focus()}}
   if(e.key==='Tab'&&!$('#quote-shell').hidden){
    const tabbable=$$('#quote-shell button:not([disabled]),#quote-shell select:not([disabled]),#quote-shell input:not([disabled])').filter(x=>!x.closest('[hidden]'));
    if(!tabbable.length)return;const first=tabbable[0],last=tabbable.at(-1);
@@ -306,10 +306,15 @@ function setup(){
   if(el.hasAttribute('data-retry')){refresh();return}
   if(el.hasAttribute('data-quote')){openQuote(el.dataset.quote);return}
   if(el.hasAttribute('data-close-comparison')){$('#comparison').hidden=true;return}
-  if(el.id==='toggle-filters'){
-   state.filtersOpen=!state.filtersOpen;$('#filters').classList.toggle('open',state.filtersOpen);
-   el.setAttribute('aria-expanded',String(state.filtersOpen));return;
-  }
+  if(el.id==='toggle-filters'||el.id==='filters-backdrop'||el.hasAttribute('data-close-filters')){
+    state.filtersOpen=el.id==='toggle-filters'?!state.filtersOpen:false;
+    $('#filters')?.classList.toggle('open',state.filtersOpen);
+    const toggle=$('#toggle-filters');if(toggle)toggle.setAttribute('aria-expanded',String(state.filtersOpen));
+    const back=$('#filters-backdrop');if(back)back.hidden=!state.filtersOpen;
+    document.body.style.overflow=state.filtersOpen?'hidden':'';
+    if(!state.filtersOpen&&el.id!=='toggle-filters')toggle?.focus();
+    return;
+   }
  });
  root.addEventListener('change',e=>{
   const el=e.target;

@@ -49,7 +49,8 @@ function go(view,writeHistory=true){
  document.querySelector('.header')?.classList.remove('nav-open');
  const toggle=$('#mobile-menu');
  if(toggle){toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Abrir menú principal');toggle.textContent='☰';}
- $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
+ $('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+view));
+ document.body.classList.toggle('explore-is-active',view==='explore');
  $$('[data-go]').forEach(e=>e.classList.toggle('selected',e.dataset.go===view));
  $$('.nav-item').forEach(e=>{if(e.dataset.go===view)e.setAttribute('aria-current','page');else e.removeAttribute('aria-current');});
  window.scrollTo({top:0,behavior:'smooth'});
@@ -119,8 +120,8 @@ function openDetail(id){
  showModal('detail-modal');
 }
 function categories(){
- const types=[['all','Todas'],['hotel','Alojamiento'],['medico','Servicios médicos'],['transporte','Transporte'],['negocio','Negocios']];
- $('#category-pills').innerHTML=types.map(item=>'<button data-cat="'+item[0]+'" class="'+(state.category===item[0]?'active':'')+'">'+item[1]+'</button>').join('');
+ const types=[['all','Todas las opciones'],['hotel','Hospedaje'],['medico','Servicios médicos'],['transporte','Movilidad'],['negocio','Comercio local']];
+ $('#category-pills').innerHTML=types.map((item,index)=>'<button type="button" data-cat="'+item[0]+'" class="'+(state.category===item[0]?'active':'')+'" aria-pressed="'+(state.category===item[0]?'true':'false')+'"><span class="category-index">'+String(index).padStart(2,'0')+'</span><span class="category-label">'+item[1]+'</span><span class="category-arrow" aria-hidden="true">↗</span></button>').join('');
  $$('#category-pills [data-cat]').forEach(btn=>btn.onclick=()=>{state.category=btn.dataset.cat;categories();searchCatalog();});
 }
 async function loadAll(){
@@ -186,7 +187,7 @@ function drawMap(){
  if(!state.map||!window.maplibregl)return;
  state.markers.forEach(m=>m.remove());state.markers=[];
  for(const item of state.catalog){
-  const dot=document.createElement('div');dot.style.cssText='background:#245345;color:white;border:2px solid white;border-radius:30px;padding:8px 10px;font:700 11px Arial;box-shadow:0 2px 10px #1233';
+  const dot=document.createElement('div');dot.style.cssText='background:#171717;color:#fff;border:2px solid #fff;border-radius:0;padding:8px 10px;font:700 11px Arial;box-shadow:0 2px 9px #0003';
   dot.textContent=money(item.price_mxn);
   const popup=new maplibregl.Popup({offset:14}).setHTML('<strong>'+safe(item.name)+'</strong><br>'+safe(item.zone)+'<br>Tarifa orientativa');
   state.markers.push(new maplibregl.Marker({element:dot}).setLngLat([item.longitude,item.latitude]).setPopup(popup).addTo(state.map));
@@ -196,7 +197,8 @@ function toggleMap(){
  state.mapVisible=!state.mapVisible;
  $('#map-panel').hidden=!state.mapVisible;
  $('.explore-layout').classList.toggle('with-map',state.mapVisible);
- $('#toggle-map').textContent=state.mapVisible?'◩ Ocultar mapa':'◩ Ver mapa';
+ $('#toggle-map').innerHTML=state.mapVisible?'<span aria-hidden="true">⌖</span> Ocultar mapa':'<span aria-hidden="true">⌖</span> Ver mapa';
+ $('#toggle-map').setAttribute('aria-pressed',String(state.mapVisible));
  if(state.mapVisible)loadMap();
 }
 async function planning(e){

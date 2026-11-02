@@ -58,7 +58,7 @@ async function refresh(){
  state.loading=true;
  try{
   const data=await api("/api/journey/cases");state.cases=data.items||[];
-  if(isAdmin()){try{state.providers=await api("/api/journey/providers")}catch{state.providers=[]}}
+  if(isManager()){try{state.providers=await api("/api/journey/providers")}catch{state.providers=[]}}
   if(state.caseId&&!state.cases.find(c=>c.id===state.caseId)){state.caseId=null;state.detail=null;state.caseOpen=false}
   if(!state.caseId&&state.cases.length===1){state.caseId=state.cases[0].id;if(!isManager())state.caseOpen=true;}
   if(state.caseId)state.detail=await api("/api/journey/cases/"+encodeURIComponent(state.caseId));
@@ -97,7 +97,7 @@ function acceptance(){
 }
 function sideNav(){
  const tabs=[["overview","Resumen"],["tasks","Pendientes"],["appointments","Mis citas"],["messages","Mensajes"],["events","Actividad"]];
- if(isAdmin())tabs.push(["new","Nuevo proceso"]);
+ if(isManager())tabs.push(["new","Nuevo proceso"]);
  return '<aside class="sidebar"><div class="sidebar-header"><span class="eyebrow">GROWA JOURNEY</span><strong>'+escapeHTML(displayRole())+'</strong><small>Gestión de visitas · Mazatlán</small></div>'+
  '<nav class="sidebar-nav" aria-label="Navegación del espacio">'+tabs.map(([id,name])=>'<button type="button" class="'+(state.nav===id?'active':'')+'" data-nav="'+id+'"><span aria-hidden="true">'+icon[id]+'</span>'+name+'</button>').join('')+'</nav>'+
  '<div class="sidebar-bottom"><div class="identity"><strong>'+escapeHTML(state.user.name)+'</strong><small>'+escapeHTML(state.user.email)+'</small></div><button class="btn" data-action="logout">Cerrar sesión</button></div></aside>';
@@ -126,7 +126,7 @@ function caseRows(){
 function overview(){
  const greeting=isManager()?"Panel de seguimiento":"Tu proceso, en orden";
  return '<header class="page-head"><div><span class="eyebrow">'+escapeHTML(displayRole()).toUpperCase()+'</span><h1>'+greeting+'.</h1><p>'+(isManager()?'Coordina los casos y atiende los pendientes de cada visita.':'Consulta lo que sigue y mantén comunicación con tu equipo.')+'</p></div>'+
- '<div class="head-actions">'+(isAdmin()?'<button class="btn primary" data-nav="new">＋ Crear proceso</button>':'')+'<button class="btn" data-action="refresh">↻ Actualizar</button></div></header>'+
+ '<div class="head-actions">'+(isManager()?'<button class="btn primary" data-nav="new">＋ Crear proceso</button>':'')+'<button class="btn" data-action="refresh">↻ Actualizar</button></div></header>'+
  summaryCards()+
  '<section class="panel"><div class="panel-head"><div><h2>'+ (isManager()?'Procesos asignados':'Mis procesos')+'</h2><p class="sub">Selecciona un proceso para abrir su seguimiento completo.</p></div>'+
  (isManager()?'<div class="search"><input id="case-search" placeholder="Buscar paciente o servicio..." aria-label="Buscar procesos" value="'+escapeHTML(state.filter)+'"></div>':'')+'</div>'+caseRows()+'</section>';
@@ -159,7 +159,7 @@ function detailView(){
  const actionButtons='<div class="head-actions">'+
  (d.can_manage&&next?'<button class="btn primary" data-action="advance" '+(state.demo?'disabled':'')+'>Avanzar etapa →</button>':'')+
  (d.can_manage&&c.stage!=="completed"&&c.stage!=="cancelled"?'<button class="btn" data-action="new-task">＋ Pendiente</button>':'')+
- (isAdmin()&&!c.claimed?'<button class="btn" data-action="reissue" '+(state.demo?'disabled':'')+'>Nueva invitación</button>':'')+
+ (d.can_manage&&!c.claimed?'<button class="btn" data-action="reissue" '+(state.demo?'disabled':'')+'>Nueva invitación</button>':'')+
  '<button class="btn" data-action="print">Imprimir resumen</button></div>';
  let content="";
  if(state.nav==="tasks"){
@@ -204,7 +204,7 @@ function createForm(){
 function render(){
  if(!state.user){auth();return}
  if(state.invite&&!state.demo){acceptance();return}
- if(state.nav==="new"&&isAdmin()){shell(createForm());return}
+ if(state.nav==="new"&&isManager()){shell(createForm());return}
  let body;
  if(state.detail&&state.caseId&&state.caseOpen)body=detailView();
  else body=overview();

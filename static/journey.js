@@ -12,7 +12,7 @@ const cap=v=>String(v||"").replace(/(^|\s)\S/g,x=>x.toUpperCase());
 const inviteToken=decodeURIComponent((location.hash.match(/(?:^#|&)invite=([^&]+)/)||[])[1]||"");
 const isDemo=["patient","doctor"].includes(new URLSearchParams(location.search).get("demo"));
 const sampleDoctor=new URLSearchParams(location.search).get("demo")==="doctor";
-const state={user:null,cases:[],caseId:null,detail:null,nav:"overview",providers:[],invite:inviteToken,inviteLink:"",showLogin:false,modal:null,filter:"",loading:false,demo:isDemo};
+const state={user:null,cases:[],caseId:null,detail:null,nav:"overview",providers:[],invite:inviteToken,inviteLink:"",showLogin:false,modal:null,filter:"",loading:false,demo:isDemo,caseOpen:false};
 const icon={overview:"◫",tasks:"☑",appointments:"▦",messages:"✉",events:"◷",new:"＋"};
 const stageIndex={"request":0,"review":1,"planning":2,"scheduled":3,"completed":4};
 const stageLabels={"request":"Solicitud recibida","review":"Revisión administrativa","planning":"Organizando la visita","scheduled":"Cita confirmada","completed":"Proceso finalizado","cancelled":"Cancelado"};
@@ -48,7 +48,7 @@ function fakeDetail(){
   notice:"Demostración ficticia. No envíes información médica."
  };
 }
-function demoStart(){state.user={id:"demo",name:sampleDoctor?"Doctora de ejemplo":"Visitante de ejemplo",role:sampleDoctor?"provider":"patient",email:"ejemplo@demo.invalid"};state.cases=[demoCase];state.caseId="demo-case";state.detail=fakeDetail();}
+function demoStart(){state.user={id:"demo",name:sampleDoctor?"Doctora de ejemplo":"Visitante de ejemplo",role:sampleDoctor?"provider":"patient",email:"ejemplo@demo.invalid"};state.cases=[demoCase];state.caseId="demo-case";state.detail=fakeDetail();state.caseOpen=true;}
 function isManager(){return state.user&&["admin","coordinator","provider"].includes(state.user.role)}
 function isAdmin(){return state.user&&["admin","coordinator"].includes(state.user.role)}
 function displayRole(){return isAdmin()?"Coordinación":state.user?.role==="provider"?"Equipo de clínica":"Espacio del paciente"}
@@ -59,7 +59,7 @@ async function refresh(){
  try{
   const data=await api("/api/journey/cases");state.cases=data.items||[];
   if(isAdmin()){try{state.providers=await api("/api/journey/providers")}catch{state.providers=[]}}
-  if(state.caseId&&!state.cases.find(c=>c.id===state.caseId)){state.caseId=null;state.detail=null}
+  if(state.caseId&&!state.cases.find(c=>c.id===state.caseId)){state.caseId=null;state.detail=null;state.caseOpen=false}
   if(!state.caseId&&state.cases.length===1)state.caseId=state.cases[0].id;
   if(state.caseId)state.detail=await api("/api/journey/cases/"+encodeURIComponent(state.caseId));
  }finally{state.loading=false}
@@ -205,14 +205,13 @@ function render(){
  if(state.invite&&!state.demo){acceptance();return}
  if(state.nav==="new"&&isAdmin()){shell(createForm());return}
  let body;
- if(state.detail&&state.caseId&&state.nav!=="overview")body=detailView();
- else if(state.detail&&state.caseId&&state.nav==="overview"&&state.cases.length===1)body=detailView();
+ if(state.detail&&state.caseId&&state.caseOpen)body=detailView();
  else body=overview();
  shell(body);
  if(state.nav==="messages"){const feed=$("#conversation");if(feed)feed.scrollTop=feed.scrollHeight}
 }
 async function openCase(id,nav="overview"){
- state.caseId=id;state.nav=nav;
+ state.caseId=id;state.nav=nav;state.caseOpen=true;
  if(state.demo){state.detail=fakeDetail();render();return}
  state.detail=await api("/api/journey/cases/"+encodeURIComponent(id));render();
 }
@@ -249,7 +248,7 @@ document.addEventListener("click",async e=>{
  const nav=e.target.closest("[data-nav]");const opener=e.target.closest("[data-open-case]");
  if(nav){
   state.nav=nav.dataset.nav;
-  if(state.nav==="overview"&&state.cases.length!==1){state.caseId=null;state.detail=null}
+  if(state.nav==="overview"){state.caseId=null;state.detail=null;state.caseOpen=false}
   if(!state.caseId&&state.cases.length)try{await openCase(state.cases[0].id,state.nav)}catch(err){notify(err.message)}
   render();return;
  }
@@ -264,7 +263,7 @@ document.addEventListener("click",async e=>{
  const action=act.dataset.action;
  if(action==="close-modal"){if(e.target.closest(".modal")&&e.target!==act)return;state.modal=null;render();return}
  if(action==="toggle-login"){state.showLogin=!state.showLogin;render();return}
- if(action==="back"){state.caseId=null;state.detail=null;state.nav="overview";render();return}
+ if(action==="back"){state.caseId=null;state.detail=null;state.caseOpen=false;state.nav="overview";render();return}
  if(action==="new-task"){if(state.demo)return notify("En modo demo no se guardan cambios.");newTask();return}
  if(action==="new-appointment"){if(state.demo)return notify("En modo demo no se guardan cambios.");newAppointment();return}
  if(action==="print"){window.print();return}
@@ -284,7 +283,7 @@ document.addEventListener("click",async e=>{
  if(action==="logout"){
   if(state.demo){location.href="/mi-proceso";return}
   try{await api("/api/logout","POST",{})}catch(err){notify(err.message)}
-  state.user=null;state.cases=[];state.caseId=null;state.detail=null;state.nav="overview";render();return;
+  state.user=null;state.cases=[];state.caseId=null;state.detail=null;state.caseOpen=false;state.nav="overview";render();return;
  }
 });
 document.addEventListener("input",e=>{
@@ -312,7 +311,7 @@ document.addEventListener("submit",async e=>{
    state.user=await api("/api/me");await refresh();notify("Tu espacio ha sido activado.");
   }else if(form.id==="create-form"){
    const out=await api("/api/journey/cases","POST",{patient_name:v("patient_name"),patient_email:v("patient_email"),listing_id:v("listing_id"),service_label:v("service_label"),preferred_language:v("preferred_language")});
-   state.inviteLink=out.invitation_url;state.caseId=out.case.id;state.nav="overview";await refresh();invitationPopup();
+   state.inviteLink=out.invitation_url;state.caseId=out.case.id;state.caseOpen=true;state.nav="overview";await refresh();invitationPopup();
   }else if(form.id==="task-form"){
    await api("/api/journey/cases/"+state.caseId+"/tasks","POST",{title:v("title"),detail:v("detail"),kind:v("kind"),assigned_to:v("assigned_to"),due_date:v("due_date")||null});
    state.modal=null;await reloadDetail();notify("Pendiente registrado.");

@@ -4,6 +4,10 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 
 **Estado:** proyecto de desarrollo. Los proveedores semilla y sus precios son exclusivamente demostrativos. No representan ofertas reales ni disponibilidad médica verificable.
 
+## Red médica de prueba · 50 perfiles sintéticos en Neon
+
+Visita `/red-medica` para explorar 10 médicos y 40 pacientes ficticios con citas ilustrativas en Neon. La vista no ofrece servicios reales; solo las cuentas administrativas autorizadas pueden modificar citas de demostración. Los registros viven en tablas aisladas de los procesos reales.
+
 ## Growa Journey v0.9 · seguimiento de consultas y trámites
 
 El sistema dispone de **dos espacios con permisos separados**: [Mi proceso](/mi-proceso) para el paciente y [Panel médico](/panel-medico) para profesionales/proveedores autorizados. Permite registrar solicitudes administrativas, invitar pacientes, organizar tareas, proponer y confirmar citas, resolver consultas logísticas y consultar un historial de eventos.

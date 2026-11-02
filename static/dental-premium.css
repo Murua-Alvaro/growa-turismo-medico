@@ -305,3 +305,20 @@ body{color:var(--ink);background:#fff;font-family:var(--body)}
 @media(prefers-reduced-motion:reduce){
  .dental-home .result-cover img{transition:none}
 }
+
+/* Mobile filters: proper slide-over panel; never push results below the list. */
+.filters-backdrop,.filter-mobile-close{display:none}
+@media(max-width:740px){
+ .dental-home .filters-backdrop:not([hidden]){
+  display:block;position:fixed;inset:64px 0 0;width:100vw;height:calc(100dvh - 64px);
+  background:#122c3b88;border:0;z-index:79;padding:0
+ }
+ .dental-home .filter-sidebar.open{
+  display:block;position:fixed;inset:64px auto 0 0;width:min(360px,89vw);max-height:calc(100dvh - 64px);
+  overflow-y:auto;overscroll-behavior:contain;background:#fff;z-index:85;
+  padding:25px 24px 42px;margin:0;box-shadow:7px 0 28px #0e273720;border:0
+ }
+ .dental-home .filter-mobile-close{
+  display:block;font-size:27px;line-height:1;color:#193e52;background:transparent;border:0;padding:0 3px;font-weight:400
+ }
+}

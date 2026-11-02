@@ -182,7 +182,7 @@ def providers(user: User = Depends(security.require("admin", "coordinator"))):
     with SessionLocal() as db:
         rows = list(db.scalars(select(Listing).where(
             Listing.category == "medico", Listing.active.is_(True),
-            Listing.demo.is_(False), Listing.provider_user_id.is_not(None)
+            Listing.demo.is_(False), Listing.verified.is_(True), Listing.provider_user_id.is_not(None)
         ).order_by(Listing.name)))
         return [{"id": r.id, "name": r.name, "provider": db.get(User, r.provider_user_id).name}
                 for r in rows if db.get(User, r.provider_user_id).active]
@@ -195,8 +195,8 @@ def create_case(body: NewCase, request: Request, user: User = Depends(security.r
         raise HTTPException(422, "Correo no válido.")
     with SessionLocal.begin() as db:
         listing = db.get(Listing, body.listing_id)
-        if not listing or not listing.active or listing.demo or listing.category != "medico" or not listing.provider_user_id:
-            raise HTTPException(422, "Selecciona un proveedor real con cuenta asignada.")
+        if not listing or not listing.active or listing.demo or not listing.verified or listing.category != "medico" or not listing.provider_user_id:
+            raise HTTPException(422, "Selecciona una clínica real verificada y con cuenta profesional asignada.")
         provider = db.get(User, listing.provider_user_id)
         if not provider or not provider.active:
             raise HTTPException(422, "El proveedor no tiene cuenta activa.")

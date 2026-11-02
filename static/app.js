@@ -37,6 +37,7 @@ function canOperate(){return state.user && ['admin','coordinator'].includes(stat
 const WORKSPACE_PATHS={home:'/',explore:'/explorar',planner:'/planificar',community:'/comunidad',trips:'/itinerarios',partners:'/aliados'};
 const PATH_WORKSPACES=Object.fromEntries(Object.entries(WORKSPACE_PATHS).map(([k,v])=>[v,k]));
 function go(view,writeHistory=true){
+ if(view==='explore'){window.location.assign('/explorar');return;}
  if(view==='mazatlan'){window.location.assign('/mazatlan');return;}
  if(!WORKSPACE_PATHS[view])return;
  if(['trips','partners'].includes(view) && (!state.user || !['admin','coordinator','provider'].includes(state.user.role))){

@@ -7,7 +7,7 @@ semantic index when a demo web process starts.
 from __future__ import annotations
 import logging
 from types import SimpleNamespace
-from . import discovery, optimizer, routing, services, community, dental
+from . import discovery, optimizer, routing, services, community, dental, journey
 from .db import SessionLocal, Listing
 from sqlalchemy import select, inspect
 
@@ -72,8 +72,16 @@ def run_demo_checks() -> dict[str, str]:
             if clinic.demo:
                 assert not dental.record(clinic)["verified"]
                 assert dental.record(clinic)["rating"] is None
+    with SessionLocal() as db:
+        journey_tables={"journey_cases","journey_invites","journey_tasks",
+                        "journey_messages","journey_appointments","journey_events"}
+        assert journey_tables.issubset(set(inspect(db.bind).get_table_names()))
+    for item in ("journey.html","journey.css","journey.js"):
+        assert (ROOT/"static"/item).exists(), "Missing journey asset: "+item
+    assert "/api/journey" in journey.router.prefix
     result={"optimizer":engine,"semantic":"passed","catalog":"passed",
             "geo_distance":"passed","routing":routing.status(),
-            "community":"passed","destination":"passed","dental":"passed"}
+            "community":"passed","destination":"passed","dental":"passed",
+            "journey":"passed"}
     LOG.info("GROWA_DEMO_SELFTEST_PASSED %s", result)
     return result

@@ -178,18 +178,20 @@ class NewCase(BaseModel):
 
 
 @router.get("/providers")
-def providers(user: User = Depends(security.require("admin", "coordinator"))):
+def providers(user: User = Depends(security.require("admin", "coordinator", "provider"))):
     with SessionLocal() as db:
-        rows = list(db.scalars(select(Listing).where(
+        query = select(Listing).where(
             Listing.category == "medico", Listing.active.is_(True),
-            Listing.demo.is_(False), Listing.verified.is_(True), Listing.provider_user_id.is_not(None)
-        ).order_by(Listing.name)))
+            Listing.demo.is_(False), Listing.verified.is_(True), Listing.provider_user_id.is_not(None))
+        if user.role == "provider":
+            query = query.where(Listing.provider_user_id == user.id)
+        rows = list(db.scalars(query.order_by(Listing.name)))
         return [{"id": r.id, "name": r.name, "provider": db.get(User, r.provider_user_id).name}
                 for r in rows if db.get(User, r.provider_user_id).active]
 
 
 @router.post("/cases", status_code=201, dependencies=[Depends(security.check_csrf)])
-def create_case(body: NewCase, request: Request, user: User = Depends(security.require("admin", "coordinator"))):
+def create_case(body: NewCase, request: Request, user: User = Depends(security.require("admin", "coordinator", "provider"))):
     email = body.patient_email.strip().lower()
     if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
         raise HTTPException(422, "Correo no válido.")
@@ -197,6 +199,8 @@ def create_case(body: NewCase, request: Request, user: User = Depends(security.r
         listing = db.get(Listing, body.listing_id)
         if not listing or not listing.active or listing.demo or not listing.verified or listing.category != "medico" or not listing.provider_user_id:
             raise HTTPException(422, "Selecciona una clínica real verificada y con cuenta profesional asignada.")
+        if user.role == "provider" and listing.provider_user_id != user.id:
+            raise HTTPException(403, "Solo puedes crear casos de tu clínica asignada.")
         provider = db.get(User, listing.provider_user_id)
         if not provider or not provider.active:
             raise HTTPException(422, "El proveedor no tiene cuenta activa.")
@@ -225,7 +229,7 @@ class ReissueRequest(BaseModel):
 
 @router.post("/cases/{case_id}/reissue", dependencies=[Depends(security.check_csrf)])
 def reissue_invitation(case_id: str, body: ReissueRequest, request: Request,
-                       user: User = Depends(security.require("admin", "coordinator"))):
+                       user: User = Depends(security.require("admin", "coordinator", "provider"))):
     with SessionLocal.begin() as db:
         c = access(db, case_id, user)
         if c.patient_user_id:

@@ -37,9 +37,9 @@ El despliegue usa \`Base.metadata.create_all\` ya presente en el servicio para i
 
 | Método y ruta | Acceso |
 | --- | --- |
-| GET \`/api/journey/providers\` | Admin/coordinador; lista clínicas reales verificadas con prestador |
-| POST \`/api/journey/cases\` | Admin/coordinador; crea un caso e invitación |
-| POST \`/api/journey/cases/{id}/reissue\` | Admin/coordinador; invalida enlaces anteriores |
+| GET \`/api/journey/providers\` | Equipo autorizado; el proveedor solo ve sus clínicas verificadas |
+| POST \`/api/journey/cases\` | Admin/coordinador/proveedor asignado; crea un caso e invitación |
+| POST \`/api/journey/cases/{id}/reissue\` | Equipo autorizado, con acceso al caso; invalida enlaces anteriores |
 | POST \`/api/journey/claim\` | Nuevo paciente con token, correo, contraseña y aceptación |
 | POST \`/api/journey/claim-existing\` | Usuario existente, autenticado con CSRF |
 | GET \`/api/journey/cases\` | Casos filtrados por rol y pertenencia |
@@ -65,11 +65,11 @@ Las operaciones autenticadas con efectos de escritura usan verificación CSRF, s
 
 ## Puesta en servicio pendiente
 
-1. Resolver el acceso al servicio Render existente \`srv-dbj6b6s9v7es73980540\`, sin crear otro, y verificar estado del despliegue.
+1. Servicio Render vigente identificado: \`srv-dbj6jk8473hc73ba1mug\`, URL \`https://growa-turismo-medico-qoon.onrender.com\`. El ID anterior \`srv-dbj6b6s9v7es73980540\` dejó de estar disponible. Despliegue demo del código Journey confirmado como **live** el 2 de noviembre de 2026, autodiagnóstico \`journey=passed\`. Los ajustes posteriores de permisos requieren redeploy.
 2. Configurar \`DATABASE_URL\` vigente de Neon en el entorno seguro de ese servicio. No publicar secretos en GitHub. El proyecto Neon identificado es \`falling-lake-03374849\`.
 3. Revisar \`PRODUCTION=true\`, \`PUBLIC_BASE_URL\`, \`ALLOWED_HOSTS\`, \`SESSION_SECRET\`, variables de administrador y configuración de proxy.
 4. Desplegar el commit de \`main\` y verificar \`/api/health\`, \`/mi-proceso\`, \`/panel-medico\`, registro y separación de roles con cuentas ficticias.
-5. Ejecutar \`pytest -q\`, \`python -m compileall -q app\`, \`node --check static/journey.js\`; inspeccionar logs y resultados del despliegue. Las ejecuciones observadas de GitHub Actions han fallado y no se obtuvo una prueba automatizada exitosa.
+5. Ejecutar \`pytest -q\`, \`python -m compileall -q app\`, \`node --check static/journey.js\`; inspeccionar logs y resultados del despliegue. Las ejecuciones observadas de GitHub Actions han fallado y no se obtuvo una prueba automatizada exitosa; los logs de dicho CI no estuvieron accesibles. El autodiagnóstico de arranque Render sí pasó, pero no sustituye toda la suite de pruebas.
 6. Incorporar validación real de clínica y prestador antes de abrir casos reales. No utilizar datos de pacientes reales durante el piloto sin auditoría legal, operativa y de seguridad.
 
 ## Fuera de alcance de v0.9

@@ -452,7 +452,8 @@ function bind(){
   $('#mobile-menu').setAttribute('aria-label',open?'Cerrar menú principal':'Abrir menú principal');
   $('#mobile-menu').textContent=open?'×':'☰';
  };
- $$('[data-go]').forEach(btn=>btn.onclick=()=>{
+ $('[data-go]').forEach(btn=>btn.onclick=event=>{
+  if(btn.tagName==='A')event.preventDefault();
   go(btn.dataset.go);
   btn.closest('details')?.removeAttribute('open');
   if(btn.dataset.storyTarget)requestAnimationFrame(()=>$('#'+btn.dataset.storyTarget)?.scrollIntoView({behavior:'smooth',block:'start'}));
@@ -492,6 +493,13 @@ function bind(){
 }
 async function startup(){
  bind();
+ // Immediately render the requested route; slow API requests must not block Explore.
+ const initialView=PATH_WORKSPACES[window.location.pathname]||'home';
+ const requestedCategory=new URLSearchParams(location.search).get('categoria');
+ if(requestedCategory&&['hotel','medico','transporte','negocio'].includes(requestedCategory)){
+  state.category=requestedCategory;categories();
+ }
+ if(initialView!=='home')go(initialView,false);
  // Browser Back/Forward and direct-link refresh resolve to the same workspace.
  window.addEventListener('popstate',()=>{
   const target=PATH_WORKSPACES[window.location.pathname]||'home';
@@ -499,16 +507,10 @@ async function startup(){
  });
  try{state.user=await req('/api/me');setAccount();}catch(e){}
  try{await loadAll();await searchCatalog();}catch(e){msg('No fue posible cargar el catálogo: '+e.message,true);}
- const requestedCategory=new URLSearchParams(location.search).get('categoria');
- if(requestedCategory&&['hotel','medico','transporte','negocio'].includes(requestedCategory)){
-  state.category=requestedCategory;categories();
- }
  const requestedProvider=new URLSearchParams(location.search).get('prestador');
  if(requestedProvider && state.all.some(item=>item.id===requestedProvider && item.category==='medico')){
   $('#plan-medical').value=requestedProvider;
  }
- const initialView=PATH_WORKSPACES[window.location.pathname]||'home';
- if(initialView!=='home')go(initialView,false);
  if(new URLSearchParams(location.search).has('calendar')){msg('Se recibió el retorno de Google Calendar.');history.replaceState(null,'',location.pathname);}
 }
 startup();

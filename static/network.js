@@ -70,7 +70,7 @@ function renderCalendar(){
   const key=iso(new Date(year,month,n)),items=events.filter(v=>v.starts_at.slice(0,10)===key);
   cal+='<button class="day '+(key===state.date?"selected":"")+'" data-day="'+key+'" aria-label="'+esc(fullDate(key))+', '+items.length+' citas">'+
   '<span class="date '+(key===iso(today)?"today":"")+'">'+n+'</span>'+
-  items.slice(0,2).map(v=>'<span class="appointment-mark '+(v.status==="proposed"?"soft":"")+'">'+esc(hours(v.starts_at))+' · '+esc(patient(v.patient_id)?.name||"Paciente")+'</span>').join("")+
+  items.slice(0,2).map(v=>'<span class="appointment-mark '+(v.status==="proposed"?"soft":"")+'">'+esc(hours(v.starts_at))+' · '+esc(shortName(patient(v.patient_id)?.name||"Paciente"))+'</span>').join("")+
   (items.length>2?'<span class="appointment-mark soft">+'+(items.length-2)+' más</span>':"")+'</button>';
  }
  while((offset+length)%7!==0){cal+='<div class="day empty" aria-hidden="true"></div>';offset++}

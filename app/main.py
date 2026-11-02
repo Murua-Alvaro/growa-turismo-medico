@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel, Field
 from typing import Literal
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from .db import (ROOT, PRODUCTION, SessionLocal, init_db, User, Listing, Slot,
                  Booking, BookingLeg, Audit, uid, now)
@@ -27,6 +27,11 @@ async def lifespan(app:FastAPI):
         raise RuntimeError("A unique SESSION_SECRET with 32+ characters is required.")
     init_db()
     security.bootstrap_admin()
+    # Safe readiness evidence: only an aggregate count of synthetic profiles, no identities.
+    import logging
+    with SessionLocal() as db:
+        network_count = db.scalar(select(func.count()).select_from(demo_network.DemoPerson))
+    logging.getLogger("uvicorn.error").info("GROWA_NETWORK_STORAGE_CONNECTED synthetic_profiles=%d", network_count or 0)
     if os.getenv("DEMO_SEED","false").lower()=="true":
         if PRODUCTION:raise RuntimeError("DEMO_SEED is not permitted in production.")
         from .seed import seed_demo, seed_dental_demo

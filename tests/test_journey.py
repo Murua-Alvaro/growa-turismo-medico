@@ -81,7 +81,10 @@ def test_journey_invite_tasks_appointments_and_role_isolation():
             "token":invite_token,"email":patient_email,"name":"Paciente ficticio","password":PASS
         }).status_code == 400
         assert provider.get("/api/journey/cases/"+case_id).status_code == 200
-        assert provider.get("/api/journey/providers").status_code == 403
+        own = provider.post("/api/journey/cases",json={**request,"patient_email":f"other-{token}@example.test"},headers=provider_csrf)
+        assert own.status_code == 201, own.text
+        assert own.json()["case"]["provider"] == "Profesional ficticio"
+        assert any(x["id"] == clinic_id for x in provider.get("/api/journey/providers").json())
         assert patient.get("/api/journey/providers").status_code == 403
         assert patient.patch(f"/api/journey/cases/{case_id}/stage",
                              json={"stage":"review"},headers=csrf).status_code == 403

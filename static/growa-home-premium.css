@@ -296,3 +296,22 @@ body.home-is-active .footer-links button:hover,body.home-is-active .footer-links
 @media(prefers-reduced-motion:reduce){
  #view-home .showcase,#view-home .featured-listings .listing-card{transition:none}
 }
+
+/* Align layout width with the full-bleed dental experience. */
+body.home-is-active .container{max-width:none;width:100%;padding:0 0 105px}
+#view-home>.hero{width:100%;max-width:none}
+#view-home .hero-copy{padding-left:max(5vw,calc((100vw - 1430px)/2))}
+#view-home .hero-photo-credit,#view-home .search-dock,#view-home .assurance-strip,#view-home .content-section,#view-home .dental-feature,#view-home .destination-feature,#view-home .experience-banner{
+ width:min(1430px,calc(100% - 94px));margin-left:auto;margin-right:auto
+}
+@media(max-width:930px){
+ #view-home .hero-copy{padding-left:clamp(27px,4vw,45px)}
+ #view-home .hero-photo-credit,#view-home .search-dock,#view-home .assurance-strip,#view-home .content-section,#view-home .dental-feature,#view-home .destination-feature,#view-home .experience-banner{width:calc(100% - 55px)}
+}
+@media(max-width:740px){
+ body.home-is-active .container{padding:0 0 75px}
+ #view-home .hero-copy{padding-left:21px}
+ #view-home .hero-photo-credit,#view-home .search-dock,#view-home .assurance-strip,#view-home .content-section,#view-home .dental-feature,#view-home .destination-feature,#view-home .experience-banner{width:calc(100% - 38px)}
+ #view-home .dental-feature-body{padding:43px 20px}
+ #view-home .experience-banner{padding:47px 24px}
+}

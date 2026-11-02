@@ -60,7 +60,7 @@ async function refresh(){
   const data=await api("/api/journey/cases");state.cases=data.items||[];
   if(isAdmin()){try{state.providers=await api("/api/journey/providers")}catch{state.providers=[]}}
   if(state.caseId&&!state.cases.find(c=>c.id===state.caseId)){state.caseId=null;state.detail=null;state.caseOpen=false}
-  if(!state.caseId&&state.cases.length===1)state.caseId=state.cases[0].id;
+  if(!state.caseId&&state.cases.length===1){state.caseId=state.cases[0].id;if(!isManager())state.caseOpen=true;}
   if(state.caseId)state.detail=await api("/api/journey/cases/"+encodeURIComponent(state.caseId));
  }finally{state.loading=false}
  render();
@@ -84,7 +84,7 @@ function auth(){
  '<form class="form-stack" id="register-form"><label class="field">Correo de la invitación<input name="email" type="email" required maxlength="180" autocomplete="email"></label>'+
  '<label class="field">Tu nombre<input name="name" minlength="2" maxlength="140" required autocomplete="name"></label>'+
  '<label class="field">Crea una contraseña segura<input name="password" type="password" minlength="14" maxlength="200" required autocomplete="new-password"></label>'+
- '<button class="btn primary" type="submit">Activar acceso →</button><button type="button" class="link-btn" data-action="toggle-login">¿Ya tienes cuenta? Inicia sesión</button></form>':
+ '<label style="display:flex;gap:10px;align-items:start;font-size:11px;line-height:1.6;color:#687985"><input type="checkbox" name="accept_terms" required style="margin-top:4px"> Acepto que este espacio se utilice únicamente para coordinación administrativa y confirmo haber leído el aviso de privacidad del piloto. No subiré datos clínicos.</label><button class="btn primary" type="submit">Activar acceso →</button><button type="button" class="link-btn" data-action="toggle-login">¿Ya tienes cuenta? Inicia sesión</button></form>':
  '<form class="form-stack" id="login-form"><label class="field">Correo electrónico<input name="email" type="email" required autocomplete="username"></label>'+
  '<label class="field">Contraseña<input name="password" type="password" required autocomplete="current-password"></label>'+
  '<button class="btn primary" type="submit">Acceder a mi espacio →</button>'+
@@ -159,6 +159,7 @@ function detailView(){
  const actionButtons='<div class="head-actions">'+
  (d.can_manage&&next?'<button class="btn primary" data-action="advance" '+(state.demo?'disabled':'')+'>Avanzar etapa →</button>':'')+
  (d.can_manage&&c.stage!=="completed"&&c.stage!=="cancelled"?'<button class="btn" data-action="new-task">＋ Pendiente</button>':'')+
+ (isAdmin()&&!c.claimed?'<button class="btn" data-action="reissue" '+(state.demo?'disabled':'')+'>Nueva invitación</button>':'')+
  '<button class="btn" data-action="print">Imprimir resumen</button></div>';
  let content="";
  if(state.nav==="tasks"){
@@ -267,6 +268,11 @@ document.addEventListener("click",async e=>{
  if(action==="new-task"){if(state.demo)return notify("En modo demo no se guardan cambios.");newTask();return}
  if(action==="new-appointment"){if(state.demo)return notify("En modo demo no se guardan cambios.");newAppointment();return}
  if(action==="print"){window.print();return}
+ if(action==="reissue"){
+  if(state.demo)return notify("No disponible en demostración.");
+  if(!confirm("Se invalidará la invitación anterior. ¿Generar una nueva?"))return;
+  try{const r=await api("/api/journey/cases/"+state.caseId+"/reissue","POST",{reason:"Reenvío administrativo solicitado"});state.inviteLink=r.invitation_url;invitationPopup()}catch(err){notify(err.message)}return;
+ }
  if(action==="copy-invite"){
   try{await navigator.clipboard.writeText(state.inviteLink);notify("Enlace copiado.")}catch{notify("Selecciona el enlace y cópialo manualmente.")}return;
  }
@@ -306,7 +312,7 @@ document.addEventListener("submit",async e=>{
    state.user=await api("/api/login","POST",{email:v("email"),password:v("password")});
    if(!state.invite)await refresh();else render();
   }else if(form.id==="register-form"){
-   await api("/api/journey/claim","POST",{token:state.invite,email:v("email"),name:v("name"),password:v("password")});
+   await api("/api/journey/claim","POST",{token:state.invite,email:v("email"),name:v("name"),password:v("password"),accept_terms:fields.get("accept_terms")==="on"});
    state.invite="";history.replaceState(null,"",location.pathname);
    state.user=await api("/api/me");await refresh();notify("Tu espacio ha sido activado.");
   }else if(form.id==="create-form"){

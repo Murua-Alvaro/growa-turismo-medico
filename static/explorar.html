@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#ffffff">
+ <meta name="description" content="Explorar servicios de hospitalidad médica, hospedaje y movilidad en Mazatlán — Growa.">
+ <title>Explorar · Growa Turismo Médico</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+ <link href="/static/styles.css?v=explore-standalone-1" rel="stylesheet">
+ <link href="/static/growa-editorial.css?v=explore-standalone-1" rel="stylesheet">
+ <link href="/static/explore-monochrome.css?v=explore-standalone-1" rel="stylesheet">
+ <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+ <style>
+  html{scroll-behavior:smooth}
+  body.explore-is-active{background:#fff}
+  .standalone-nav{min-height:78px;position:sticky;top:0;z-index:40;background:#fff;border-bottom:1px solid #e9e9e9;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:13px 5vw;font-family:"Plus Jakarta Sans",Arial,sans-serif}
+  .standalone-brand{display:inline-flex;align-items:center;gap:12px;font-size:23px;font-weight:700;letter-spacing:-.065em;text-decoration:none;color:#101010}
+  .standalone-brand-mark{width:36px;height:36px;background:#101010;color:#fff;display:grid;place-items:center;font-size:19px}
+  .standalone-brand-name{display:flex;flex-direction:column;line-height:.96}
+  .standalone-brand-name small{font-size:8px;letter-spacing:.25em;font-weight:700;color:#777;margin-top:6px}
+  .standalone-links{display:flex;align-items:center;gap:clamp(12px,2vw,30px)}
+  .standalone-links a{font:600 11px/1.4 "Plus Jakarta Sans",Arial,sans-serif;letter-spacing:.01em;color:#555;text-decoration:none;white-space:nowrap}
+  .standalone-links a:hover,.standalone-links a[aria-current]{color:#0a0a0a}
+  .standalone-links a[aria-current]{border-bottom:1px solid #111;padding-bottom:8px;padding-top:8px}
+  .standalone-links .standalone-plan{color:#fff;background:#101010;padding:13px 17px}
+  .standalone-links .standalone-plan:hover{color:#fff;background:#444}
+  .explore-standalone-footer{border-top:1px solid #ddd;padding:36px 5vw 52px;display:flex;justify-content:space-between;gap:20px;font:500 11px/1.7 "Plus Jakarta Sans",Arial,sans-serif;color:#777}
+  .standalone-detail-card{width:min(820px,100%);max-height:88vh;overflow:auto;background:#fff;padding:0;position:relative;color:#111}
+  .standalone-detail-content{padding:35px 40px 45px}
+  .standalone-detail-content h2{font:400 clamp(35px,4vw,54px)/1.1 "Bodoni Moda",Georgia,serif;letter-spacing:-.05em;margin:13px 0}
+  .standalone-detail-content p{font:400 13px/1.8 "Plus Jakarta Sans",Arial,sans-serif;color:#555;max-width:700px}
+  .standalone-detail-content ul{display:flex;gap:15px;flex-wrap:wrap;padding:0;list-style:none}
+  .standalone-detail-content li{font-size:11px;border-bottom:1px solid #ddd;padding:7px 0}
+  .standalone-detail-visual{width:100%;height:280px;object-fit:cover;filter:grayscale(100%);background:#ddd}
+  .standalone-detail-heading{font:700 10px "Plus Jakarta Sans",Arial,sans-serif;letter-spacing:.17em;color:#777}
+  .standalone-detail-price{border-top:1px solid #ddd;margin-top:23px;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+  .standalone-detail-price strong{font:400 27px "Bodoni Moda",Georgia,serif}
+  .standalone-detail-price small{display:block;font-size:10px;color:#777;margin-top:5px}
+  .standalone-detail-price a{background:#111;color:#fff;text-decoration:none;padding:14px 18px;font-size:11px;font-weight:700}
+  #explore-detail-modal[hidden]{display:none!important}
+  #explore-detail-modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.76);display:grid;place-items:center;padding:18px}
+  #explore-detail-close{position:absolute;right:17px;top:13px;z-index:2;background:#fff;border:1px solid #ddd;width:37px;height:37px;font-size:25px;cursor:pointer}
+  @media(max-width:950px){.standalone-nav{flex-wrap:wrap;gap:14px}.standalone-links{overflow:auto;width:100%;padding:5px 0 8px}}
+  @media(max-width:650px){.standalone-nav{padding:10px 19px;min-height:0}.standalone-brand{font-size:20px}.standalone-links{gap:17px}.standalone-links a{font-size:10px}.explore-standalone-footer{display:block}.standalone-detail-content{padding:24px}.standalone-detail-visual{height:180px}}
+ </style>
+ <script src="/static/explore-standalone.js?v=explore-standalone-1" defer></script>
+</head>
+<body class="explore-is-active">
+ <a class="skip-link" href="#view-explore">Ir al contenido</a>
+ <header class="standalone-nav">
+  <a class="standalone-brand" href="/" aria-label="Growa, volver al inicio"><span class="standalone-brand-mark">G</span><span class="standalone-brand-name">growa<small>TURISMO MÉDICO</small></span></a>
+  <nav class="standalone-links" aria-label="Navegación principal">
+   <a href="/">Inicio</a>
+   <a href="/explorar" aria-current="page">Explorar</a>
+   <a href="/odontologia">Odontología</a>
+   <a href="/mazatlan">Mazatlán</a>
+   <a href="/mi-proceso">Mi proceso</a>
+   <a class="standalone-plan" href="/planificar">Planificar ↗</a>
+  </nav>
+ </header>
+ <main class="container">
+<section class="view active" id="view-explore" aria-label="Explorar servicios en Mazatlán">
+ <div class="explore-hero">
+  <div class="explore-hero-content">
+   <div class="explore-hero-overline"><span>GROWA / HOSPITALIDAD MÉDICA</span><span>MAZATLÁN, MÉXICO — 2026</span></div>
+   <div class="explore-hero-main">
+    <span class="explore-hero-index">01 — DESCUBRE TU DESTINO</span>
+    <h1>Explorar es <em>encontrar.</em></h1>
+    <p>Una forma más sencilla de descubrir hospedaje, atención independiente, movilidad y experiencias para acompañar tu estancia.</p>
+    <div class="explore-hero-cta">
+     <button type="button" data-anchor="explore-catalog-anchor" class="explore-cta-primary">Explorar el directorio <span aria-hidden="true">↘</span></button>
+     <a href="/odontologia" class="explore-cta-secondary">Ver odontología <span aria-hidden="true">↗</span></a>
+    </div>
+   </div>
+   <div class="explore-hero-foot"><span>Un destino. Distintas posibilidades.</span><span>DESLIZA PARA DESCUBRIR ↓</span></div>
+  </div>
+  <div class="explore-hero-media">
+   <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Paisaje de playa, imagen ilustrativa de una estancia junto al mar" fetchpriority="high">
+   <div class="explore-hero-media-caption"><span>EL VIAJE TAMBIÉN IMPORTA</span><span>IMAGEN ILUSTRATIVA · COSTA</span></div>
+   <span class="explore-hero-vertical" aria-hidden="true">EXPLORE / EXPERIENCE / CONNECT</span>
+  </div>
+ </div>
+ <div class="explore-utility-line" aria-label="Áreas del directorio"><span>01 / HOSPEDAJE</span><span>02 / SERVICIOS MÉDICOS</span><span>03 / MOVILIDAD</span><span>04 / COMERCIO LOCAL</span></div>
+ <div class="explore-catalog" id="explore-catalog-anchor">
+  <div class="explore-chapter-head">
+   <div><span class="explore-chapter-no">02 / DIRECTORIO</span><h2>Todo lo que necesitas, <em>a tu ritmo.</em></h2></div>
+   <p>Busca por nombre, zona o características. Examina las opciones y conoce los detalles antes de contactar o planificar.</p>
+  </div>
+  <div class="explore-toolbar" role="search" aria-label="Búsqueda de servicios">
+   <label class="explore-field explore-field-search"><span class="explore-field-label">¿QUÉ ESTÁS BUSCANDO?</span><span class="search-input"><span class="explore-search-icon" aria-hidden="true">⌕</span><input id="catalog-q" type="search" placeholder="Busca hoteles, profesionales, traslados…" autocomplete="off" aria-label="Buscar servicios por nombre o características"></span></label>
+   <label class="explore-field explore-field-zone"><span class="explore-field-label">UBICACIÓN</span><select id="catalog-zone" aria-label="Zona"><option value="">Todas las zonas</option></select></label>
+   <label class="explore-field explore-field-price"><span class="explore-field-label">PRESUPUESTO</span><select id="catalog-price" aria-label="Precio máximo"><option value="0">Sin límite</option><option value="1000">Hasta $1,000</option><option value="2000">Hasta $2,000</option><option value="3000">Hasta $3,000</option></select></label>
+   <button type="button" class="explore-map-toggle" id="toggle-map"><span aria-hidden="true">⌖</span> Ver mapa</button>
+  </div>
+  <div class="explore-category-wrap"><span class="explore-filter-label">EXPLORAR POR CATEGORÍA</span><div class="category-pills" id="category-pills" role="group" aria-label="Categoría de servicios"></div></div>
+  <div class="filter-row"><span class="explore-filter-label">FILTRAR POR</span><label><input id="filter-access" type="checkbox"> Accesibilidad</label><label><input id="filter-english" type="checkbox"> Atención en inglés</label><label><input id="filter-verified" type="checkbox"> Verificados</label><button type="button" class="simple-link" id="clear-filters">Restablecer filtros <span aria-hidden="true">↺</span></button></div>
+  <div class="results-heading"><div><span class="explore-results-overline">EL DIRECTORIO</span><h2 id="results-title">Opciones para tu estancia</h2><p id="results-count" role="status" aria-live="polite">Cargando oferta...</p></div><div class="results-tools"><label class="sort-control"><span>ORDENAR POR</span><select id="catalog-sort" aria-label="Ordenar resultados"><option value="default">Relevancia del catálogo</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre A–Z</option></select></label></div></div>
+  <div class="explore-layout"><div class="listing-grid" id="results"></div><div id="map-panel" class="map-panel" hidden><div id="map"></div><small>Ubicaciones ilustrativas en demostración.</small></div></div>
+  <p class="explore-disclaimer">INFORMACIÓN IMPORTANTE — Las fichas de demostración no representan ofertas reales. Los precios, servicios, disponibilidades y condiciones publicados por terceros requieren confirmación directa.</p>
+ </div>
+ <div class="explore-closer"><div class="explore-closer-image" role="img" aria-label="Interior de hospitalidad, imagen ilustrativa"></div><div class="explore-closer-content"><span>03 / SIGUIENTE PASO</span><h2>Tu estancia, <em>mejor planeada.</em></h2><p>Después de explorar, reúne hospedaje, traslados y servicios independientes en una propuesta de itinerario.</p><button type="button" data-go="planner">Comenzar a planificar <span aria-hidden="true">↗</span></button><small>La solicitud no sustituye la confirmación con cada proveedor.</small></div></div>
+</section>
+
+
+ </main>
+ <footer class="explore-standalone-footer"><span>GROWA · HOSPITALIDAD MÉDICA · MAZATLÁN</span><span>Directorio de coordinación. Los servicios y la disponibilidad requieren confirmación del proveedor.</span></footer>
+ <div id="explore-detail-modal" role="dialog" aria-label="Detalles del servicio" aria-modal="true" hidden>
+  <div class="standalone-detail-card"><button type="button" id="explore-detail-close" aria-label="Cerrar ficha">×</button><div id="explore-detail-content"></div></div>
+ </div>
+</body>
+</html>

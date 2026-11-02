@@ -25,22 +25,23 @@ const status=c=>c.demo?'<span class="label label-demo">Demostración</span>':c.v
 const field=(id,name,label)=>'<option value="'+esc(id)+'">'+esc(name||label)+'</option>';
 function card(c){
  const pic=imgData(c),id=esc(c.id),selected=state.selected.has(c.id);
+ const profileHref='/odontologia/clinicas/'+id;
  return '<article class="result" data-id="'+id+'">'+
- '<div class="result-cover"><a href="/odontologia/clinicas/'+id+'" aria-label="Ver ficha de '+esc(c.name)+'">'+renderImg(pic)+'</a>'+
- '<span class="cover-tag">'+(c.demo?'IMAGEN DE REFERENCIA':'FOTOGRAFÍA DE FICHA')+'</span>'+refImg(c)+'</div>'+
- '<div class="result-body"><div class="result-overline"><span>Odontología · '+esc(c.zone)+'</span>'+status(c)+'</div>'+
- '<h3><a href="/odontologia/clinicas/'+id+'">'+esc(c.name)+'</a></h3>'+
+ '<div class="result-cover"><a href="'+profileHref+'" aria-label="Ver ficha de '+esc(c.name)+'">'+renderImg(pic)+'</a>'+
+ '<span class="cover-tag">'+(c.demo?'FOTOGRAFÍA ILUSTRATIVA':'IMAGEN DEL PERFIL')+'</span>'+refImg(c)+'</div>'+
+ '<div class="result-body"><div class="result-overline"><span>ODONTOLOGÍA · '+esc(c.zone)+'</span>'+status(c)+'</div>'+
+ '<h3><a href="'+profileHref+'">'+esc(c.name)+'</a></h3>'+
  '<p class="result-description">'+esc(c.description)+'</p>'+
  '<div class="result-attributes"><span><b>Ubicación</b>'+esc(c.zone)+', Mazatlán</span>'+
  '<span><b>Idioma</b>'+(c.english?'Inglés declarado':'Por confirmar')+'</span>'+
- '<span><b>Acceso</b>'+(c.accessible?'Accesibilidad declarada':'Por confirmar')+'</span></div>'+
- '<div class="result-foot"><label class="compare-choice"><input type="checkbox" data-compare="'+id+'" '+(selected?'checked':'')+'> Añadir a comparación</label>'+
- '<a href="/odontologia/clinicas/'+id+'">Ver ficha completa <span aria-hidden="true">↗</span></a></div></div>'+
+ '<span><b>Accesibilidad</b>'+(c.accessible?'Declarada':'Por confirmar')+'</span></div>'+
+ '<div class="result-foot"><label class="compare-choice"><input type="checkbox" data-compare="'+id+'" '+(selected?'checked':'')+'> Comparar perfil</label>'+
+ '<a href="'+profileHref+'">Conocer la clínica <span aria-hidden="true">↗</span></a></div></div>'+
  '<div class="result-action"><span class="result-action-kicker">Consulta de referencia</span>'+
  '<strong class="result-price">'+money(c.consultation_reference_mxn)+'</strong>'+
- '<small>'+(c.demo?'Importe ficticio · DEMO':esc(c.price_label))+'</small>'+
- '<div class="result-action-bottom"><button type="button" class="action-primary" data-quote="'+id+'">Preparar solicitud</button>'+
- '<a class="action-secondary" href="/odontologia/clinicas/'+id+'">Más información</a></div></div>'+
+ '<small>'+(c.demo?'IMPORTE FICTICIO · DEMO':esc(c.price_label))+'</small>'+
+ '<div class="result-action-bottom"><a class="action-secondary" href="'+profileHref+'">Ver información <span aria-hidden="true">↗</span></a>'+
+ '<button type="button" class="action-primary" data-quote="'+id+'">Preparar consulta <span aria-hidden="true">↗</span></button></div></div>'+
  '</article>';
 }
 function displayList(){
@@ -106,52 +107,67 @@ function reset(){
 function selectInterest(id,toggle=true){
  state.interest=toggle&&state.interest===id?'':id;
  $$('.procedure-item').forEach(b=>{const active=b.dataset.procedure===state.interest;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
- const title=$('#selected-procedure');if(title)title.textContent=state.interest?'Interés: '+categoryName(state.interest):'Selecciona un tratamiento de interés';
+ const title=$('#selected-procedure');if(title)title.textContent=state.interest?categoryName(state.interest):'';
  const p=$('#procedure-disclosure');if(p)p.hidden=!state.interest;
  const desc=$('#procedure-description');if(desc)desc.textContent=state.treatments.find(x=>x.id===state.interest)?.about||'';
+ const selector=$('#procedure-select');if(selector)selector.value=state.interest;
  if($('#results-list'))updateAddress(query());
 }
+function treatmentIcon(name){
+ const n=String(name||'').toLowerCase();
+ const base='viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round"';
+ if(n.includes('implante'))return '<svg '+base+'><path d="M8 3h8M9 6h6M8 9h8M9 12h6M10 15h4M12 18v3"/><path d="M7 3l1 6 4 9 4-9 1-6"/></svg>';
+ if(n.includes('ortodoncia'))return '<svg '+base+'><path d="M4 9c-1 3-1 6 0 9M20 9c1 3 1 6 0 9M4 11h16M4 16h16"/><rect x="6" y="8" width="4" height="10" rx="1"/><rect x="14" y="8" width="4" height="10" rx="1"/></svg>';
+ if(n.includes('limpieza')||n.includes('prevención'))return '<svg '+base+'><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg>';
+ if(n.includes('corona')||n.includes('prótesis'))return '<svg '+base+'><path d="m3 7 4 4 5-6 5 6 4-4-2 12H5z"/><path d="M5 16h14"/></svg>';
+ return '<svg '+base+'><path d="M12 5c-3-3-8-2-9 2-1 3 1 6 2 9l2 5 2-1 3-7 3 7 2 1 2-5c1-3 3-6 2-9-1-4-6-5-9-2z"/></svg>';
+}
 function renderHome(){
- document.title='Clínicas dentales en Mazatlán | Growa';
- const t=state.treatments,z=state.zones;
- root.innerHTML=crumbs()+
- '<section class="market-head"><div class="market-heading"><p class="market-location">MÉXICO / SINALOA / MAZATLÁN</p>'+
- '<h1>Clínicas dentales en Mazatlán</h1>'+
- '<p>Consulta perfiles, compara servicios declarados y organiza tu estancia.</p></div>'+
- '<div class="market-head-media">'+renderImg(photos.hero||{},true)+'<span>Fotografía ilustrativa · '+esc(photos.hero?.photographer||'Pexels')+'</span></div></section>'+
- '<form class="search-panel" id="directory-search" role="search"><div class="search-main"><label for="clinic-q">¿Qué clínica buscas?</label>'+
- '<input id="clinic-q" type="search" placeholder="Nombre, colonia o zona" autocomplete="off"></div>'+
- '<div class="search-procedure"><label for="procedure-select">Tratamiento de interés</label><select id="procedure-select"><option value="">Cualquier tratamiento</option>'+
- t.map(x=>field(x.id,x.name)).join('')+'</select></div>'+
- '<button type="submit" class="search-button">Buscar clínicas <span aria-hidden="true">→</span></button></form>'+
- '<div class="search-disclaimer"><span class="bullet-dot"></span><span>Directorio en demostración: los perfiles marcados DEMO son ficticios y los tratamientos deben confirmarse con cada prestador.</span></div>'+
- '<section class="procedures" id="tratamientos"><div class="minor-heading"><h2>Buscar por tratamiento</h2><span>Selección orientativa · No acredita disponibilidad</span></div>'+
- '<div class="procedure-row">'+t.map(x=>'<button type="button" class="procedure-item" data-procedure="'+esc(x.id)+'" aria-pressed="false">'+esc(x.name)+' <span>↗</span></button>').join('')+'</div>'+
- '<div id="procedure-disclosure" class="procedure-disclosure" hidden><strong id="selected-procedure"></strong><span id="procedure-description"></span><button type="button" data-quote="">Preparar consulta →</button></div></section>'+
- '<section class="market-results" id="clinicas"><div class="market-layout">'+
- '<aside class="filter-sidebar" id="filters" aria-label="Filtros"><div class="filter-title"><h2>Filtrar clínicas</h2><button type="button" data-reset>Limpiar</button></div>'+
+ document.title='Odontología en Mazatlán | Growa Hospitality';
+ root.classList.add('is-directory');
+ const t=state.treatments,z=state.zones,heroPhoto=photos['Odontología Marina Norte · DEMO']||photos.hero||{};
+ root.innerHTML='<div class="dental-home">'+
+ '<section class="dental-hero" aria-labelledby="dental-hero-title">'+
+ '<div class="dental-hero-media">'+renderImg(heroPhoto,true)+'</div>'+
+ '<div class="dental-hero-shade"></div><div class="dental-hero-content"><p class="dental-hero-eyebrow">ODONTOLOGÍA EN MAZATLÁN</p>'+
+ '<h1 id="dental-hero-title">Tu salud dental, <em>con la tranquilidad de un viaje bien planeado.</em></h1>'+
+ '<p>Conoce opciones de atención odontológica, compara información disponible y prepara tu visita a Mazatlán desde un mismo lugar.</p>'+
+ '<div class="dental-hero-links"><a href="#clinicas" class="dental-hero-cta">Explorar clínicas <span aria-hidden="true">↗</span></a>'+
+ '<a href="/mi-proceso" class="dental-hero-secondary">Consultar mi proceso <span aria-hidden="true">→</span></a></div>'+
+ '<small class="dental-hero-caption">DIRECTORIO INDEPENDIENTE · INFORMACIÓN SUJETA A CONFIRMACIÓN DEL PRESTADOR</small></div>'+
+ '<span class="dental-hero-photo-caption">Fotografía ilustrativa · '+esc(heroPhoto.photographer||'Pexels')+'</span></section>'+
+ '<section class="procedures" id="tratamientos" aria-label="Tratamientos odontológicos"><div class="procedure-header"><span>EXPLORAR POR TRATAMIENTO</span><p>Categorías orientativas; consulta la oferta directamente con cada clínica.</p></div>'+
+ '<div class="procedure-row" role="group" aria-label="Selecciona un tratamiento">'+t.map(x=>'<button type="button" class="procedure-item" data-procedure="'+esc(x.id)+'" aria-pressed="false"><span class="procedure-icon">'+treatmentIcon(x.name)+'</span><span class="procedure-name">'+esc(x.name)+'</span></button>').join('')+'</div>'+
+ '<div class="treatment-select-mobile"><label for="procedure-select">Elegir tratamiento</label><select id="procedure-select"><option value="">Todos los tratamientos</option>'+t.map(x=>field(x.id,x.name)).join('')+'</select></div>'+
+ '<div id="procedure-disclosure" class="procedure-disclosure" hidden><div><span class="procedure-disclosure-prefix">TRATAMIENTO DE INTERÉS</span><strong id="selected-procedure"></strong></div><p id="procedure-description"></p><button type="button" data-quote="">Preparar consulta <span aria-hidden="true">↗</span></button></div></section>'+
+ '<section class="market-results" id="clinicas"><div class="directory-heading"><div><p class="directory-eyebrow">DIRECTORIO DE ODONTOLOGÍA / MAZATLÁN</p><h2>Clínicas de odontología<br><em>en Mazatlán.</em></h2><p>Explora información publicada por los prestadores. Los perfiles DEMO son ficticios.</p></div><div class="directory-heading-action"><a href="/planificar">Planifica tu estancia <span aria-hidden="true">↗</span></a></div></div>'+
+ '<div class="market-layout">'+
+ '<aside class="filter-sidebar" id="filters" aria-label="Filtros del directorio"><div class="filter-title"><h2>Refinar búsqueda</h2><button type="button" data-reset>Restablecer</button></div>'+
  '<div class="filter-group"><label for="clinic-zone">Ubicación</label><select id="clinic-zone"><option value="">Todo Mazatlán</option>'+z.map(x=>field(x,x)).join('')+'</select></div>'+
- '<div class="filter-group"><span class="filter-label">Características</span><label class="filter-check"><input id="clinic-english" type="checkbox"> Atención en inglés</label>'+
- '<label class="filter-check"><input id="clinic-access" type="checkbox"> Accesibilidad</label></div>'+
- '<div class="filter-group"><span class="filter-label">Estado del perfil</span><label class="filter-check"><input id="clinic-verified" type="checkbox"> Solo verificados</label></div>'+
- '<div class="sidebar-explain">El catálogo muestra características declaradas. Una ficha de demostración no representa una clínica operativa.</div>'+
- '<a class="sidebar-link" href="/mazatlan">Conoce Mazatlán <span>↗</span></a></aside>'+
- '<div class="results-area"><div class="results-bar"><div><h2>Opciones disponibles</h2><p id="result-count" role="status"></p></div>'+
- '<div class="results-tools"><button type="button" class="mobile-filter" id="toggle-filters" aria-controls="filters" aria-expanded="false">Filtros</button>'+
- '<label for="clinic-sort">Ordenar por</label><select id="clinic-sort"><option value="name">Nombre</option><option value="zone">Zona</option><option value="reference_asc">Consulta: menor precio</option><option value="reference_desc">Consulta: mayor precio</option></select></div></div>'+
+ '<div class="filter-group"><span class="filter-label">Servicios e instalaciones</span>'+
+ '<label class="filter-check"><input id="clinic-english" type="checkbox"> Atención en inglés</label>'+
+ '<label class="filter-check"><input id="clinic-access" type="checkbox"> Accesibilidad declarada</label></div>'+
+ '<div class="filter-group"><span class="filter-label">Estado del perfil</span><label class="filter-check"><input id="clinic-verified" type="checkbox"> Solo perfiles verificados</label></div>'+
+ '<div class="sidebar-explain">Las características proceden del catálogo. Las fichas DEMO no representan clínicas reales ni acreditan disponibilidad.</div>'+
+ '<a class="sidebar-link" href="/mazatlan">Conoce Mazatlán <span aria-hidden="true">↗</span></a></aside>'+
+ '<div class="results-area"><div class="results-bar"><div class="results-headings"><h2>Opciones disponibles</h2><p id="result-count" role="status"></p></div>'+
+ '<div class="results-tools"><button type="button" class="mobile-filter" id="toggle-filters" aria-controls="filters" aria-expanded="false">Filtros <span aria-hidden="true">↓</span></button>'+
+ '<label for="clinic-sort">Ordenar por</label><select id="clinic-sort"><option value="name">Nombre</option><option value="zone">Zona</option><option value="reference_asc">Consulta: menor importe</option><option value="reference_desc">Consulta: mayor importe</option></select></div></div>'+
+ '<form class="search-panel" id="directory-search" role="search"><label for="clinic-q" class="visually-hidden">Buscar clínicas por nombre o zona</label>'+
+ '<span class="search-icon" aria-hidden="true">⌕</span><input id="clinic-q" type="search" placeholder="Buscar clínica, colonia o zona" autocomplete="off">'+
+ '<button type="submit" class="search-button">Buscar <span aria-hidden="true">↗</span></button></form>'+
  '<div class="active-filters" id="active-filters" hidden></div>'+
  '<div class="result-list" id="results-list">'+state.visible.map(card).join('')+'</div>'+
- '<div class="listing-footer">Las cantidades mostradas, cuando existan, son referencias de consulta. No se publican precios de procedimientos sin cotizaciones verificadas.</div>'+
+ '<p class="listing-footer">Los importes, cuando se publican, corresponden exclusivamente a consultas de referencia. No constituyen cotizaciones de tratamientos. La selección de un tratamiento no confirma que un prestador lo ofrezca.</p>'+
  '<section class="comparison-section" id="comparison" hidden></section></div></div></section>'+
- '<section class="information" id="informacion"><div><p class="section-overline">ANTES DE ELEGIR</p><h2>Información que conviene comprobar</h2></div>'+
- '<div class="information-grid"><article><strong>01</strong><h3>Profesionales y permisos</h3><p>Solicita cédula, especialidad cuando corresponda y documentación del establecimiento.</p></article>'+
- '<article><strong>02</strong><h3>Presupuesto completo</h3><p>Confirma materiales, número de visitas, costos adicionales y seguimiento por escrito.</p></article>'+
- '<article><strong>03</strong><h3>Organización del viaje</h3><p>Consulta tiempos de atención antes de contratar hospedaje o transporte.</p></article></div></section>'+
+ '<section class="information" id="informacion"><div><p class="section-overline">ANTES DE ELEGIR</p><h2>Qué conviene verificar antes de viajar.</h2></div>'+
+ '<div class="information-grid"><article><strong>01 /</strong><h3>Credenciales y permisos</h3><p>Solicita cédulas profesionales y la documentación aplicable del establecimiento.</p></article>'+
+ '<article><strong>02 /</strong><h3>Costos y materiales</h3><p>Pregunta por el presupuesto total, materiales, número de visitas y seguimiento.</p></article>'+
+ '<article><strong>03 /</strong><h3>Itinerario</h3><p>Acuerda los tiempos de atención antes de contratar traslados u hospedaje.</p></article></div></section>'+
  '<section class="faq-section" id="preguntas"><div class="minor-heading"><h2>Preguntas frecuentes</h2></div>'+
  '<details><summary>¿Son precios de tratamientos dentales?</summary><p>No. Las cifras ilustrativas corresponden a consultas de referencia; el costo de tratamientos debe cotizarse directamente con el proveedor.</p></details>'+
- '<details><summary>¿Las clínicas están verificadas?</summary><p>Las fichas DEMO son ficticias. Los demás perfiles indican su estado de validación. No se muestran reseñas ni credenciales inventadas.</p></details>'+
- '<details><summary>¿Se envía una solicitud desde Growa?</summary><p>Por ahora se prepara un resumen descargable; no se envía a ninguna clínica.</p></details></section>';
- // Restore deep-linked filter state only if supplied in the URL.
+ '<details><summary>¿Las clínicas están verificadas?</summary><p>Los perfiles marcados DEMO son ficticios. Las fichas de otros prestadores indican su estado de validación; no se presentan reseñas ni credenciales sin verificar.</p></details>'+
+ '<details><summary>¿Se envía una solicitud desde Growa?</summary><p>Por ahora puedes preparar un resumen descargable. No se envía a ninguna clínica ni confirma una cita.</p></details></section></div>';
  const a=urlParams;
  $('#clinic-q').value=a.get('q')||'';
  if(z.includes(a.get('zona')))$('#clinic-zone').value=a.get('zona');
@@ -167,6 +183,7 @@ function galleryItem(p,first=false){
  return '<figure class="gallery-item">'+renderImg(p,first)+'<figcaption>Fotografía de referencia · '+esc(p.photographer||'Pexels')+'</figcaption></figure>';
 }
 function profile(c){
+ root.classList.remove('is-directory');
  document.title=c.name+' | Odontología | Growa';
  state.current=c;
  const pic=imgData(c);

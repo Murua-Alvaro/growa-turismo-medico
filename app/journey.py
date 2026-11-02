@@ -12,6 +12,7 @@ import re
 import secrets
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
 from time import monotonic
 from typing import Literal
 
@@ -211,10 +212,36 @@ def create_case(body: NewCase, request: Request, user: User = Depends(security.r
         event(db, case.id, user.id, "created", "Solicitud administrativa registrada")
         db.add(Audit(user_id=user.id, action="journey_created", target_id=case.id))
         result = {"case": summary(db, case),
-                  "invitation_url": str(request.base_url).rstrip("/") + "/mi-proceso#invite=" + raw,
+                  "invitation_url": os.getenv("PUBLIC_BASE_URL", str(request.base_url)).rstrip("/") + "/mi-proceso#invite=" + raw,
                   "expires_in_days": 7, "existing_account": bool(existing),
                   "notice": "Entrega este enlace privado al paciente por un canal seguro. No se envían correos automáticamente."}
         return result
+
+
+class ReissueRequest(BaseModel):
+    # Explicit action; the response returns the link only to authorized staff.
+    reason: str = Field(default="Reemisión solicitada", min_length=3, max_length=100)
+
+
+@router.post("/cases/{case_id}/reissue", dependencies=[Depends(security.check_csrf)])
+def reissue_invitation(case_id: str, body: ReissueRequest, request: Request,
+                       user: User = Depends(security.require("admin", "coordinator"))):
+    with SessionLocal.begin() as db:
+        c = access(db, case_id, user)
+        if c.patient_user_id:
+            raise HTTPException(409, "El paciente ya activó su acceso.")
+        existing = list(db.scalars(select(JourneyInvite)
+                                   .where(JourneyInvite.case_id == c.id, JourneyInvite.redeemed_at.is_(None))))
+        for invitation in existing:
+            invitation.expires_at = now()
+        raw = secrets.token_urlsafe(36)
+        db.add(JourneyInvite(case_id=c.id, token_hash=digest(raw),
+                             expires_at=now() + timedelta(days=7)))
+        event(db, c.id, user.id, "invite_reissued", "Invitación privada renovada")
+        db.add(Audit(user_id=user.id, action="journey_invite_reissued", target_id=c.id))
+        return {"invitation_url": os.getenv("PUBLIC_BASE_URL", str(request.base_url)).rstrip("/")
+                + "/mi-proceso#invite=" + raw, "expires_in_days": 7,
+                "notice": "El enlace anterior dejó de ser válido. Comparte únicamente el nuevo."}
 
 
 class Claim(BaseModel):
@@ -222,6 +249,7 @@ class Claim(BaseModel):
     email: str = Field(min_length=6, max_length=180)
     name: str = Field(min_length=2, max_length=140)
     password: str = Field(min_length=14, max_length=200)
+    accept_terms: bool = False
 
 
 def valid_invite(db, token: str, email: str):
@@ -239,6 +267,8 @@ def valid_invite(db, token: str, email: str):
 @router.post("/claim", status_code=201)
 def claim(body: Claim, request: Request, response: Response):
     check_origin(request)
+    if not body.accept_terms:
+        raise HTTPException(422, "Debes aceptar el aviso de privacidad y las condiciones del piloto.")
     throttle(request.client.host if request.client else "unknown")
     try:
         with SessionLocal.begin() as db:
@@ -424,7 +454,7 @@ def propose_appointment(case_id: str, body: NewAppointment, user: User = Depends
         # Mazatlán local wall time; never convert timezone-aware datetimes silently.
         if body.starts_at.tzinfo is not None:
             raise HTTPException(422, "Usa hora local de Mazatlán, sin zona horaria.")
-        if body.starts_at < now() - timedelta(hours=8):
+        if body.starts_at <= datetime.now(ZoneInfo("America/Mazatlan")).replace(tzinfo=None):
             raise HTTPException(422, "La fecha debe estar en el futuro.")
         row = JourneyAppointment(case_id=c.id, starts_at=body.starts_at,
                                  duration_minutes=body.duration_minutes, mode=body.mode)
@@ -452,6 +482,18 @@ def change_appointment(case_id: str, appointment_id: str, body: AppointmentUpdat
             raise HTTPException(409, "La cita ya fue resuelta.")
         if c.stage in ("completed", "cancelled"):
             raise HTTPException(409, "Proceso cerrado.")
+        if body.state == "confirmed":
+            # Prevent two local confirmations for the same provider from overlapping.
+            confirmed = list(db.scalars(select(JourneyAppointment)
+                .join(JourneyCase, JourneyCase.id == JourneyAppointment.case_id)
+                .where(JourneyCase.provider_user_id == c.provider_user_id,
+                       JourneyAppointment.state == "confirmed")))
+            start = row.starts_at
+            finish = start + timedelta(minutes=row.duration_minutes)
+            for old in confirmed:
+                old_end = old.starts_at + timedelta(minutes=old.duration_minutes)
+                if old.id != row.id and start < old_end and old.starts_at < finish:
+                    raise HTTPException(409, "Ya hay una cita confirmada para ese proveedor en este horario.")
         row.state = body.state
         c.updated_at = now()
         event(db, c.id, user.id, "appointment", "Cita " + ("confirmada por el proveedor" if body.state == "confirmed" else "cancelada"))

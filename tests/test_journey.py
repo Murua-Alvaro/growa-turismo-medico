@@ -50,7 +50,7 @@ def test_journey_invite_tasks_appointments_and_role_isolation():
                             password_hash=hash_password(PASS), role="patient")
             db.add_all([doctor, outsider]); db.flush()
             clinic = Listing(category="medico", name="Clínica ficticia Journey " + token,
-                             demo=False, active=True, verified=False,
+                             demo=False, active=True, verified=True,
                              provider_user_id=doctor.id, zone="Mazatlán",
                              description="Prestador de prueba")
             db.add(clinic);db.flush()

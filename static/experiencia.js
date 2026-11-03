@@ -124,7 +124,7 @@ function book(){
  if(!st.data||!st.patient||patient(st.patient)?.doctor_id!==st.doctor||!st.slot||!validSlot(st.doctor,st.date,st.slot)){toast("Selecciona un paciente asignado al profesional y un horario disponible.");renderSlots();return}
  const id="local-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,9);
  const v={id,doctor_id:st.doctor,patient_id:st.patient,starts_at:st.date+"T"+st.slot,duration_minutes:45,status:"proposed",service:$("visit-service").value};
- st.local.push(v);if(st.local.length>150)st.local.shift();st.lastId=id;save();
+ st.local.push(v);if(st.local.length>150)st.local.shift();st.lastId=id;save();$("metric-visits").textContent=st.data.appointments.length+st.local.length;
  st.slot="";renderSlots();
  $("patient-select").value=st.patient;$("dashboard-doctor").value=st.doctor;
  $("success-detail").textContent=clean(patient(v.patient_id)?.name)+" · "+clean(doc(v.doctor_id)?.name)+" · "+dayFormat(st.date)+" a las "+v.starts_at.slice(11,16)+".";

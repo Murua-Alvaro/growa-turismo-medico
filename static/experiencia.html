@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f7f5">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Experiencia interactiva de coordinación de atención y agendas en Growa Turismo Médico.">
+<title>Experiencia integral | Growa Turismo Médico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/experiencia.css?v=1">
+<script src="/static/experiencia.js?v=1" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Ir al contenido</a>
+<header class="site-head"><a href="/" class="brand" aria-label="Growa, ir al inicio"><span class="brand-mark">g</span><span>growa<small>TURISMO MÉDICO</small></span></a>
+<nav aria-label="Navegación"><a href="/">Inicio</a><a href="/odontologia">Odontología</a><a href="/red-medica">Red médica</a><a href="/mi-proceso">Mi proceso</a></nav><span class="head-context">MAZATLÁN, MÉXICO <span class="tiny-circle"></span></span></header>
+<main id="main">
+<section class="hero shell">
+<div class="hero-left"><p class="eyebrow"><span class="status-dot"></span> PLATAFORMA DE COORDINACIÓN / 01</p>
+<h1>Una mejor experiencia de atención <em>comienza antes de la consulta.</em></h1>
+<p class="hero-lead">Explora profesionales, organiza una visita y sigue cada paso desde una misma plataforma. Tres perspectivas, un proceso conectado.</p>
+<div class="hero-actions"><button type="button" class="primary-btn" data-view="search">Comenzar recorrido <span aria-hidden="true">↗</span></button><button type="button" class="quiet-btn" data-view="doctor">Conocer el panel médico <span aria-hidden="true">↗</span></button></div>
+</div>
+<div class="hero-right"><p class="right-kicker">UNA SOLA PLATAFORMA</p><div class="hero-art" aria-hidden="true"><div class="art-orbit a"></div><div class="art-orbit b"></div><div class="art-center">G</div><span class="art-point p1">01 <span>Paciente</span></span><span class="art-point p2">02 <span>Profesional</span></span><span class="art-point p3">03 <span>Agenda</span></span></div><p class="art-footer">Directorio <span>·</span> Programación <span>·</span> Seguimiento</p></div>
+</section>
+<div class="metric-line shell" aria-label="Datos disponibles"><div><strong id="metric-doctors">—</strong><span>Profesionales</span></div><div><strong id="metric-patients">—</strong><span>Perfiles de pacientes</span></div><div><strong id="metric-visits">—</strong><span>Citas en la red</span></div><p id="source-status" aria-live="polite">Conectando con el directorio…</p></div>
+<section class="workspace shell" aria-label="Experiencia interactiva">
+<div class="section-top"><div><p class="eyebrow">EL RECORRIDO</p><h2>Tres espacios. <em>Un mismo proceso.</em></h2></div><span class="soft-note">Datos ficticios, funciones interactivas</span></div>
+<div class="switcher" role="tablist" aria-label="Seleccionar perspectiva">
+<button id="tab-search" role="tab" aria-selected="true" class="active" data-view="search"><span>01</span> Encontrar y programar</button>
+<button id="tab-patient" role="tab" aria-selected="false" data-view="patient"><span>02</span> Vista del paciente</button>
+<button id="tab-doctor" role="tab" aria-selected="false" data-view="doctor"><span>03</span> Panel profesional</button>
+</div>
+<div id="view-search" class="view" role="tabpanel" aria-labelledby="tab-search">
+<div class="panel-heading"><div><p class="eyebrow">DIRECTORIO DE PROFESIONALES</p><h3>Encuentra al especialista indicado.</h3><p>Selecciona un profesional y organiza una consulta de ejemplo con disponibilidad calculada a partir de la agenda.</p></div><span class="step-count">PASO 01 / 03</span></div>
+<div class="directory-layout">
+<aside class="directory-side"><label class="field-title" for="doctor-query">Buscar profesional o especialidad</label><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="doctor-query" type="search" autocomplete="off" placeholder="Nombre, tratamiento…" aria-controls="doctor-results"></div>
+<label class="field-title" for="specialty-filter">Especialidad</label><select id="specialty-filter"><option value="">Todas las especialidades</option></select>
+<div class="directory-meta"><span id="results-caption">Cargando directorio…</span><span aria-hidden="true">↘</span></div><div id="doctor-results" class="doctor-results" aria-live="polite"></div></aside>
+<div class="booking-side" id="booking-side"><div class="doctor-preview" id="doctor-preview"><p>Selecciona un profesional para continuar.</p></div>
+<div class="booking-fields"><div class="field-group"><label class="field-title" for="visit-patient">Paciente</label><select id="visit-patient"></select></div><div class="field-group"><label class="field-title" for="visit-service">Tipo de cita</label><select id="visit-service"><option value="Consulta de orientación">Consulta de orientación</option><option value="Evaluación odontológica">Evaluación odontológica</option><option value="Revisión de tratamiento">Revisión de tratamiento</option><option value="Seguimiento de visita">Seguimiento de visita</option></select></div><div class="field-group"><label class="field-title" for="visit-date">Fecha</label><input id="visit-date" type="date"></div></div>
+<div class="slots-head"><span>Horarios sugeridos <small>Hora local de Mazatlán</small></span><button class="text-btn" type="button" id="next-date">Siguiente día disponible ↗</button></div>
+<div class="slots-grid" id="time-slots" role="group" aria-label="Elegir horario"><p class="muted">Selecciona una fecha para consultar horarios.</p></div>
+<div class="booking-bottom"><p>Una programación de muestra no confirma una atención real ni reserva disponibilidad de terceros.</p><button class="primary-btn" id="reserve" type="button" disabled>Programar visita <span aria-hidden="true">→</span></button></div>
+</div></div>
+</div>
+<div id="view-patient" class="view" role="tabpanel" aria-labelledby="tab-patient" hidden>
+<div class="panel-heading"><div><p class="eyebrow">CENTRO DE SEGUIMIENTO</p><h3>Todo tu proceso, en orden.</h3><p>Consulta la próxima visita, revisa la información y lleva el seguimiento administrativo desde un solo lugar.</p></div><span class="step-count">PASO 02 / 03</span></div>
+<div class="dashboard-filter"><label for="patient-select">Seleccionar paciente ilustrativo</label><select id="patient-select"></select><button class="secondary-btn" id="patient-print" type="button">Imprimir resumen ↗</button></div>
+<div id="patient-summary"></div>
+</div>
+<div id="view-doctor" class="view" role="tabpanel" aria-labelledby="tab-doctor" hidden>
+<div class="panel-heading"><div><p class="eyebrow">ESPACIO PROFESIONAL</p><h3>Una agenda que también organiza.</h3><p>Consulta tu calendario y actualiza el estado de las citas de esta sesión de muestra.</p></div><span class="step-count">PASO 03 / 03</span></div>
+<div class="dashboard-filter"><label for="dashboard-doctor">Profesional</label><select id="dashboard-doctor"></select><button class="secondary-btn" id="dashboard-export" type="button">Exportar agenda .ics ↗</button></div>
+<div id="doctor-summary"></div>
+</div>
+</section>
+<section class="closing shell"><div><p class="eyebrow">¿QUÉ SIGUE?</p><h2>De una primera consulta a <em>una experiencia integrada.</em></h2><p>El directorio, los calendarios y los paneles ya se comunican dentro de este recorrido ilustrativo. La gestión de pacientes reales requiere permisos, controles y verificación adicional.</p></div><div class="closing-links"><a href="/red-medica">Explorar la red profesional <span>↗</span></a><a href="/mi-proceso">Conocer el seguimiento del paciente <span>↗</span></a><a href="/odontologia">Ver servicios de odontología <span>↗</span></a></div></section>
+</main>
+<footer class="foot shell"><span>© Growa · Turismo médico, Mazatlán</span><span>Entorno interactivo con perfiles, pacientes y citas ficticias. Las acciones públicas se guardan únicamente en este navegador.</span></footer>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="success-dialog" class="overlay" role="dialog" aria-modal="true" aria-labelledby="success-title" hidden><div class="success-dialog"><button class="dismiss" id="dialog-close" type="button" aria-label="Cerrar">×</button><span class="check">✓</span><p class="eyebrow">PROGRAMACIÓN REGISTRADA</p><h2 id="success-title">Tu visita está en la agenda.</h2><p id="success-detail"></p><div class="dialog-actions"><button class="primary-btn" id="success-patient" type="button">Ver seguimiento <span>→</span></button><button class="secondary-btn" id="success-calendar" type="button">Añadir a calendario .ics</button></div><small>Registro ilustrativo conservado en este dispositivo; no se ha enviado ninguna solicitud médica real.</small></div></div>
+</body></html>

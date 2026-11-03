@@ -15,7 +15,7 @@
  let timer=null;
  function showCategories(){
   const entries=Object.entries(types);
-  $('#category-pills').innerHTML=entries.map(([key,name],index)=>'<button type="button" data-cat="'+key+'" class="'+(state.category===key?'active':'')+'" aria-pressed="'+(state.category===key)+'"><span class="category-index">'+String(index).padStart(2,'0')+'</span><span class="category-label">'+name+'</span><span class="category-arrow" aria-hidden="true">↗</span></button>').join('');
+  $('#category-pills').innerHTML=entries.map(([key,name])=>'<button type="button" data-cat="'+key+'" class="'+(state.category===key?'active':'')+'" aria-pressed="'+(state.category===key)+'"><span class="category-label">'+name+'</span><span class="category-arrow" aria-hidden="true">↗</span></button>').join('');
  }
  function params(){
   const p=new URLSearchParams({

@@ -121,7 +121,7 @@ function renderDoctor(){
  '<section><h4>Pacientes asignados.</h4><div class="table-scroll"><table class="dashboard-table"><thead><tr><th>Perfil</th><th>Citas</th><th>Acción</th></tr></thead><tbody>'+assigned.map(p=>'<tr><td>'+esc(clean(p.name))+'</td><td>'+patientVisits(p.id).length+'</td><td><button class="mini-btn" type="button" data-open-patient="'+esc(p.id)+'">Abrir ficha ↗</button></td></tr>').join("")+'</tbody></table></div></section></div>';
 }
 function book(){
- if(!st.data||!st.patient||!st.slot||!validSlot(st.doctor,st.date,st.slot)){toast("Selecciona un día y un horario disponible.");renderSlots();return}
+ if(!st.data||!st.patient||patient(st.patient)?.doctor_id!==st.doctor||!st.slot||!validSlot(st.doctor,st.date,st.slot)){toast("Selecciona un paciente asignado al profesional y un horario disponible.");renderSlots();return}
  const id="local-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,9);
  const v={id,doctor_id:st.doctor,patient_id:st.patient,starts_at:st.date+"T"+st.slot,duration_minutes:45,status:"proposed",service:$("visit-service").value};
  st.local.push(v);if(st.local.length>150)st.local.shift();st.lastId=id;save();

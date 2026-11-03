@@ -107,6 +107,12 @@ def explore_page():
 def app_workspace():
     return FileResponse(ROOT/"static"/"index.html")
 
+@app.get("/experiencia")
+@app.get("/experiencia/")
+def interactive_experience():
+    """Public walkthrough: synthetic directory with browser-local booking actions."""
+    return FileResponse(ROOT/"static"/"experiencia.html")
+
 @app.get("/red-medica")
 def medical_network():
     return FileResponse(ROOT/"static"/"network.html")

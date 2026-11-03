@@ -4,6 +4,20 @@ Plataforma de coordinación de hospitalidad médica (no presta servicios clínic
 
 **Estado:** proyecto de desarrollo. Los proveedores semilla y sus precios son exclusivamente demostrativos. No representan ofertas reales ni disponibilidad médica verificable.
 
+## Recorrido interactivo de coordinación
+
+La ruta **`/experiencia`** incorpora un recorrido presentable que utiliza el endpoint público de datos sintéticos **`/api/demo-network`** (10 médicos, 40 pacientes y citas ficticias en Neon):
+
+- Buscar y filtrar profesionales por especialidad, seleccionar paciente ilustrativo y proponer una fecha/hora.
+- Evitar solapamientos con las citas ilustrativas cargadas y con las nuevas reservas del mismo navegador.
+- Consultar el seguimiento del paciente, citas, ruta administrativa y resumen imprimible.
+- Revisar agenda y pacientes por profesional, confirmar/cancelar citas creadas en la sesión y exportar archivos `.ics`.
+- Presentar una versión de respaldo cuando el directorio remoto no esté disponible.
+
+**Límite deliberado de privacidad:** la API que retorna registros de Neon es de solo lectura para visitantes; **las citas agregadas desde `/experiencia` se almacenan exclusivamente en `localStorage`** y no se escriben en Neon ni crean reservas reales. Las escrituras persistentes sobre el módulo administrativo requieren cuenta autorizada, cookies y CSRF, de acuerdo con `app/demo_network.py`. No utilizar nombres ni información clínica real.
+
+**Publicación:** `render.yaml` mantiene `autoDeploy: false`; actualizar GitHub no publica la nueva versión automáticamente. Desplegar manualmente el servicio existente en Render después de verificar sus variables de conexión y ejecutar pruebas.
+
 ## Red médica de prueba · 50 perfiles sintéticos en Neon
 
 Visita `/red-medica` para explorar 10 médicos y 40 pacientes ficticios con citas ilustrativas en Neon. La vista no ofrece servicios reales; solo las cuentas administrativas autorizadas pueden modificar citas de demostración. Los registros viven en tablas aisladas de los procesos reales.

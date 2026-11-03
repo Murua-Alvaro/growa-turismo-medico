@@ -187,3 +187,63 @@ body.explore-is-active .container{max-width:1550px;margin:0 auto;padding:0 0 75p
  .explore-standalone-footer{padding-inline:20px}
 }
 @media(prefers-reduced-motion:reduce){#view-explore *,#view-explore *::before,#view-explore *::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Presentation cleanup: editorial links instead of boxed CTAs/slide-like labels.
+   Functional inputs, directory actions and responsive behavior remain intact. */
+.standalone-links .standalone-plan,
+.standalone-links .standalone-plan:hover{
+  background:transparent;color:#0b4968;border:0;border-bottom:1px solid #0b4968;
+  border-radius:0;padding:12px 0;box-shadow:none;
+}
+#view-explore .explore-cta-primary,
+#view-explore .explore-cta-primary:hover{
+  background:transparent;color:#0b4968;border:0;border-bottom:1px solid #0b4968;
+  border-radius:0;box-shadow:none;min-height:0;padding:6px 0 8px;
+  text-transform:none;letter-spacing:0;font-size:13px;font-weight:750;gap:14px;
+  transform:none;
+}
+#view-explore .explore-cta-secondary,
+#view-explore .explore-cta-secondary:hover{
+  background:transparent;color:#214e65;border:0;border-bottom:1px solid #98afbc;
+  border-radius:0;min-height:0;padding:6px 0 8px;gap:14px;box-shadow:none;
+}
+#view-explore .explore-utility-line{
+  background:transparent;border:0;box-shadow:none;
+  padding-block:26px 8px;letter-spacing:0;flex-wrap:wrap;
+}
+#view-explore .explore-utility-line span{
+  color:#37617a;font-size:13px;letter-spacing:0;text-transform:none;font-weight:650;
+}
+#view-explore .explore-toolbar{
+  background:transparent;border:0;box-shadow:none;
+  column-gap:22px;row-gap:12px;
+}
+#view-explore .explore-field{
+  background:transparent;border:0;border-bottom:1px solid #c9dbe3;
+  padding:15px 0;
+}
+#view-explore .explore-map-toggle,
+#view-explore .explore-map-toggle:hover{
+  background:transparent;color:#0b4968;border:0;border-bottom:1px solid #0b4968;
+  padding:12px 0;min-width:0;align-self:center;justify-self:end;
+  box-shadow:none;
+}
+#view-explore .listing-badges span{
+  background:transparent;border:0;border-radius:0;color:#fff;
+  padding:0;text-shadow:0 1px 6px rgba(0,0,0,.65);
+}
+#view-explore .empty-state button,
+#view-explore .empty-state button:hover{
+  background:transparent;border:0;border-bottom:1px solid #0b4968;
+  color:#0b4968;border-radius:0;padding:8px 0;
+}
+#view-explore .explore-closer-content button,
+#view-explore .explore-closer-content button:hover{
+  background:transparent;color:#fff;border:0;border-bottom:1px solid #d6e8f1;
+  border-radius:0;padding:12px 0;box-shadow:none;
+}
+@media(max-width:760px){
+  .standalone-links .standalone-plan{padding:12px 0}
+  #view-explore .explore-utility-line{justify-content:flex-start;gap:15px 24px}
+  #view-explore .explore-map-toggle{justify-self:start;min-height:0}
+}

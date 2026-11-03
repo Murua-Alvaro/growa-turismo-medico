@@ -23,4 +23,5 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
       - run: python -m compileall -q app
+      - run: node --check static/experiencia.js
       - run: python -m pytest -q
